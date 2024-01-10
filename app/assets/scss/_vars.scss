@@ -1,0 +1,22 @@
+$color-gris-suave : #e2e2e2;
+$color-gris-medio : #b1b0b0;
+$color-gris-oscuro : #343434;
+
+$color-rojo : #db1139;
+$color-naranja : #ff7b00;
+$color-verde: #549913;
+$color-azul: #246cb4;
+
+$color-error : $color-rojo;
+$color-warning : $color-naranja;
+$color-success : $color-verde;
+$color-info : $color-azul;
+
+$fuente-primaria : arial;
+
+$font-size-small : .5rem;
+$font-size-regular : 1rem;
+$font-size-medium : 1.5rem;
+$font-size-big : 2.5rem;
+
+$wrapper-size : min(1024px, 90vw);

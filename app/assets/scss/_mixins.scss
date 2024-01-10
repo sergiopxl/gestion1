@@ -1,0 +1,15 @@
+@mixin btn($color-fondo){
+  border-radius: .3rem;
+  max-width: fit-content;
+  padding: .3rem .5rem;
+  color:white;
+  background-color: $color-fondo;
+  border: 2px solid $color-fondo;
+  transition: all .5s;
+  cursor: pointer;
+  margin: .5rem;
+  &:hover{
+    color:$color-fondo;
+    background-color: white;
+  }
+}
