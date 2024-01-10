@@ -1,0 +1,49 @@
+.cliente-row {
+
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+
+    border: 1px solid $color-gris-medio;
+    margin-bottom: 0.5rem;
+
+    &:nth-of-type(odd) {
+        background-color: $color-gris-suave;
+    }
+
+    .cliente-row-datos {
+
+        flex-basis: 30%;
+
+        padding: 0 0.55rem;
+        border-right: 1px dashed $color-gris-medio;  // Línea separadora
+
+        p { margin: 0.6rem 0; }
+    
+        .cliente-datos-nombre {
+            background-color: lighten($color-azul, 40%);
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            font-weight: bolder;
+        }
+    }
+
+    .cliente-row-contactos {
+
+        flex-grow: 1;
+        flex-shrink: 0;
+
+        padding-right: 0.55rem;
+
+        .contactos-contacto {
+
+            margin-bottom: 1.4rem;
+
+            p { margin: 0.6rem 0; }
+
+            .contacto-nombre {
+                font-weight: 600;
+            }
+        }
+    }
+}
