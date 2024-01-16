@@ -16,6 +16,17 @@ $resultadoClientes = mysqli_query($conn, $sqlClientes);
 $clientes = [];
 
 while ($cliente = mysqli_fetch_assoc($resultadoClientes)) {
+
+    $sqlContactos = "SELECT * FROM clientes_contactos_tb WHERE id_cliente = " . $cliente["id"];
+
+    $resultadoContactos = mysqli_query($conn, $sqlContactos);
+    
+    $contactos = [];
+    while ($contacto = mysqli_fetch_assoc($resultadoContactos)) {
+        $contactos[] = $contacto;
+    }
+
+    $cliente["contactos"] = $contactos;
     $clientes[] = $cliente;
 }
 
