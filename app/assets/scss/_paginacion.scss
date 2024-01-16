@@ -13,6 +13,8 @@
         border-radius: 0.6rem;
         padding: 0.4rem;
 
+        cursor: pointer;
+
         &.elemento-paginacion-activo {
             background-color: $color-gris-medio;
             color: white;
