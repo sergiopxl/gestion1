@@ -1,12 +1,24 @@
-#navegacion-principal{
+#navegacion-principal {
+
   display: flex;
   width: $wrapper-size;
   margin: auto;
-  ul{
+
+  ul {
     display: flex;
     align-items: center;
-    gap: .5rem;
-    align-items: center;
+    gap: 0.5rem;
+
+    padding-left: 0;
+
     list-style: none;
+  }  
+  li {
+    background-color: $color-gris-medio;
+    color: black;
+    border-radius: 0.4rem;
+    padding: 0.4rem;
+
+    text-transform: capitalize;
   }
 }
