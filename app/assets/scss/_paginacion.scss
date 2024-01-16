@@ -1,0 +1,21 @@
+#paginacion {
+
+    ul {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        list-style: none;
+    }
+
+    li.elemento-paginacion {
+        background-color: $color-gris-suave;
+        color: black;
+        border-radius: 0.6rem;
+        padding: 0.4rem;
+
+        &.elemento-paginacion-activo {
+            background-color: $color-gris-medio;
+            color: white;
+        }
+    }
+}
