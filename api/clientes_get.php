@@ -10,6 +10,14 @@ include("conn/conexion.php");
 
 $respuesta = [];
 
+$condicion = " WHERE activo = 1 ";
+
+// Búsqueda
+if (isset($_GET["buscar"])) {
+    $busqueda = $_GET["buscar"];
+    $condicion = " WHERE activo = 1 AND (clientes_tb.nombre LIKE '%$busqueda%' OR clientes_tb.cif LIKE '%$busqueda%') ";
+}
+
 // Paginación
 $inicio = $_GET["inicio"];
 $porPagina = $_GET["porpagina"];
@@ -17,7 +25,7 @@ $porPagina = $_GET["porpagina"];
 $limite = " LIMIT $inicio, $porPagina";
 
 // Consulta cuántos clientes hay en total
-$sqlNumClientes = "SELECT COUNT(*) AS numero_clientes FROM clientes_tb WHERE activo = 1";
+$sqlNumClientes = "SELECT COUNT(*) AS numero_clientes FROM clientes_tb $condicion";
 $respuestaNumClientes = mysqli_query($conn, $sqlNumClientes);
 
 if ($respuestaNumClientes) {
@@ -29,7 +37,7 @@ if ($respuestaNumClientes) {
 $sqlClientes = "SELECT clientes_tb.*, clientes_sectores_tb.nombre AS sector
                 FROM `clientes_tb`
                 LEFT JOIN clientes_sectores_tb ON clientes_tb.id_sector = clientes_sectores_tb.id
-                WHERE activo = 1 $limite";
+                $condicion $limite";
 
 $resultadoClientes = mysqli_query($conn, $sqlClientes);
 
