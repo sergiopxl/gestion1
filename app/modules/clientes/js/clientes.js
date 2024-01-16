@@ -4,23 +4,41 @@ console.log("clientes.js v1.0")
 
 function doClientes() {
 
+    let paginaActual = 1
+    const resultadosPorPagina = 20
+
     const contenedorListado = document.querySelector("main")
     const templateCliente = document.querySelector(".cliente-row")
     const templateContacto = document.querySelector(".contactos-contacto")
 
-    function getClientes() {
+    function getClientes(actual) {
 
-        fetch(apiUrlClientesGet, { method: "GET" }).then(respuesta => {
+        if (actual)
+            paginaActual = actual
+
+        const inicio = paginaActual > 1
+            ? (paginaActual - 1) * resultadosPorPagina
+            : 0
+        const parametroInicio = `?inicio=${inicio}`
+        const parametroPorPagina = `&porpagina=${resultadosPorPagina}`
+
+        const url = apiUrlClientesGet + parametroInicio + parametroPorPagina
+
+        fetch(url, { method: "GET" }).then(respuesta =>
             respuesta.json().then(clientes => {
-                printListaClientes(clientes)
+                printListaClientes(clientes.numero_clientes, clientes.clientes)
             })
-        })
+        )
     }
 
-    function printListaClientes(clientes) {
+    function printListaClientes(numClientes, clientes) {
 
         contenedorListado.innerHTML = ""
 
+        // Preparamos la paginación
+        doPaginacion(paginaActual, resultadosPorPagina, numClientes, getClientes)
+
+        // Imprime los clientes devueltos
         clientes.forEach(cliente => {
             const clienteContenedor = templateCliente.cloneNode(true)
 
