@@ -26,6 +26,12 @@
             border-radius: 0.25rem;
             font-weight: bolder;
         }
+
+        .cliente-botones {
+            button {
+                margin-left: 0;
+            }
+        }
     }
 
     .cliente-row-contactos {
