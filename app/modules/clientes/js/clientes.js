@@ -84,6 +84,13 @@ function doClientes() {
 
             clienteContenedor.classList.remove("hidden")
 
+            // Botones de acciones
+            const botonClienteEditar = clienteContenedor.querySelector(".cliente-botones-editar")
+            const botonClienteFactura = clienteContenedor.querySelector(".cliente-botones-factura")
+            botonClienteEditar.addEventListener("click", () => doEditar(cliente))
+            botonClienteFactura.addEventListener("click", () => doFactura(cliente.id))
+
+            // Contenidos
             clienteContenedor.querySelector(".cliente-datos-nombre").textContent = cliente.nombre;
             clienteContenedor.querySelector(".cliente-datos-cif").textContent = cliente.cif;
             clienteContenedor.querySelector(".cliente-datos-tlf").textContent = cliente.telefono;
@@ -94,6 +101,61 @@ function doClientes() {
 
             contenedorListado.append(clienteContenedor)
         });
+    }
+
+    // Edita el contacto seleccionado
+    function doEditar(cliente) {
+
+        const bloqueFormulario = document.querySelector("#bloque-formulario").cloneNode(true)
+        bloqueFormulario.classList.remove("hidden")
+
+        const formEditarCliente = bloqueFormulario.querySelector("#cliente-formulario")
+        
+        // Datos del cliente
+        const campoId = formEditarCliente.querySelector("[name = 'input-cliente-id']")
+        campoId.value = cliente.id
+        const campoNombre = formEditarCliente.querySelector("[name = 'input-cliente-nombre']")
+        campoNombre.value = cliente.nombre
+        const campoCIF = formEditarCliente.querySelector("[name = 'input-cliente-cif']")
+        campoCIF.value = cliente.cif
+        const campoTelefono = formEditarCliente.querySelector("[name = 'input-cliente-tlf']")
+        campoTelefono.value = cliente.telefono
+        const campoDireccion = formEditarCliente.querySelector("[name = 'input-cliente-direccion']")
+        campoDireccion.value = cliente.direccion
+        const campoSector = formEditarCliente.querySelector("[name = 'select-cliente-sector']")
+        getSectoresClientes()
+
+        const botonEnviar = bloqueFormulario.querySelector("#formulario-boton-enviar")
+        botonEnviar.addEventListener("click", () => {})
+
+        // Cambiamos la vista a la de edición
+        const titulo = document.querySelector("#h1-apartado")
+        titulo.textContent = "Editar cliente"
+        const barraAcciones = document.querySelector("#acciones")
+        barraAcciones.classList.add("hidden")
+        contenedorListado.innerHTML = ""
+        contenedorListado.append(bloqueFormulario)
+
+        // Llama a la API para obtener los sectores disponibles para el cliente.
+        function getSectoresClientes() {
+
+            fetch(apiUrlClientesSectoresGet, { method: "GET" })
+                .then(respuesta => respuesta.json()
+                .then(sectores => 
+                    sectores.forEach(sector => {
+
+                        const opcionSector = document.createElement("option")
+                        opcionSector.value = sector.id
+                        opcionSector.textContent = sector.nombre
+
+                        if (sector.id == cliente.id_sector)
+                            opcionSector.setAttribute("selected", "selected")
+
+                        campoSector.append(opcionSector)
+                    })
+                )
+            )
+        }
     }
 
     // Lista los contactos de un cliente en la interfaz
