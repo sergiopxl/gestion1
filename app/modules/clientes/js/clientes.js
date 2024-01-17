@@ -126,7 +126,15 @@ function doClientes() {
         getSectoresClientes()
 
         const botonEnviar = bloqueFormulario.querySelector("#formulario-boton-enviar")
-        botonEnviar.addEventListener("click", () => {})
+        botonEnviar.addEventListener("click", e => {
+            e.preventDefault()
+
+            const datosFormulario = new FormData(formEditarCliente)
+
+            fetch(apiUrlClientesUpdate, { method: "POST", body: datosFormulario })
+                .then(respuesta => respuesta.json()
+                .then(data => console.log(data)))
+        })
 
         // Cambiamos la vista a la de edición
         const titulo = document.querySelector("#h1-apartado")
