@@ -53,5 +53,35 @@
       </div>
     </div>
   </div>
+
+  <!-- Vista para la edición de clientes -->
+  <div id="bloque-formulario" class="hidden">
+    <form id="cliente-formulario" action="" method="post">
+      <input type="hidden" name="input-cliente-id">
+      <fieldset>
+        <label for="input-cliente-nombre">Nombre</label>
+        <input type="text" name="input-cliente-nombre" required="required">
+      </fieldset>
+      <fieldset>
+        <label for="input-cliente-cif">CIF</label>
+        <input type="text" name="input-cliente-cif" required="required">
+      </fieldset>
+      <fieldset>
+        <label for="input-cliente-tlf">Teléfono</label>
+        <input type="text" name="input-cliente-tlf">
+      </fieldset>
+      <fieldset>
+        <label for="input-cliente-direccion">Dirección</label>
+        <input type="text" name="input-cliente-direccion">
+      </fieldset>
+      <fieldset>
+        <label for="select-cliente-sector">Sector</label>
+        <select name="select-cliente-sector" required="required">
+          <option value="0" selected disabled>Selecciona un sector</option>
+        </select>
+      </fieldset>
+      <button id="formulario-boton-enviar" class="btn-success">Crear usuario</button>
+    </form>
+  </div>
 </body>
 </html>
