@@ -16,6 +16,7 @@ main{
   width: $wrapper-size;
   margin: auto;
 }
+
 .btn-success{
   @include btn($color-success);
 }
@@ -27,6 +28,11 @@ main{
 }
 .btn-info{
   @include btn($color-info);
+}
+
+#h1-apartado {
+  width: $wrapper-size;
+  margin: auto;
 }
 
 .hidden { display: none !important; }
