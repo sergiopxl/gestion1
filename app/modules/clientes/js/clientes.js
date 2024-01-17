@@ -50,13 +50,13 @@ function doClientes() {
 
         fetch(url, { method: "GET" }).then(respuesta =>
             respuesta.json().then(clientes => {
-                printListaClientes(clientes.numero_clientes, clientes.clientes, busquedaActiva)
+                printListaClientes(clientes.numero_clientes, clientes.clientes, busquedaActiva, busqueda)
             })
         )
     }
 
     // Lista los clientes en la interfaz
-    function printListaClientes(numClientes, clientes, busquedaActiva) {
+    function printListaClientes(numClientes, clientes, busquedaActiva, busqueda) {
 
         contenedorListado.innerHTML = ""
 
@@ -91,8 +91,14 @@ function doClientes() {
             botonClienteFactura.addEventListener("click", () => doFactura(cliente.id))
 
             // Contenidos
-            clienteContenedor.querySelector(".cliente-datos-nombre").textContent = cliente.nombre;
-            clienteContenedor.querySelector(".cliente-datos-cif").textContent = cliente.cif;
+            if (busquedaActiva)
+                clienteContenedor.querySelector(".cliente-datos-nombre").innerHTML = resaltar(cliente.nombre, busqueda)
+            else
+                clienteContenedor.querySelector(".cliente-datos-nombre").textContent = cliente.nombre
+            if (busquedaActiva)
+                clienteContenedor.querySelector(".cliente-datos-cif").innerHTML = resaltar(cliente.cif, busqueda)
+            else
+                clienteContenedor.querySelector(".cliente-datos-cif").textContent = cliente.cif
             clienteContenedor.querySelector(".cliente-datos-tlf").textContent = cliente.telefono;
             clienteContenedor.querySelector(".cliente-datos-direccion").textContent = cliente.direccion;
             clienteContenedor.querySelector(".cliente-datos-sector").textContent = `Sector: ${cliente.sector}`;
@@ -182,6 +188,26 @@ function doClientes() {
 
             contenedorContactos.append(contactoContenedor)
         });
+    }
+
+    // Devuelve un HTML donde aparecen resaltados los términos de búsqueda.
+    function resaltar(texto, busqueda) {
+
+        let buscar = busqueda.toLowerCase()
+        let cadenaResaltada = ""
+
+        let posBusqueda = 0
+        while ((posBusqueda = texto.toLowerCase().indexOf(buscar)) >= 0) {
+
+            cadenaResaltada += texto.substring(0, posBusqueda)
+
+            const resaltado = texto.substring(posBusqueda, posBusqueda + buscar.length)
+            cadenaResaltada += `<span class="resaltar">${resaltado}</span>`
+
+            texto = texto.substring(posBusqueda + buscar.length)
+        }
+
+        return cadenaResaltada + texto
     }
 
     getClientes()
