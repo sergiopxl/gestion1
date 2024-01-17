@@ -73,8 +73,8 @@ function doClientes() {
             botonVerTodos.addEventListener("click", () => getClientes())
 
             document.querySelector("#paginacion").innerHTML = numClientes == 1
-                ? "<h2>1 cliente encontrado</h2>"
-                : `<h2>${numClientes} clientes encontrado</h2>`
+                ? "<h2 class=\"paginacion-resultados\">1 cliente encontrado</h2>"
+                : `<h2 class=\"paginacion-resultados\">${numClientes} clientes encontrado</h2>`
             document.querySelector("#paginacion").append(botonVerTodos)
         }
 
