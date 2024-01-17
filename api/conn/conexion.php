@@ -11,5 +11,3 @@ if ($conn->connect_error) {
 } else {
     // echo "<div>La conexión a la base de datos ha tenido éxito</div>";
 }
-
-?>

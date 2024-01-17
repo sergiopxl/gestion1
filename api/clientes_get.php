@@ -15,7 +15,7 @@ $condicion = " WHERE activo = 1 ";
 // Búsqueda
 if (isset($_GET["buscar"])) {
     $busqueda = $_GET["buscar"];
-    $condicion = " WHERE activo = 1 AND (clientes_tb.nombre LIKE '%$busqueda%' OR clientes_tb.cif LIKE '%$busqueda%') ";
+    $condicion = " WHERE activo = 1 AND (UPPER(clientes_tb.nombre) LIKE UPPER('%$busqueda%') OR UPPER(clientes_tb.cif) LIKE UPPER('%$busqueda%')) ";
 }
 
 // Paginación
@@ -62,5 +62,3 @@ while ($cliente = mysqli_fetch_assoc($resultadoClientes)) {
 $respuesta["clientes"] = $clientes;
 
 echo json_encode($respuesta);
-
-?>
