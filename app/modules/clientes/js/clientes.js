@@ -142,6 +142,9 @@ function doClientes() {
                 .then(data => console.log(data)))
         })
 
+        // Mostramos los contactos
+        setContactos()
+
         // Cambiamos la vista a la de edición
         const titulo = document.querySelector("#h1-apartado")
         titulo.textContent = "Editar cliente"
@@ -169,6 +172,38 @@ function doClientes() {
                     })
                 )
             )
+        }
+
+        // Compone la interfaz para mostrar, editar y eliminar contactos de un cliente.
+        function setContactos() {
+
+            const contenedorContactos = bloqueFormulario.querySelector("#cliente-contactos-contenedor-formulario")
+            const contactoFormulario = contenedorContactos.querySelector(".cliente-contactos-form")
+
+            cliente.contactos.forEach(contacto => {
+                const nuevoFormularioContacto = contactoFormulario.cloneNode(true)
+
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-id']").value = contacto.id
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-nombre']").value = contacto.nombre
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-apellido1']").value = contacto.apellido1
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-apellido2']").value = contacto.apellido2
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-telefono']").value = contacto.telefono1
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-email']").value = contacto.email1
+
+                const botonEnviar = nuevoFormularioContacto.querySelector("button.enviar")
+                botonEnviar.addEventListener("click", e => {
+                    e.preventDefault()
+                    console.log("Enviando cambios del contacto", contacto.id)
+                })
+                const botonEliminar = nuevoFormularioContacto.querySelector("button.eliminar")
+                botonEliminar.addEventListener("click", e => {
+                    e.preventDefault()
+                    console.log("Eliminando contacto", contacto.id)
+                })
+
+                nuevoFormularioContacto.classList.remove("hidden")
+                contenedorContactos.append(nuevoFormularioContacto)
+            })
         }
     }
 
