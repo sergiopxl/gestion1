@@ -88,7 +88,7 @@ function doClientes() {
             clienteContenedor.querySelector(".cliente-datos-cif").textContent = cliente.cif;
             clienteContenedor.querySelector(".cliente-datos-tlf").textContent = cliente.telefono;
             clienteContenedor.querySelector(".cliente-datos-direccion").textContent = cliente.direccion;
-            clienteContenedor.querySelector(".cliente-datos-sector").textContent = "";
+            clienteContenedor.querySelector(".cliente-datos-sector").textContent = `Sector: ${cliente.sector}`;
 
             printListaContactos(clienteContenedor, cliente.contactos)
 
