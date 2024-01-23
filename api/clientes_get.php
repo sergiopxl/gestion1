@@ -43,9 +43,10 @@ $resultadoClientes = mysqli_query($conn, $sqlClientes);
 
 $clientes = [];
 
-// Para cada cliente, consulta sus contactos
+// Para cada cliente, consulta sus contactos y su facturación total
 while ($cliente = mysqli_fetch_assoc($resultadoClientes)) {
 
+    // Contactos
     $sqlContactos = "SELECT * FROM clientes_contactos_tb WHERE id_cliente = " . $cliente["id"];
 
     $resultadoContactos = mysqli_query($conn, $sqlContactos);
@@ -56,6 +57,19 @@ while ($cliente = mysqli_fetch_assoc($resultadoClientes)) {
     }
 
     $cliente["contactos"] = $contactos;
+
+    // Facturación total + IVA
+    $sqlFacturacion = "SELECT SUM(baseimponible * (iva + 100) / 100) AS facturacion
+                       FROM facturas_tb
+                       WHERE id_cliente = " . $cliente["id"];
+
+    $resultadoFacturacion = mysqli_query($conn, $sqlFacturacion);
+
+    if ($resultadoFacturacion) {
+        $fila = mysqli_fetch_assoc($resultadoFacturacion);
+        $cliente["facturacion"] = $fila["facturacion"] ?? 0;
+    }
+
     $clientes[] = $cliente;
 }
 
