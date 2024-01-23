@@ -59,7 +59,7 @@
 
   <!-- Vista para la edición de clientes -->
   <div id="bloque-formulario" class="hidden">
-    <form id="cliente-formulario" action="" method="post">
+    <form class="cliente-formulario" action="" method="post">
       <input type="hidden" name="input-cliente-id">
       <fieldset>
         <label for="input-cliente-nombre">Nombre</label>
@@ -83,10 +83,10 @@
           <option value="0" selected disabled>Selecciona un sector</option>
         </select>
       </fieldset>
-      <button id="formulario-boton-enviar" class="btn-success">Crear usuario</button>
+      <button class="btn-success formulario-boton-enviar">Crear usuario</button>
     </form>
-    <div id="cliente-contactos-contenedor-formulario">
-      <button id="nuevo-contacto-boton" class="btn-info">Nuevo contacto</button>
+    <div class="cliente-contactos-contenedor-formulario">
+      <button class="btn-info nuevo-contacto-boton">Nuevo contacto</button>
 
       <form action="" class="cliente-contactos-form hidden">
         <input type="hidden" name="input-contacto-id">

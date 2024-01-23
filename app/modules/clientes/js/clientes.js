@@ -129,7 +129,7 @@ function doClientes() {
         const bloqueFormulario = document.querySelector("#bloque-formulario").cloneNode(true)
         bloqueFormulario.classList.remove("hidden")
 
-        const formEditarCliente = bloqueFormulario.querySelector("#cliente-formulario")
+        const formEditarCliente = bloqueFormulario.querySelector(".cliente-formulario")
         
         // Datos del cliente
         const campoId = formEditarCliente.querySelector("[name = 'input-cliente-id']")
@@ -145,7 +145,7 @@ function doClientes() {
         const campoSector = formEditarCliente.querySelector("[name = 'select-cliente-sector']")
         getSectoresClientes()
 
-        const botonEnviar = bloqueFormulario.querySelector("#formulario-boton-enviar")
+        const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
         botonEnviar.addEventListener("click", e => {
             e.preventDefault()
 
@@ -191,7 +191,7 @@ function doClientes() {
         // Compone la interfaz para mostrar, editar y eliminar contactos de un cliente.
         function setContactos() {
 
-            const contenedorContactos = bloqueFormulario.querySelector("#cliente-contactos-contenedor-formulario")
+            const contenedorContactos = bloqueFormulario.querySelector(".cliente-contactos-contenedor-formulario")
             const contactoFormulario = contenedorContactos.querySelector(".cliente-contactos-form")
 
             cliente.contactos.forEach(contacto => {
