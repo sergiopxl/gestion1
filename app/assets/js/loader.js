@@ -18,7 +18,6 @@ class Loader {
 
         document.querySelector("body").append(this.container)
         document.querySelector("body").classList.add("noscroll")
-        document.querySelector("main").classList.add("blur")
     }
 
     destroy() {
@@ -26,6 +25,5 @@ class Loader {
         this.container.remove()
 
         document.querySelector("body").classList.remove("noscroll")
-        document.querySelector("main").classList.remove("blur")
     }
 }
