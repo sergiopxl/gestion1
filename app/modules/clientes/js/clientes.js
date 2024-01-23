@@ -193,7 +193,14 @@ function doClientes() {
                 const botonEnviar = nuevoFormularioContacto.querySelector("button.enviar")
                 botonEnviar.addEventListener("click", e => {
                     e.preventDefault()
-                    console.log("Enviando cambios del contacto", contacto.id)
+                    
+                    const datosFormulario = new FormData(nuevoFormularioContacto);
+
+                    fetch(apiUrlClientesContactoUpdate, { method: "POST", body: datosFormulario })
+                        .then(respuesta => respuesta
+                        .json()
+                        .then(data => console.log(data))
+                    );
                 })
                 const botonEliminar = nuevoFormularioContacto.querySelector("button.eliminar")
                 botonEliminar.addEventListener("click", e => {
