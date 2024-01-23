@@ -11,6 +11,10 @@ function doClientes() {
     const templateCliente = document.querySelector(".cliente-row")
     const templateContacto = document.querySelector(".contactos-contacto")
 
+    // Prepara el botón de crear Cliente nuevo
+    const botonNuevoCliente = document.querySelector("#acciones > .nuevo-cliente-boton")
+    botonNuevoCliente.addEventListener("click", () => doNuevoCliente())
+
     // Prepara el buscador de clientes
     const buscadorTexto = document.querySelector("#buscador-input")
     const buscadorBoton = document.querySelector("#buscador-boton")
@@ -132,6 +136,59 @@ function doClientes() {
     }
 
     //
+    // Muestra el formulario de creación de nuevo Cliente.
+    //
+    function doNuevoCliente() {
+
+        const bloqueFormulario = newBloqueFormulario()
+        const formNuevoCliente = bloqueFormulario.querySelector(".cliente-formulario")
+
+        // Para un nuevo Cliente, ocultamos temporalmente la interfaz de modificación de los Contactos
+        bloqueFormulario.querySelector(".cliente-contactos-contenedor-formulario").innerHTML = ""
+        
+        const campoSector = formNuevoCliente.querySelector("[name = 'select-cliente-sector']")
+        getSectoresClientes(campoSector)
+
+        const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
+        botonEnviar.addEventListener("click", e => {
+            e.preventDefault()
+            new Modal("¿Seguro que quiere guardar los datos?", "confirmacion", guardarNuevoCliente)
+        })    
+
+        // Cambiamos la vista a la de creación
+        const titulo = document.querySelector("#h1-apartado")
+        titulo.textContent = "Nuevo cliente"
+        const barraAcciones = document.querySelector("#acciones")
+        barraAcciones.classList.add("hidden")
+        contenedorListado.innerHTML = ""
+        contenedorListado.append(bloqueFormulario)
+
+        //
+        // Crea el nuevo Cliente con los datos del formulario.
+        //
+        function guardarNuevoCliente() {
+            
+            const datosFormulario = new FormData(formNuevoCliente)
+
+            fetch(apiUrlClientesPut, { method: "POST", body: datosFormulario })
+                .then(respuesta => {
+
+                    if (!respuesta.ok)
+                        throw new Error(`Error intentando crear el cliente (${respuesta.status})`)
+                    else
+                        return respuesta.json()
+                })
+                .then(data => {
+                    new Modal(data, "informacion")
+                })
+                .catch(error => {
+                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+                    new Modal(mensajeError, "informacion")
+                })
+        }
+    }
+
+    //
     // Edita el Cliente seleccionado en la lista de Clientes.
     //
     function doEditar(cliente) {
@@ -151,7 +208,7 @@ function doClientes() {
         const campoDireccion = formEditarCliente.querySelector("[name = 'input-cliente-direccion']")
         campoDireccion.value = cliente.direccion
         const campoSector = formEditarCliente.querySelector("[name = 'select-cliente-sector']")
-        getSectoresClientes()
+        getSectoresClientes(campoSector, cliente)
 
         const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
         botonEnviar.addEventListener("click", e => {
@@ -169,29 +226,6 @@ function doClientes() {
         barraAcciones.classList.add("hidden")
         contenedorListado.innerHTML = ""
         contenedorListado.append(bloqueFormulario)
-
-        //
-        // Llama a la API para obtener los Sectores disponibles para el Cliente.
-        //
-        function getSectoresClientes() {
-
-            fetch(apiUrlClientesSectoresGet, { method: "GET" })
-                .then(respuesta => respuesta.json()
-                .then(sectores => 
-                    sectores.forEach(sector => {
-
-                        const opcionSector = document.createElement("option")
-                        opcionSector.value = sector.id
-                        opcionSector.textContent = sector.nombre
-
-                        if (sector.id == cliente.id_sector)
-                            opcionSector.setAttribute("selected", "selected")
-
-                        campoSector.append(opcionSector)
-                    })
-                )
-            )
-        }
 
         //
         // Actualiza un Cliente con los datos del formulario.
@@ -296,20 +330,43 @@ function doClientes() {
                 }
             })
         }
+    }
 
-        //
-        // Crea un contenedor HTML #bloque-formulario clonado, asegurándose de que cambia el id por una class
-        // y lo hace visible.
-        //
-        function newBloqueFormulario() {
+    //
+    // Llama a la API para obtener los Sectores disponibles para el Cliente.
+    //
+    function getSectoresClientes(selectSector, cliente) {
 
-            const bloqueFormulario = document.querySelector("#bloque-formulario").cloneNode(true)
-            bloqueFormulario.id = ""
-            bloqueFormulario.classList.add("bloque-formulario")
-            bloqueFormulario.classList.remove("hidden")
+        fetch(apiUrlClientesSectoresGet, { method: "GET" })
+            .then(respuesta => respuesta.json()
+            .then(sectores => 
+                sectores.forEach(sector => {
 
-            return bloqueFormulario
-        }
+                    const opcionSector = document.createElement("option")
+                    opcionSector.value = sector.id
+                    opcionSector.textContent = sector.nombre
+
+                    if (cliente && sector.id == cliente.id_sector)
+                        opcionSector.setAttribute("selected", "selected")
+
+                    selectSector.append(opcionSector)
+                })
+            )
+        )
+    }
+
+    //
+    // Crea un contenedor HTML #bloque-formulario clonado, asegurándose de que cambia el id por una class
+    // y lo hace visible.
+    //
+    function newBloqueFormulario() {
+
+        const bloqueFormulario = document.querySelector("#bloque-formulario").cloneNode(true)
+        bloqueFormulario.id = ""
+        bloqueFormulario.classList.add("bloque-formulario")
+        bloqueFormulario.classList.remove("hidden")
+
+        return bloqueFormulario
     }
 
     //
