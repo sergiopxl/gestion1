@@ -52,20 +52,22 @@ function doClientes() {
 
         fetch(url, { method: "GET" })
             .then(respuesta => {
+
                 if (!respuesta.ok)
                     throw new Error(`Error en la solicitud: ${respuesta.status}`)
                 else
                     return respuesta.json()
             })
             .then(clientes => {
+
                 printListaClientes(clientes.numero_clientes, clientes.clientes, busquedaActiva, busqueda)
                 loader.destroy()
             })
             .catch(error => {
                 
                 loader.destroy()
-                const mensaje = `Error en la solicitud: ${error}`
-                console.log(mensaje)
+                const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+                new Modal(mensajeError, "informacion")
             })
     }
 
@@ -152,8 +154,20 @@ function doClientes() {
             const datosFormulario = new FormData(formEditarCliente)
 
             fetch(apiUrlClientesUpdate, { method: "POST", body: datosFormulario })
-                .then(respuesta => respuesta.json()
-                .then(data => console.log(data)))
+                .then(respuesta => {
+
+                    if (!respuesta.ok)
+                        throw new Error(`Error intentando actualizar el cliente (${respuesta.status})`)
+                    else
+                        return respuesta.json()
+                })
+                .then(data => {
+                    new Modal(data, "informacion")
+                })
+                .catch(error => {
+                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+                    new Modal(mensajeError, "informacion")
+                })
         })
 
         // Mostramos los contactos
@@ -211,22 +225,41 @@ function doClientes() {
                     const datosFormulario = new FormData(nuevoFormularioContacto)
 
                     fetch(apiUrlClientesContactoUpdate, { method: "POST", body: datosFormulario })
-                        .then(respuesta => respuesta
-                        .json()
-                        .then(data => console.log(data)))
+                        .then(respuesta => {
+
+                            if (!respuesta.ok)
+                                throw new Error(`Error intentando actualizar el contacto (${respuesta.status})`)
+                            else
+                                return respuesta.json()
+                        })
+                        .then(data => {
+                            new Modal(data, "informacion")
+                        })
+                        .catch(error => {
+                            const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+                            new Modal(mensajeError, "informacion")
+                        })
                 })
                 const botonEliminar = nuevoFormularioContacto.querySelector("button.eliminar")
                 botonEliminar.addEventListener("click", e => {
                     e.preventDefault()
 
                     fetch(`${apiUrlClientesContactoDelete}?contacto-id=${contacto.id}`, { method: "GET" })
-                        .then(respuesta => respuesta
-                        .json()
-                        .then(data => {
-                            nuevoFormularioContacto.innerHTML = "<p>EL contacto ha sido eliminado.</p>"
-                            console.log(data)
+                        .then(respuesta => {
+
+                            if (!respuesta.ok)
+                                throw new Error(`Error intentando eliminar el contacto (${respuesta.status})`)
+                            else
+                                return respuesta.json()
                         })
-                )})
+                        .then(data => {
+                            new Modal(data, "informacion")
+                        })
+                        .catch(error => {
+                            const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+                            new Modal(mensajeError, "informacion")
+                        })
+                })
 
                 nuevoFormularioContacto.classList.remove("hidden")
                 contenedorContactos.append(nuevoFormularioContacto)
