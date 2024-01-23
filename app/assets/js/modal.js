@@ -14,6 +14,7 @@ console.log("modal.js 1.1")
 
 class Modal {
 
+    fondo = document.createElement("div")
     contendor = document.createElement("div")
     contenido = document.createElement("div")
     titularContenedor = document.createElement("div")
@@ -23,6 +24,7 @@ class Modal {
 
     constructor(texto, tipo, accion, params) {
 
+        this.fondo.classList.add("modal-fondo")
         this.contendor.classList.add("modal-contenedor")
         this.contenido.classList.add("modal-contenido")
         this.contenido.innerHTML = `<p>${texto}</p>`
@@ -56,10 +58,13 @@ class Modal {
         }
 
         this.contendor.append(this.titularContenedor, this.contenido, this.botonera)
-        document.querySelector("body").append(this.contendor)
+        this.fondo.append(this.contendor)
+        document.querySelector("body").classList.add("noscroll")
+        document.querySelector("body").append(this.fondo)
     }
 
     destroy() {
-        this.contendor.remove()
+        this.fondo.remove()
+        document.querySelector("body").classList.remove("noscroll")
     }
 }
