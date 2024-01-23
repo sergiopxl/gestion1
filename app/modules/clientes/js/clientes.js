@@ -128,9 +128,7 @@ function doClientes() {
     // Edita el contacto seleccionado
     function doEditar(cliente) {
 
-        const bloqueFormulario = document.querySelector("#bloque-formulario").cloneNode(true)
-        bloqueFormulario.classList.remove("hidden")
-
+        const bloqueFormulario = newBloqueFormulario()
         const formEditarCliente = bloqueFormulario.querySelector(".cliente-formulario")
         
         // Datos del cliente
@@ -283,6 +281,20 @@ function doClientes() {
                         })
                 }
             })
+        }
+
+        //
+        // Crea un contenedor HTML #bloque-formulario clonado, asegurándose de que cambia el id por una class
+        // y lo hace visible.
+        //
+        function newBloqueFormulario() {
+
+            const bloqueFormulario = document.querySelector("#bloque-formulario").cloneNode(true)
+            bloqueFormulario.id = ""
+            bloqueFormulario.classList.add("bloque-formulario")
+            bloqueFormulario.classList.remove("hidden")
+
+            return bloqueFormulario
         }
     }
 
