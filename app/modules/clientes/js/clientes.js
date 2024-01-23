@@ -22,8 +22,10 @@ function doClientes() {
         }
     })
 
-    // Función de carga de los clientes de una página en concreto y con una
-    // expresión de búsqueda.
+    //
+    // Carga los Clientes de forma paginada y, opcionalmente, filtrados con una cadena de búsqueda.
+    // Imprime los Clientes en la interfaz, resaltando la búsqueda.
+    //
     function getClientes(pagina, busqueda) {
 
         // Paginación
@@ -71,7 +73,9 @@ function doClientes() {
             })
     }
 
-    // Lista los clientes en la interfaz
+    //
+    // Imprime la lista de los Clientes en la interfaz.
+    //
     function printListaClientes(numClientes, clientes, busquedaActiva, busqueda) {
 
         contenedorListado.innerHTML = ""
@@ -125,7 +129,9 @@ function doClientes() {
         });
     }
 
-    // Edita el contacto seleccionado
+    //
+    // Edita el Cliente seleccionado en la lista de Clientes.
+    //
     function doEditar(cliente) {
 
         const bloqueFormulario = newBloqueFormulario()
@@ -162,7 +168,9 @@ function doClientes() {
         contenedorListado.innerHTML = ""
         contenedorListado.append(bloqueFormulario)
 
-        // Llama a la API para obtener los sectores disponibles para el cliente.
+        //
+        // Llama a la API para obtener los Sectores disponibles para el Cliente.
+        //
         function getSectoresClientes() {
 
             fetch(apiUrlClientesSectoresGet, { method: "GET" })
@@ -206,6 +214,10 @@ function doClientes() {
                     new Modal(mensajeError, "informacion")
                 })
         }
+
+        //
+        // Compone la interfaz para mostrar, editar y eliminar los Contactos de un Cliente.
+        //
         function setContactos() {
 
             const contenedorContactos = bloqueFormulario.querySelector(".cliente-contactos-contenedor-formulario")
@@ -298,7 +310,9 @@ function doClientes() {
         }
     }
 
-    // Lista los contactos de un cliente en la interfaz
+    //
+    // Imprime la lista de los Contactos de un Cliente en la interfaz.
+    //
     function printListaContactos(cliente, contactos) {
 
         const contenedorContactos = cliente.querySelector(".cliente-row-contactos")
@@ -316,7 +330,9 @@ function doClientes() {
         });
     }
 
+    //
     // Devuelve un HTML donde aparecen resaltados los términos de búsqueda.
+    //
     function resaltar(texto, busqueda) {
 
         let buscar = busqueda.toLowerCase()
