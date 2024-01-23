@@ -1,0 +1,49 @@
+// Nueva versión 2024
+
+.modal-contenedor {
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background-color: white;
+    box-shadow: 0 0 4px #222;
+    padding: 1rem;
+    border-radius: 0.3rem;
+
+    .btn-aceptar,
+    .btn-cancelar {
+        max-width: fit-content;
+
+        margin: 0.5rem;
+        padding: 0.3rem 0.5rem;
+
+        border-radius: 0.3rem;
+        
+        cursor: pointer;
+
+        color: white;
+        transition: all 0.5s;
+    }
+
+    .btn-aceptar {
+        background-color: #549913;
+        border: 2px solid #549913;
+
+        &:hover {
+            color: #549913;
+            background-color: white;
+        }
+    }
+
+    .btn-cancelar {
+        background-color: #db1139;
+        border: 2px solid #db1139;
+
+        &:hover {
+            color: #db1139;
+            background-color: white;
+        }
+    }
+}
