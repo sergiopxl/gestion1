@@ -122,6 +122,8 @@ function doClientes() {
             clienteContenedor.querySelector(".cliente-datos-tlf").textContent = cliente.telefono;
             clienteContenedor.querySelector(".cliente-datos-direccion").textContent = cliente.direccion;
             clienteContenedor.querySelector(".cliente-datos-sector").textContent = `Sector: ${cliente.sector}`;
+            if (cliente.facturacion && cliente.facturacion > 0)
+                clienteContenedor.querySelector(".cliente-datos-facturacion").textContent = `Facturación total: ${formatoMoneda(cliente.facturacion)}`;
 
             printListaContactos(clienteContenedor, cliente.contactos)
 
