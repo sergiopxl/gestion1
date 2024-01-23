@@ -48,11 +48,25 @@ function doClientes() {
         // Hace la llamada GET al API e imprime los resultados
         const url = apiUrlClientesGet + parametroInicio + parametroPorPagina + parametroBusqueda
 
-        fetch(url, { method: "GET" }).then(respuesta =>
-            respuesta.json().then(clientes => {
-                printListaClientes(clientes.numero_clientes, clientes.clientes, busquedaActiva, busqueda)
+        const loader = new Loader()   // Muestra un "Cargando datos..." si la carga tarda
+
+        fetch(url, { method: "GET" })
+            .then(respuesta => {
+                if (!respuesta.ok)
+                    throw new Error(`Error en la solicitud: ${respuesta.status}`)
+                else
+                    return respuesta.json()
             })
-        )
+            .then(clientes => {
+                printListaClientes(clientes.numero_clientes, clientes.clientes, busquedaActiva, busqueda)
+                loader.destroy()
+            })
+            .catch(error => {
+                
+                loader.destroy()
+                const mensaje = `Error en la solicitud: ${error}`
+                console.log(mensaje)
+            })
     }
 
     // Lista los clientes en la interfaz
