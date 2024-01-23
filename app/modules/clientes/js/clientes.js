@@ -194,19 +194,25 @@ function doClientes() {
                 botonEnviar.addEventListener("click", e => {
                     e.preventDefault()
                     
-                    const datosFormulario = new FormData(nuevoFormularioContacto);
+                    const datosFormulario = new FormData(nuevoFormularioContacto)
 
                     fetch(apiUrlClientesContactoUpdate, { method: "POST", body: datosFormulario })
                         .then(respuesta => respuesta
                         .json()
-                        .then(data => console.log(data))
-                    );
+                        .then(data => console.log(data)))
                 })
                 const botonEliminar = nuevoFormularioContacto.querySelector("button.eliminar")
                 botonEliminar.addEventListener("click", e => {
                     e.preventDefault()
-                    console.log("Eliminando contacto", contacto.id)
-                })
+
+                    fetch(`${apiUrlClientesContactoDelete}?contacto-id=${contacto.id}`, { method: "GET" })
+                        .then(respuesta => respuesta
+                        .json()
+                        .then(data => {
+                            nuevoFormularioContacto.innerHTML = "<p>EL contacto ha sido eliminado.</p>"
+                            console.log(data)
+                        })
+                )})
 
                 nuevoFormularioContacto.classList.remove("hidden")
                 contenedorContactos.append(nuevoFormularioContacto)
