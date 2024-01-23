@@ -53,3 +53,22 @@
         }
     }
 }
+
+#bloque-formulario {
+    display: flex;
+    flex-direction: row;
+    gap: 0.6rem;
+    
+    fieldset {
+        border: 0;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        align-items: center;
+
+        input, select { padding: 0.4rem; }
+    }
+    
+    #cliente-formulario { flex-basis: 50%; }
+    
+    #cliente-contactos-contenedor-formulario { flex-basis: 50%; }
+}
