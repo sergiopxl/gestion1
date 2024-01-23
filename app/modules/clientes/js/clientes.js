@@ -150,25 +150,8 @@ function doClientes() {
         const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
         botonEnviar.addEventListener("click", e => {
             e.preventDefault()
-
-            const datosFormulario = new FormData(formEditarCliente)
-
-            fetch(apiUrlClientesUpdate, { method: "POST", body: datosFormulario })
-                .then(respuesta => {
-
-                    if (!respuesta.ok)
-                        throw new Error(`Error intentando actualizar el cliente (${respuesta.status})`)
-                    else
-                        return respuesta.json()
-                })
-                .then(data => {
-                    new Modal(data, "informacion")
-                })
-                .catch(error => {
-                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                    new Modal(mensajeError, "informacion")
-                })
-        })
+            new Modal("¿Seguro que quiere efectuar los cambios?", "confirmacion", guardarUpdateCliente)
+        })        
 
         // Mostramos los contactos
         setContactos()
@@ -202,7 +185,29 @@ function doClientes() {
             )
         }
 
-        // Compone la interfaz para mostrar, editar y eliminar contactos de un cliente.
+        //
+        // Actualiza un Cliente con los datos del formulario.
+        //
+        function guardarUpdateCliente() {
+            
+            const datosFormulario = new FormData(formEditarCliente)
+
+            fetch(apiUrlClientesUpdate, { method: "POST", body: datosFormulario })
+                .then(respuesta => {
+
+                    if (!respuesta.ok)
+                        throw new Error(`Error intentando actualizar el cliente (${respuesta.status})`)
+                    else
+                        return respuesta.json()
+                })
+                .then(data => {
+                    new Modal(data, "informacion")
+                })
+                .catch(error => {
+                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+                    new Modal(mensajeError, "informacion")
+                })
+        }
         function setContactos() {
 
             const contenedorContactos = bloqueFormulario.querySelector(".cliente-contactos-contenedor-formulario")
@@ -221,7 +226,22 @@ function doClientes() {
                 const botonEnviar = nuevoFormularioContacto.querySelector("button.enviar")
                 botonEnviar.addEventListener("click", e => {
                     e.preventDefault()
-                    
+                    new Modal("¿Seguro que quiere efectuar los cambios?", "confirmacion", guardarUpdateContacto)
+                })
+                const botonEliminar = nuevoFormularioContacto.querySelector("button.eliminar")
+                botonEliminar.addEventListener("click", e => {
+                    e.preventDefault()
+                    new Modal("¿Seguro que quiere eliminar el contacto?", "confirmacion", eliminarContacto)
+                })
+
+                nuevoFormularioContacto.classList.remove("hidden")
+                contenedorContactos.append(nuevoFormularioContacto)
+
+                //
+                // Actualiza un Contacto con los datos del formulario.
+                //
+                function guardarUpdateContacto() {
+
                     const datosFormulario = new FormData(nuevoFormularioContacto)
 
                     fetch(apiUrlClientesContactoUpdate, { method: "POST", body: datosFormulario })
@@ -239,10 +259,12 @@ function doClientes() {
                             const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
                             new Modal(mensajeError, "informacion")
                         })
-                })
-                const botonEliminar = nuevoFormularioContacto.querySelector("button.eliminar")
-                botonEliminar.addEventListener("click", e => {
-                    e.preventDefault()
+                }
+
+                //
+                // Elimina el Contacto indicado en el formulario.
+                //
+                function eliminarContacto() {
 
                     fetch(`${apiUrlClientesContactoDelete}?contacto-id=${contacto.id}`, { method: "GET" })
                         .then(respuesta => {
@@ -259,10 +281,7 @@ function doClientes() {
                             const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
                             new Modal(mensajeError, "informacion")
                         })
-                })
-
-                nuevoFormularioContacto.classList.remove("hidden")
-                contenedorContactos.append(nuevoFormularioContacto)
+                }
             })
         }
     }
