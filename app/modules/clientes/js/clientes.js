@@ -32,6 +32,9 @@ function doClientes() {
     //
     function getClientes(pagina, busqueda) {
 
+        // Volvemos la vista a la parte superior cuando se cambia de página
+        scroll({ top: 0, left: 0, behavior: "smooth" })
+
         // Paginación
         if (pagina)
             paginaActual = pagina
