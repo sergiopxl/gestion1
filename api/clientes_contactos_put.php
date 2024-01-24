@@ -22,5 +22,17 @@ $sqlContactosInsert = "INSERT INTO clientes_contactos_tb
 
 $respuesta = mysqli_query($conn, $sqlContactosInsert);
 
-$mensaje = $respuesta ? "Registro actualizado correctamente" : "Tienes un problema";
-echo json_encode($mensaje);
+$datosRespuesta = [];
+$datosRespuesta["mensaje"] = $respuesta ? "Registro creado correctamente" : "Tienes un problema";
+
+if ($respuesta) {
+    $sqlContactosLastId = "SELECT LAST_INSERT_ID() AS id_ultimo_contacto";
+    $respuesta = mysqli_query($conn, $sqlContactosLastId);
+
+    if ($respuesta) {
+        $lastId = mysqli_fetch_assoc($respuesta)["id_ultimo_contacto"];
+        $datosRespuesta["id"] = $lastId;
+    }
+}
+
+echo json_encode($datosRespuesta);
