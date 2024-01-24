@@ -6,6 +6,7 @@ const apiUrlClientesUpdate = "http://localhost/gestion1/api/clientes_update.php"
 
 const apiUrlClientesSectoresGet = "http://localhost/gestion1/api/clientes_sectores_get.php"
 
+const apiUrlClientesContactoPut = "http://localhost/gestion1/api/clientes_contactos_put.php"
 const apiUrlClientesContactoUpdate = "http://localhost/gestion1/api/clientes_contactos_update.php"
 const apiUrlClientesContactoDelete = "http://localhost/gestion1/api/clientes_contactos_delete.php"
 

@@ -259,6 +259,9 @@ function doClientes() {
             const contenedorContactos = bloqueFormulario.querySelector(".cliente-contactos-contenedor-formulario")
             const contactoFormulario = contenedorContactos.querySelector(".cliente-contactos-form")
 
+            const botonNuevoContacto = contenedorContactos.querySelector(".nuevo-contacto-boton")
+            botonNuevoContacto.addEventListener("click", doNuevoContacto)
+
             cliente.contactos.forEach(contacto => {
                 const nuevoFormularioContacto = contactoFormulario.cloneNode(true)
 
@@ -272,63 +275,131 @@ function doClientes() {
                 const botonEnviar = nuevoFormularioContacto.querySelector("button.enviar")
                 botonEnviar.addEventListener("click", e => {
                     e.preventDefault()
-                    new Modal("¿Seguro que quiere efectuar los cambios?", "confirmacion", guardarUpdateContacto)
+                    new Modal("¿Seguro que quiere efectuar los cambios?", "confirmacion", () => guardarUpdateContacto(nuevoFormularioContacto))
                 })
                 const botonEliminar = nuevoFormularioContacto.querySelector("button.eliminar")
                 botonEliminar.addEventListener("click", e => {
                     e.preventDefault()
-                    new Modal("¿Seguro que quiere eliminar el contacto?", "confirmacion", eliminarContacto)
+                    new Modal("¿Seguro que quiere eliminar el contacto?", "confirmacion", () => eliminarContacto(nuevoFormularioContacto, contacto.id))
                 })
 
                 nuevoFormularioContacto.classList.remove("hidden")
                 contenedorContactos.append(nuevoFormularioContacto)
+            })
+
+            //
+            // Crea un formulario para crear un nuevo Contacto y lo añade a la interfaz.
+            //
+            function doNuevoContacto() {
+
+                const nuevoFormularioContacto = contactoFormulario.cloneNode(true)
+
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-idCliente']").value = cliente.id
+
+                const botonEnviar = nuevoFormularioContacto.querySelector("button.enviar")
+                botonEnviar.textContent = "Crear contacto"
+                const funCrearContacto = e => {
+                    e.preventDefault()
+                    new Modal("¿Seguro que quiere crear el contacto con estos datos?", "confirmacion", guardarNuevoContacto)
+                }
+                botonEnviar.addEventListener("click", funCrearContacto)
+                const botonEliminar = nuevoFormularioContacto.querySelector("button.eliminar")
+                botonEliminar.classList.add("hidden")
+
+                nuevoFormularioContacto.classList.remove("hidden")
+                contactoFormulario.after(nuevoFormularioContacto)
 
                 //
-                // Actualiza un Contacto con los datos del formulario.
+                // Crea un Contacto nuevo con los datos del formulario.
                 //
-                function guardarUpdateContacto() {
+                function guardarNuevoContacto() {
 
                     const datosFormulario = new FormData(nuevoFormularioContacto)
 
-                    fetch(apiUrlClientesContactoUpdate, { method: "POST", body: datosFormulario })
+                    fetch(apiUrlClientesContactoPut, { method: "POST", body: datosFormulario })
                         .then(respuesta => {
 
                             if (!respuesta.ok)
-                                throw new Error(`Error intentando actualizar el contacto (${respuesta.status})`)
+                                throw new Error(`Error intentando crear el contacto (${respuesta.status})`)
                             else
                                 return respuesta.json()
                         })
                         .then(data => {
-                            new Modal(data, "informacion")
+                            new Modal(data.mensaje, "informacion")
+
+                            // Establecemos el Id que la BD ha asignado al nuevo Contacto
+                            const idNuevoContacto = data.id
+                            nuevoFormularioContacto.querySelector("[name = 'input-contacto-id']").value = idNuevoContacto
+
+                            // Activamos el botón para eliminar el Contacto
+                            botonEliminar.classList.remove("hidden")
+                            botonEliminar.addEventListener("click", e => {
+                                e.preventDefault()
+                                new Modal("¿Seguro que quiere eliminar el contacto?", "confirmacion", () => eliminarContacto(nuevoFormularioContacto, idNuevoContacto))
+                            })                    
+
+                            // Cambiamos el botón de crear Contacto por el de modificar
+                            botonEnviar.textContent = "Guardar cambios"
+                            botonEnviar.removeEventListener("click", funCrearContacto)
+                            botonEnviar.addEventListener("click", e => {
+                                e.preventDefault()
+                                new Modal("¿Seguro que quiere modificar el contacto con estos datos?", "confirmacion", () => guardarUpdateContacto(nuevoFormularioContacto))
+                            })
                         })
                         .catch(error => {
                             const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
                             new Modal(mensajeError, "informacion")
                         })
                 }
+            }
 
-                //
-                // Elimina el Contacto indicado en el formulario.
-                //
-                function eliminarContacto() {
+            //
+            // Actualiza un Contacto con los datos del formulario.
+            //
+            function guardarUpdateContacto(formContacto) {
 
-                    fetch(`${apiUrlClientesContactoDelete}?contacto-id=${contacto.id}`, { method: "GET" })
-                        .then(respuesta => {
+                const datosFormulario = new FormData(formContacto)
 
-                            if (!respuesta.ok)
-                                throw new Error(`Error intentando eliminar el contacto (${respuesta.status})`)
-                            else
-                                return respuesta.json()
-                        })
-                        .then(data => {
-                            new Modal(data, "informacion")
-                        })
-                        .catch(error => {
-                            const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                            new Modal(mensajeError, "informacion")
-                        })
-                }
-            })
+                fetch(apiUrlClientesContactoUpdate, { method: "POST", body: datosFormulario })
+                    .then(respuesta => {
+
+                        if (!respuesta.ok)
+                            throw new Error(`Error intentando actualizar el contacto (${respuesta.status})`)
+                        else
+                            return respuesta.json()
+                    })
+                    .then(data => {
+                        new Modal(data, "informacion")
+                    })
+                    .catch(error => {
+                        const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+                        new Modal(mensajeError, "informacion")
+                    })
+            }
+
+            //
+            // Elimina el Contacto indicado en el formulario.
+            //
+            function eliminarContacto(formContacto, contactoId) {
+
+                fetch(`${apiUrlClientesContactoDelete}?contacto-id=${contactoId}`, { method: "GET" })
+                    .then(respuesta => {
+
+                        if (!respuesta.ok)
+                            throw new Error(`Error intentando eliminar el contacto (${respuesta.status})`)
+                        else
+                            return respuesta.json()
+                    })
+                    .then(data => {
+
+                        formContacto.parentElement.removeChild(formContacto)
+                        new Modal(data, "informacion")
+                    })
+                    .catch(error => {
+                        const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+                        new Modal(mensajeError, "informacion")
+                    })
+            }
         }
     }
 
