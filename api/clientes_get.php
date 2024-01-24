@@ -47,7 +47,9 @@ $clientes = [];
 while ($cliente = mysqli_fetch_assoc($resultadoClientes)) {
 
     // Contactos
-    $sqlContactos = "SELECT * FROM clientes_contactos_tb WHERE id_cliente = " . $cliente["id"];
+    $sqlContactos = "SELECT * FROM clientes_contactos_tb
+                     WHERE id_cliente = " . $cliente["id"] . "
+                     ORDER BY id DESC";
 
     $resultadoContactos = mysqli_query($conn, $sqlContactos);
     
