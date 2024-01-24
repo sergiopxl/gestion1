@@ -57,7 +57,7 @@
 .bloque-formulario {
     display: flex;
     flex-direction: row;
-    gap: 0.6rem;
+    gap: 1.6rem;
     
     fieldset {
         border: 0;
@@ -70,9 +70,18 @@
     
     .cliente-contactos-contenedor-formulario { flex-basis: 50%; }
 
-    .cliente-contactos-form:nth-child(n+4) {
-        margin-top: 0.5rem;
-        padding-top: 0.5rem;
-        border-top: 1px dashed $color-gris-medio;
+    .cliente-contactos-form {
+
+        &:nth-child(n+4) {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed $color-gris-medio;
+        }
+
+        button.enviar { margin-right: 0; }
     }
+
+    text-align: right;
+
+    label, input { text-align: left; }
 }
