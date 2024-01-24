@@ -211,6 +211,7 @@ function doClientes() {
         getSectoresClientes(campoSector, cliente)
 
         const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
+        botonEnviar.textContent = "Guardar cambios"
         botonEnviar.addEventListener("click", e => {
             e.preventDefault()
             new Modal("¿Seguro que quiere efectuar los cambios?", "confirmacion", guardarUpdateCliente)
