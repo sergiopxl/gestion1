@@ -16,10 +16,11 @@ function doClientes() {
     botonNuevoCliente.addEventListener("click", () => doNuevoCliente())
 
     // Prepara el buscador de clientes
+    const buscador = document.querySelector("#buscador form")
     const buscadorTexto = document.querySelector("#buscador-input")
-    const buscadorBoton = document.querySelector("#buscador-boton")
 
-    buscadorBoton.addEventListener("click", () => {
+    buscador.addEventListener("submit", e => {
+        e.preventDefault()
         const busqueda = buscadorTexto.value
         if (busqueda != "") {
             getClientes(paginaActual = 1, busqueda)
