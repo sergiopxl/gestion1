@@ -35,9 +35,9 @@ function doInformes() {
                     })
                     .then(facturacion => {
                         resolve({
-                            fechaInicio: facturacion["fecha_inicio"],
-                            fechaFin: facturacion["fecha_fin"]
                             totalFacturas: parseFloat(facturacion["total_facturas"]),
+                            fechaInicio: new Date(facturacion["fecha_inicio"]),
+                            fechaFin: new Date(facturacion["fecha_fin"])
                         })
                     })
                     .catch(error => {
@@ -62,9 +62,9 @@ function doInformes() {
                     })
                     .then(gastos => {
                         resolve({
-                            fechaInicio: gastos["fecha_inicio"],
-                            fechaFin: gastos["fecha_fin"]
                             totalGastos: parseFloat(gastos["total_gastos"]),
+                            fechaInicio: new Date(gastos["fecha_inicio"]),
+                            fechaFin: new Date(gastos["fecha_fin"])
                         })
                     })
                     .catch(error => {
@@ -81,6 +81,7 @@ function doInformes() {
         function printResumen(facturacion, gastos) {
             const contenedorResumen = document.querySelector("#informes-resumen")
 
+            // Total de facturas, gastos y diferencia (beneficio)
             const pTotalFacturas = contenedorResumen.querySelector("#total-facturas")
             const pTotalGastos = contenedorResumen.querySelector("#total-gastos")
             const pTotalBeneficio = contenedorResumen.querySelector("#total-beneficio")
@@ -92,6 +93,23 @@ function doInformes() {
 
             const beneficio = facturado - gastado
             pTotalBeneficio.textContent = formatoMoneda(beneficio)
+
+            // Fechas de inicio y fin
+            const fechaInicioFacturas = facturacion["fechaInicio"]
+            const fechaInicioGastos = gastos["fechaInicio"]
+            const fechaInicio = fechaInicioFacturas < fechaInicioGastos ? fechaInicioFacturas : fechaInicioGastos
+            
+            const spanFechaInicio = contenedorResumen.querySelector("#informe-fecha-inicio")
+            spanFechaInicio.textContent = fechaInicio
+            
+            const fechaFinFacturas = facturacion["fechaFin"]
+            const fechaFinGastos = gastos["fechaFin"]
+            const fechaFin = fechaFinFacturas > fechaFinGastos ? fechaFinFacturas : fechaFinGastos
+            
+            const spanFechaFin = contenedorResumen.querySelector("#informe-fecha-fin")
+            spanFechaFin.textContent = fechaFin
+
+            contenedorResumen.classList.remove("hidden")
         }
     }
 
