@@ -58,7 +58,8 @@ function doClientes() {
         // Hace la llamada GET al API e imprime los resultados
         const url = apiUrlClientesGet + parametroInicio + parametroPorPagina + parametroBusqueda
 
-        const loader = new Loader()   // Muestra un "Cargando datos..." si la carga tarda
+        // Muestra un "Cargando clientes..." si la carga tarda
+        const loader = new Loader({ mensaje: "Cargando clientes..." })
 
         fetch(url, { method: "GET" })
             .then(respuesta => {
