@@ -97,14 +97,14 @@ function doInformes() {
             const fechaInicio = fechaInicioFacturas < fechaInicioGastos ? fechaInicioFacturas : fechaInicioGastos
             
             const spanFechaInicio = contenedorResumen.querySelector("#informe-fecha-inicio")
-            spanFechaInicio.textContent = fechaInicio
+            spanFechaInicio.textContent = formatoFechaLargo(fechaInicio)
             
             const fechaFinFacturas = facturacion["fechaFin"]
             const fechaFinGastos = gastos["fechaFin"]
             const fechaFin = fechaFinFacturas > fechaFinGastos ? fechaFinFacturas : fechaFinGastos
             
             const spanFechaFin = contenedorResumen.querySelector("#informe-fecha-fin")
-            spanFechaFin.textContent = fechaFin
+            spanFechaFin.textContent = formatoFechaLargo(fechaFin)
 
             contenedorResumen.classList.remove("hidden")
         }
