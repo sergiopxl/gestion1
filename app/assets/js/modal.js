@@ -8,6 +8,8 @@ console.log("modal.js 1.2")
  */
 class Modal {
 
+    tipo;
+
     fondo = document.createElement("div")
 
     contendor = document.createElement("div")
@@ -68,12 +70,52 @@ class Modal {
                 this.destroy()
             })
             this.contendor.classList.add("error")
+
+        } else {
+            throw new Error(`Modal: Tipo no soportado ${tipo}`)
         }
 
+        this.tipo = tipo
+        
         this.contendor.append(this.contenido, this.botonera)
         this.fondo.append(this.contendor)
         document.querySelector("body").classList.add("noscroll")
         document.querySelector("body").append(this.fondo)
+        
+        // Gestiona las pulsaciones de teclado para que el foco no pueda escapar del diálogo
+        this.contendor.addEventListener("keydown", this)
+        
+        // En una confirmación, la respuesta por defecto es "Cancelar"
+        if (tipo === "confirmacion")
+            this.botonCancelar.focus()
+        else
+            this.botonAceptar.focus()
+    }
+
+    //
+    // Gestiona el evento de cuando el usuario presiona una tecla en el diálogo.
+    //
+    handleEvent(evento) {
+
+        if (evento.type !== "keydown")
+            return
+
+        // Escape permite salir (equivale a Cancelar)
+        if (evento.key === "Escape")
+            this.destroy()
+
+        // Invalidamos tabulador y cambiamos el foco a mano dentro del diálogo
+        else if (evento.key == "Tab") {
+            evento.preventDefault()
+
+            if (this.tipo === "confirmacion") {
+                const focusedButton = document.activeElement
+                if (focusedButton === this.botonAceptar)
+                    this.botonCancelar.focus()
+                else if (focusedButton === this.botonCancelar)
+                    this.botonAceptar.focus()
+            }
+        }
     }
 
     /**

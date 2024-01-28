@@ -68,6 +68,9 @@ $color-modal-error: $color-rojo;
                 color: #549913;
                 background-color: white;
             }
+            &:focus {
+                box-shadow: 0 0 0 4px #54991370;
+            }
         }
 
         .btn-cancelar {
@@ -77,6 +80,9 @@ $color-modal-error: $color-rojo;
             &:hover {
                 color: #db1139;
                 background-color: white;
+            }
+            &:focus {
+                box-shadow: 0 0 0 4px #db113970;
             }
         }
     }
