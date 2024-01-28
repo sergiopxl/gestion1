@@ -174,8 +174,9 @@ function doClientes() {
         function guardarNuevoCliente() {
             
             const datosFormulario = new FormData(formNuevoCliente)
+            const jsonDatosForm = JSON.stringify(Object.fromEntries(datosFormulario.entries()))
 
-            fetch(apiUrlClientesPut, { method: "POST", body: datosFormulario })
+            fetch(apiUrlClientesPut, { method: "PUT", body: jsonDatosForm })
                 .then(respuesta => {
 
                     if (!respuesta.ok)
@@ -239,8 +240,9 @@ function doClientes() {
         function guardarUpdateCliente() {
             
             const datosFormulario = new FormData(formEditarCliente)
+            const jsonDatosForm = JSON.stringify(Object.fromEntries(datosFormulario.entries()))
 
-            fetch(apiUrlClientesUpdate, { method: "POST", body: datosFormulario })
+            fetch(apiUrlClientesUpdate, { method: "UPDATE", body: jsonDatosForm })
                 .then(respuesta => {
 
                     if (!respuesta.ok)
@@ -321,8 +323,9 @@ function doClientes() {
                 function guardarNuevoContacto() {
 
                     const datosFormulario = new FormData(nuevoFormularioContacto)
+                    const jsonDatosForm = JSON.stringify(Object.fromEntries(datosFormulario.entries()))
 
-                    fetch(apiUrlClientesContactoPut, { method: "POST", body: datosFormulario })
+                    fetch(apiUrlClientesContactoPut, { method: "PUT", body: jsonDatosForm })
                         .then(respuesta => {
 
                             if (!respuesta.ok)
@@ -365,8 +368,9 @@ function doClientes() {
             function guardarUpdateContacto(formContacto) {
 
                 const datosFormulario = new FormData(formContacto)
+                const jsonDatosForm = JSON.stringify(Object.fromEntries(datosFormulario.entries()))
 
-                fetch(apiUrlClientesContactoUpdate, { method: "POST", body: datosFormulario })
+                fetch(apiUrlClientesContactoUpdate, { method: "UPDATE", body: jsonDatosForm })
                     .then(respuesta => {
 
                         if (!respuesta.ok)
@@ -388,7 +392,7 @@ function doClientes() {
             //
             function eliminarContacto(formContacto, contactoId) {
 
-                fetch(`${apiUrlClientesContactoDelete}?contacto-id=${contactoId}`, { method: "GET" })
+                fetch(`${apiUrlClientesContactoDelete}?contacto-id=${contactoId}`, { method: "DELETE" })
                     .then(respuesta => {
 
                         if (!respuesta.ok)
