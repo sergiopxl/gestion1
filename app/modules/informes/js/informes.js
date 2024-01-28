@@ -35,9 +35,9 @@ function doInformes() {
                     })
                     .then(facturacion => {
                         resolve({
-                            totalFacturas: facturacion["total_facturas"],
                             fechaInicio: facturacion["fecha_inicio"],
                             fechaFin: facturacion["fecha_fin"]
+                            totalFacturas: parseFloat(facturacion["total_facturas"]),
                         })
                     })
                     .catch(error => {
@@ -62,9 +62,9 @@ function doInformes() {
                     })
                     .then(gastos => {
                         resolve({
-                            totalGastos: gastos["total_gastos"],
                             fechaInicio: gastos["fecha_inicio"],
                             fechaFin: gastos["fecha_fin"]
+                            totalGastos: parseFloat(gastos["total_gastos"]),
                         })
                     })
                     .catch(error => {
@@ -79,15 +79,15 @@ function doInformes() {
         // las fechas de inicio y fin de facturación.
         //
         function printResumen(facturacion, gastos) {
-            const contenedorResumen = document.querySelector("#resumen-beneficio")
+            const contenedorResumen = document.querySelector("#informes-resumen")
 
             const pTotalFacturas = contenedorResumen.querySelector("#total-facturas")
             const pTotalGastos = contenedorResumen.querySelector("#total-gastos")
             const pTotalBeneficio = contenedorResumen.querySelector("#total-beneficio")
 
-            const facturado = parseFloat(facturacion["totalFacturas"])
+            const facturado = facturacion["totalFacturas"]
             pTotalFacturas.textContent = formatoMoneda(facturado)
-            const gastado = parseFloat(gastos["totalGastos"])
+            const gastado = gastos["totalGastos"]
             pTotalGastos.textContent = formatoMoneda(gastado)
 
             const beneficio = facturado - gastado

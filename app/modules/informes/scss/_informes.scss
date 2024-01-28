@@ -1,4 +1,4 @@
-#resumen-beneficio {
+.informes-resumen-beneficio {
     display: flex;
     justify-content: space-around;
 
@@ -13,5 +13,17 @@
     p {
         font-size: 1.4rem;
         margin: 0;
+    }
+}
+
+.informes-resumen-fechas {
+    text-align: center;
+    color: $color-gris-medio;
+
+    margin-top: 2.4rem;
+
+    #informe-fecha-inicio,
+    #informe-fecha-fin {
+        color: black;
     }
 }
