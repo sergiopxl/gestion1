@@ -13,11 +13,8 @@ function doInformes() {
             .then(([datosFacturacion, datosGastos]) => {
                 printResumen(datosFacturacion, datosGastos)
             })
-            .catch(([errorFacturas, errorGastos]) => {
-                if (errorFacturas)
-                    console.log("Error cargando las estadísticas de facturación: " + errorFacturas)
-                if (errorGastos)
-                    console.log("Error cargando las estadísticas de gastos: " + errorGastos)
+            .catch(error => {
+                console.error("Error cargando las estadísticas: " + error)
             })
 
         //
