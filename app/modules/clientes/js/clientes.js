@@ -78,7 +78,7 @@ function doClientes() {
                 
                 loader.destroy()
                 const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                new Modal(mensajeError, "informacion")
+                new Modal(mensajeError, "error")
             })
     }
 
@@ -189,7 +189,7 @@ function doClientes() {
                 })
                 .catch(error => {
                     const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                    new Modal(mensajeError, "informacion")
+                    new Modal(mensajeError, "error")
                 })
         }
     }
@@ -255,7 +255,7 @@ function doClientes() {
                 })
                 .catch(error => {
                     const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                    new Modal(mensajeError, "informacion")
+                    new Modal(mensajeError, "error")
                 })
         }
 
@@ -357,7 +357,7 @@ function doClientes() {
                         })
                         .catch(error => {
                             const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                            new Modal(mensajeError, "informacion")
+                            new Modal(mensajeError, "error")
                         })
                 }
             }
@@ -383,7 +383,7 @@ function doClientes() {
                     })
                     .catch(error => {
                         const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                        new Modal(mensajeError, "informacion")
+                        new Modal(mensajeError, "error")
                     })
             }
 
@@ -407,7 +407,7 @@ function doClientes() {
                     })
                     .catch(error => {
                         const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                        new Modal(mensajeError, "informacion")
+                        new Modal(mensajeError, "error")
                     })
             }
         }
