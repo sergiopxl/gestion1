@@ -1,0 +1,17 @@
+#resumen-beneficio {
+    display: flex;
+    justify-content: space-around;
+
+    text-align: center;
+
+    h2 {
+        color: $color-gris-medio;
+
+        font-size: 1.1rem;
+        margin: 1rem 0 0.6rem;
+    }    
+    p {
+        font-size: 1.4rem;
+        margin: 0;
+    }
+}
