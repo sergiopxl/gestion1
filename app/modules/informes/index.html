@@ -9,6 +9,10 @@
   <script src="../../assets/js/navigation.js" defer></script>
   <script src="../../assets/js/formato_moneda.js" defer></script>
   <script src="../../assets/js/formato_fecha.js" defer></script>
+  <script src="https://cdn.amcharts.com/lib/5/index.js" defer></script>
+  <script src="https://cdn.amcharts.com/lib/5/xy.js" defer></script>
+  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js" defer></script>
+  <script src="//cdn.amcharts.com/lib/5/locales/es_ES.js" defer></script>
   <script src="js/informes.js" defer></script>
   <link rel="stylesheet" href="../../assets/css/theme.css">
 </head>
@@ -38,6 +42,10 @@
         </div>
       </div>
       <p class="informes-resumen-fechas">Desde <span id="informe-fecha-inicio">01/01/2000</span> hasta <span id="informe-fecha-fin">31/12/2023</span></p>
+    </section>
+
+    <section id="informes-graficos">
+      <div class="grafico hidden"></div>
     </section>
   </main>
 </body>

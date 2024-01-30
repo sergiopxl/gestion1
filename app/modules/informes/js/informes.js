@@ -12,6 +12,7 @@ function doInformes() {
         Promise.all([cargarDatosFacturacion(), cargarDatosGastos()])
             .then(([datosFacturacion, datosGastos]) => {
                 printResumen(datosFacturacion, datosGastos)
+                printGrafico(datosFacturacion, datosGastos)
             })
             .catch(error => {
                 console.error("Error cargando las estadísticas: " + error)
@@ -34,12 +35,13 @@ function doInformes() {
                         resolve({
                             totalFacturas: parseFloat(facturacion["total_facturas"]),
                             fechaInicio: new Date(facturacion["fecha_inicio"]),
-                            fechaFin: new Date(facturacion["fecha_fin"])
+                            fechaFin: new Date(facturacion["fecha_fin"]),
+                            facturasPorFecha: facturacion["facturas_por_fecha"]
                         })
                     })
                     .catch(error => {
                         const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                        reject(error)
+                        reject(mensajeError)
                     })
             })
         }
@@ -61,7 +63,8 @@ function doInformes() {
                         resolve({
                             totalGastos: parseFloat(gastos["total_gastos"]),
                             fechaInicio: new Date(gastos["fecha_inicio"]),
-                            fechaFin: new Date(gastos["fecha_fin"])
+                            fechaFin: new Date(gastos["fecha_fin"]),
+                            gastosPorFecha: gastos["gastos_por_fecha"]
                         })
                     })
                     .catch(error => {
@@ -107,6 +110,143 @@ function doInformes() {
             spanFechaFin.textContent = formatoFechaLargo(fechaFin)
 
             contenedorResumen.classList.remove("hidden")
+        }
+
+        //
+        // Imprime el gráfico de evolución de facturas y gastos.
+        //
+        function printGrafico(facturacion, gastos) {
+            const contenedorGrafico = document.querySelector("#informes-graficos > div.grafico")
+
+            // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
+            let root = am5.Root.new(contenedorGrafico)
+
+            const tema = am5.Theme.new(root)
+            tema.rule("AxisLabel", ["minor"]).setAll({ dy: 1 })             // Mueve la etiqueta menor un poco hacia abajo
+            tema.rule("Grid", ["minor"]).setAll({ strokeOpacity: 0.08 })    // Ajusta la opacidad de la rejilla menor
+
+            // Establece el tema a usar (https://www.amcharts.com/docs/v5/concepts/themes/)
+            root.setThemes([ am5themes_Animated.new(root), tema ])
+
+            // Crea el formateador de moneda y la localización española
+            root.numberFormatter.set("numberFormat", "#.###,00' €'");
+            root.locale = am5locales_es_ES;
+
+            // Crea el gráfico (https://www.amcharts.com/docs/v5/charts/xy-chart/)
+            let chart = root.container.children.push(
+                am5xy.XYChart.new(root, {
+                    panX: false,
+                    panY: false,
+                    wheelX: "panX",
+                    wheelY: "zoomX",
+                    paddingLeft: 0
+                    }))
+
+            // Configura el cursor (https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/)
+            let cursor = chart.set("cursor", am5xy.XYCursor.new(root, { behavior: "zoomX" }))
+            cursor.lineY.set("visible", false)
+
+            // Crea los ejes (https://www.amcharts.com/docs/v5/charts/xy-chart/axes/)
+            let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+                maxDeviation: 0,
+                baseInterval: { timeUnit: "day", count: 1 },
+                renderer: am5xy.AxisRendererX.new(root, {
+                    minorGridEnabled: true,
+                    minGridDistance: 200,    
+                    minorLabelsEnabled: true
+                }),
+                tooltip: am5.Tooltip.new(root, { })
+            }))
+            xAxis.set("minorDateFormats", { day: "dd", month: "MM" })
+
+            let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                renderer: am5xy.AxisRendererY.new(root, { })
+            }))
+
+            // Añade las series a representar (https://www.amcharts.com/docs/v5/charts/xy-chart/series/)
+            let serieFacturas = agregarDatosFacturas()
+            let serieGastos = agregarDatosGastos()
+
+            // Crea la barra de scroll (https://www.amcharts.com/docs/v5/charts/xy-chart/scrollbars/)
+            chart.set("scrollbarX", am5.Scrollbar.new(root, { orientation: "horizontal" }))
+
+            // Inicia una animación al aparecer el gráfico (https://www.amcharts.com/docs/v5/concepts/animations/)
+            contenedorGrafico.classList.remove("hidden")
+            serieFacturas.appear(1000)
+            serieGastos.appear(1000)
+            chart.appear(1000, 100)
+
+            //
+            // Crea la serie de datos de facturas para el gráfico.
+            //
+            function agregarDatosFacturas() {
+
+                let serieFacturas = chart.series.push(
+                    am5xy.LineSeries.new(root, {
+                        name: "Facturas",
+                        xAxis: xAxis,
+                        yAxis: yAxis,
+                        valueYField: "value",
+                        valueXField: "fecha",
+                        fill: am5.color(0x409000),
+                        stroke: am5.color(0x409000),
+                        tooltip: am5.Tooltip.new(root, { labelText: "{valueY}" })
+                    }))
+    
+                // Viñetas
+                serieFacturas.bullets.push(function () {
+                    let bulletCircle = am5.Circle.new(root, { radius: 5, fill: serieFacturas.get("fill") })
+                    return am5.Bullet.new(root, { sprite: bulletCircle })
+                })
+
+                let datos = []
+                for (let facturaMasFecha of facturacion["facturasPorFecha"]) {
+                    datos.push({
+                        fecha: new Date(facturaMasFecha.fecha).getTime(),
+                        value: parseFloat(facturaMasFecha.facturado)
+                    })
+                }
+
+                serieFacturas.data.setAll(datos)
+
+                return serieFacturas
+            }
+
+            //
+            // Crea la serie de datos de gastos para el gráfico.
+            //
+            function agregarDatosGastos() {
+
+                let serieGastos = chart.series.push(
+                    am5xy.LineSeries.new(root, {
+                        name: "Gastos",
+                        xAxis: xAxis,
+                        yAxis: yAxis,
+                        valueYField: "value",
+                        valueXField: "fecha",
+                        fill: am5.color(0x910000),
+                        stroke: am5.color(0x910000),
+                        tooltip: am5.Tooltip.new(root, { labelText: "{valueY}" })
+                    }))
+    
+                // Viñetas
+                serieGastos.bullets.push(function () {
+                    let bulletCircle = am5.Circle.new(root, { radius: 5, fill: serieGastos.get("fill") })
+                    return am5.Bullet.new(root, { sprite: bulletCircle })
+                })
+
+                let datos = []
+                for (let gastoMasFecha of gastos["gastosPorFecha"]) {
+                    datos.push({
+                        fecha: new Date(gastoMasFecha.fecha).getTime(),
+                        value: parseFloat(gastoMasFecha.gastado)
+                    })
+                }
+
+                serieGastos.data.setAll(datos)
+
+                return serieGastos
+            }
         }
     }
 
