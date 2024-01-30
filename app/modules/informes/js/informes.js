@@ -178,8 +178,10 @@ function doInformes() {
             }))
 
             // Añade las series a representar (https://www.amcharts.com/docs/v5/charts/xy-chart/series/)
-            let serieFacturas = agregarDatosFacturas()
-            let serieGastos = agregarDatosGastos()
+            const { datosFacturas, datosGastos, datosBeneficio } = crearDatos()
+            let serieFacturas = agregarDatosFacturas(datosFacturas)
+            let serieGastos = agregarDatosGastos(datosGastos)
+            let serieBeneficio = agregarDatosBeneficio(datosBeneficio)
 
             // Crea la barra de scroll (https://www.amcharts.com/docs/v5/charts/xy-chart/scrollbars/)
             chart.set("scrollbarX", am5.Scrollbar.new(root, { orientation: "horizontal" }))
@@ -188,12 +190,71 @@ function doInformes() {
             contenedorGrafico.classList.remove("hidden")
             serieFacturas.appear(1000)
             serieGastos.appear(1000)
+            serieBeneficio.appear(1000)
             chart.appear(1000, 100)
+
+            //
+            // Crea los datos de facturas, gastos y beneficio para que sirva para las series del gráfico.
+            // Devuelve un objeto `{ facturas, gastos, beneficio }`.
+            //
+            function crearDatos() {
+
+                let movimientos = []
+
+                let datosFacturas = []
+                for (let facturaMasFecha of facturacion["facturasPorFecha"]) {
+
+                    const fecha = facturaMasFecha.fecha
+                    const facturado = parseFloat(facturaMasFecha.facturado)
+
+                    datosFacturas.push({
+                        fecha: new Date(fecha).getTime(),
+                        value: facturado
+                    })
+
+                    // Anota lo facturado como positivo
+                    movimientos.push([fecha, facturado])
+                }
+                
+                let datosGastos = []
+                for (let gastoMasFecha of gastos["gastosPorFecha"]) {
+
+                    const fecha = gastoMasFecha.fecha
+                    const gastado = parseFloat(gastoMasFecha.gastado)
+
+                    datosGastos.push({
+                        fecha: new Date(fecha).getTime(),
+                        value: gastado
+                    })
+
+                    // Anota los gastos como negativo
+                    movimientos.push([fecha, -gastado])
+                }
+
+                // Contabiliza todos los movimientos por fecha
+                let beneficios = {}
+                let balance = 0;
+                for (let [fecha, movimiento] of movimientos.toSorted()) {
+
+                    balance += movimiento;
+                    beneficios[fecha] = balance
+                }
+
+                let datosBeneficio = []
+                for (const [fecha, beneficio] of Object.entries(beneficios)) {
+                    datosBeneficio.push({
+                        fecha: new Date(fecha).getTime(),
+                        value: beneficio
+                    })
+                }
+
+                return { datosFacturas, datosGastos, datosBeneficio }
+            }
 
             //
             // Crea la serie de datos de facturas para el gráfico.
             //
-            function agregarDatosFacturas() {
+            function agregarDatosFacturas(datosFacturas) {
 
                 let serieFacturas = chart.series.push(
                     am5xy.LineSeries.new(root, {
@@ -202,7 +263,7 @@ function doInformes() {
                         yAxis: yAxis,
                         valueYField: "value",
                         valueXField: "fecha",
-                        fill: am5.color(0x409000),
+                        fill: am5.color(0x409000),      // Verde
                         stroke: am5.color(0x409000),
                         tooltip: am5.Tooltip.new(root, { labelText: "{valueY}" })
                     }))
@@ -213,15 +274,7 @@ function doInformes() {
                     return am5.Bullet.new(root, { sprite: bulletCircle })
                 })
 
-                let datos = []
-                for (let facturaMasFecha of facturacion["facturasPorFecha"]) {
-                    datos.push({
-                        fecha: new Date(facturaMasFecha.fecha).getTime(),
-                        value: parseFloat(facturaMasFecha.facturado)
-                    })
-                }
-
-                serieFacturas.data.setAll(datos)
+                serieFacturas.data.setAll(datosFacturas)
 
                 return serieFacturas
             }
@@ -229,7 +282,7 @@ function doInformes() {
             //
             // Crea la serie de datos de gastos para el gráfico.
             //
-            function agregarDatosGastos() {
+            function agregarDatosGastos(datosGastos) {
 
                 let serieGastos = chart.series.push(
                     am5xy.LineSeries.new(root, {
@@ -238,7 +291,7 @@ function doInformes() {
                         yAxis: yAxis,
                         valueYField: "value",
                         valueXField: "fecha",
-                        fill: am5.color(0x910000),
+                        fill: am5.color(0x910000),      // Rojo
                         stroke: am5.color(0x910000),
                         tooltip: am5.Tooltip.new(root, { labelText: "{valueY}" })
                     }))
@@ -249,17 +302,37 @@ function doInformes() {
                     return am5.Bullet.new(root, { sprite: bulletCircle })
                 })
 
-                let datos = []
-                for (let gastoMasFecha of gastos["gastosPorFecha"]) {
-                    datos.push({
-                        fecha: new Date(gastoMasFecha.fecha).getTime(),
-                        value: parseFloat(gastoMasFecha.gastado)
-                    })
-                }
-
-                serieGastos.data.setAll(datos)
+                serieGastos.data.setAll(datosGastos)
 
                 return serieGastos
+            }
+
+            //
+            // Crea la serie de datos de beneficio para el gráfico.
+            //
+            function agregarDatosBeneficio(datosBeneficio) {
+
+                let serieBeneficio = chart.series.push(
+                    am5xy.LineSeries.new(root, {
+                        name: "Beneficio",
+                        xAxis: xAxis,
+                        yAxis: yAxis,
+                        valueYField: "value",
+                        valueXField: "fecha",
+                        fill: am5.color(0x00A0D0),      // Azul
+                        stroke: am5.color(0x00A0D0),
+                        tooltip: am5.Tooltip.new(root, { labelText: "{valueY}" })
+                    }))
+    
+                // Viñetas
+                serieBeneficio.bullets.push(function () {
+                    let bulletCircle = am5.Circle.new(root, { radius: 5, fill: serieBeneficio.get("fill") })
+                    return am5.Bullet.new(root, { sprite: bulletCircle })
+                })
+
+                serieBeneficio.data.setAll(datosBeneficio)
+
+                return serieBeneficio
             }
         }
     }
