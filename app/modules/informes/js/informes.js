@@ -4,6 +4,9 @@ console.log("informes.js v1.0")
 
 function doInformes() {
 
+    let fechaInicio = new Date(0)
+    let fechaFin = new Date(0)
+
     //
     // Carga las estadísticas de Facturas y Gastos para poder realizar informes y gráficos.
     //
@@ -11,6 +14,8 @@ function doInformes() {
 
         Promise.all([cargarDatosFacturacion(), cargarDatosGastos()])
             .then(([datosFacturacion, datosGastos]) => {
+
+                getRangoDeFechas(datosFacturacion, datosGastos)
                 printResumen(datosFacturacion, datosGastos)
                 printGrafico(datosFacturacion, datosGastos)
             })
@@ -75,6 +80,23 @@ function doInformes() {
         }
 
         //
+        // A partir de los datos de facturación y gastos, determina el intervalo de fechas que comprenden
+        // los datos.
+        //
+        function getRangoDeFechas(facturacion, gastos) {
+            
+            const fechaInicioFacturas = facturacion["fechaInicio"]
+            const fechaInicioGastos = gastos["fechaInicio"]
+            
+            fechaInicio = fechaInicioFacturas < fechaInicioGastos ? fechaInicioFacturas : fechaInicioGastos
+
+            const fechaFinFacturas = facturacion["fechaFin"]
+            const fechaFinGastos = gastos["fechaFin"]
+
+            fechaFin = fechaFinFacturas > fechaFinGastos ? fechaFinFacturas : fechaFinGastos
+        }
+
+        //
         // Imprime los datos estadísticos en el resumen de facturas, gastos y beneficio, así como
         // las fechas de inicio y fin de facturación.
         //
@@ -94,17 +116,9 @@ function doInformes() {
             const beneficio = facturado - gastado
             pTotalBeneficio.textContent = formatoMoneda(beneficio)
 
-            // Fechas de inicio y fin
-            const fechaInicioFacturas = facturacion["fechaInicio"]
-            const fechaInicioGastos = gastos["fechaInicio"]
-            const fechaInicio = fechaInicioFacturas < fechaInicioGastos ? fechaInicioFacturas : fechaInicioGastos
-            
+            // Fechas de inicio y fin            
             const spanFechaInicio = contenedorResumen.querySelector("#informe-fecha-inicio")
             spanFechaInicio.textContent = formatoFechaLargo(fechaInicio)
-            
-            const fechaFinFacturas = facturacion["fechaFin"]
-            const fechaFinGastos = gastos["fechaFin"]
-            const fechaFin = fechaFinFacturas > fechaFinGastos ? fechaFinFacturas : fechaFinGastos
             
             const spanFechaFin = contenedorResumen.querySelector("#informe-fecha-fin")
             spanFechaFin.textContent = formatoFechaLargo(fechaFin)
