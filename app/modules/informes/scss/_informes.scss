@@ -28,7 +28,18 @@
     }
 }
 
-.grafico {
-    width: 100%;
-    height: 500px;
+#informes-graficos {
+
+    h2 {
+        color: $color-gris-medio;
+
+        text-align: center;
+        font-size: 1.5rem;
+        margin: 3rem 0 1rem;
+    }
+
+    .grafico {
+        width: 100%;
+        height: max(640px, 80vh);
+    }
 }
