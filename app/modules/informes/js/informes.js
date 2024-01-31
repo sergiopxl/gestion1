@@ -313,22 +313,34 @@ function doInformes() {
             function agregarDatosBeneficio(datosBeneficio) {
 
                 let serieBeneficio = chart.series.push(
-                    am5xy.LineSeries.new(root, {
+                    am5xy.SmoothedXLineSeries.new(root, {
                         name: "Beneficio",
                         xAxis: xAxis,
                         yAxis: yAxis,
                         valueYField: "value",
                         valueXField: "fecha",
-                        fill: am5.color(0x00A0D0),      // Azul
-                        stroke: am5.color(0x00A0D0),
-                        tooltip: am5.Tooltip.new(root, { labelText: "{valueY}" })
+                        fill: am5.color(0x20B0D0),      // Azul
+                        stroke: am5.color(0x20B0D0),
+                        tooltip: am5.Tooltip.new(root, {
+                            labelText: "{valueX.formatDate()}: {valueY}",
+                            pointerOrientation: "horizontal"
+                        })
                     }))
     
-                // Viñetas
-                serieBeneficio.bullets.push(function () {
-                    let bulletCircle = am5.Circle.new(root, { radius: 5, fill: serieBeneficio.get("fill") })
-                    return am5.Bullet.new(root, { sprite: bulletCircle })
-                })
+                // Estilo de línea y área
+                serieBeneficio.strokes.template.setAll({ strokeWidth: 3 });
+                serieBeneficio.fills.template.setAll({ fillOpacity: 0.5, visible: true });
+
+                // Intervalos (-inf, 0) en rojo y [0, +inf) en azul
+                var rangoNegativo = yAxis.makeDataItem({ value: -1000000000, endValue: 0 });
+                var range = serieBeneficio.createAxisRange(rangoNegativo);
+
+                range.strokes.template.setAll({ stroke: am5.color(0xff621f), strokeWidth: 3 });
+                range.fills.template.setAll({
+                    fill: am5.color(0xff621f),
+                    fillOpacity: 0.5,
+                    visible: true
+                });
 
                 serieBeneficio.data.setAll(datosBeneficio)
 
