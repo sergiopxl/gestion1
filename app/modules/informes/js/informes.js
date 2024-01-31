@@ -12,16 +12,20 @@ function doInformes() {
     //
     function getEstadisticas() {
 
-        Promise.all([cargarDatosFacturacion(), cargarDatosGastos()])
-            .then(([datosFacturacion, datosGastos]) => {
+        Promise.all([cargarDatosFacturacion(), cargarDatosGastos(), cargarDatosFacturacionPorCliente()])
+            .then(([datosFacturacion, datosGastos, datosFacturacionPorCliente]) => {
 
                 getRangoDeFechas(datosFacturacion, datosGastos)
                 printResumen(datosFacturacion, datosGastos)
-                printGrafico(datosFacturacion, datosGastos)
+                printGraficoBeneficios(datosFacturacion, datosGastos)
+
+                printGraficoFacturacionPorCliente(datosFacturacionPorCliente)
             })
             .catch(error => {
                 console.error("Error cargando las estadísticas: " + error)
             })
+
+        // === Estadísticas de Facturas / Gastos / Beneficios =======================================
 
         //
         // Carga los datos estadísticos de facturación de forma asíncrona.
@@ -129,8 +133,8 @@ function doInformes() {
         //
         // Imprime el gráfico de evolución de facturas y gastos.
         //
-        function printGrafico(facturacion, gastos) {
-            const contenedorGrafico = document.querySelector("#informes-graficos > div.grafico")
+        function printGraficoBeneficios(facturacion, gastos) {
+            const contenedorGrafico = document.querySelector("#grafico-beneficios")
 
             // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
             let root = am5.Root.new(contenedorGrafico)
@@ -345,6 +349,124 @@ function doInformes() {
                 serieBeneficio.data.setAll(datosBeneficio)
 
                 return serieBeneficio
+            }
+        }
+
+        // === Estadísticas de Clientes que más facturan ==============================================
+
+        //
+        // Carga los datos estadísticos de facturas agrupadas por cliente de forma asíncrona.
+        //
+        function cargarDatosFacturacionPorCliente() {
+            return new Promise((resolve, reject) => {
+
+                fetch(`${apiUrlFacturasGet}?estadisticas=cliente`, { method: "GET" })
+                    .then(respuesta => {
+                        if (!respuesta.ok)
+                            throw new Error(`Error en la solicitud: ${respuesta.status}`)
+
+                        else return respuesta.json()
+                    })
+                    .then(clientes => {
+                        resolve(clientes)
+                    })
+                    .catch(error => {
+                        const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+                        reject(mensajeError)
+                    })
+            })
+        }
+
+        //
+        // Imprime el gráfico de clientes que más facturan.
+        //
+        function printGraficoFacturacionPorCliente(clientes) {
+            const contenedorGrafico = document.querySelector("#grafico-clientes")
+
+            // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
+            let root = am5.Root.new(contenedorGrafico)
+
+            // Establece el tema a usar (https://www.amcharts.com/docs/v5/concepts/themes/)
+            root.setThemes([ am5themes_Animated.new(root) ])
+
+            // Crea el formateador de moneda y la localización española
+            root.numberFormatter.set("numberFormat", "#.###,00' €'");
+            root.locale = am5locales_es_ES;
+
+            // Crea el gráfico (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/)
+            var chart = root.container.children.push(
+                am5percent.PieChart.new(root, {
+                    layout: root.verticalLayout,
+                    innerRadius: am5.percent(50)
+                }));
+
+
+            // Añade la serie a representar (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Series)
+            const datosClientes = crearDatos(clientes)
+            let serie = agregarDatosClientes(datosClientes)
+
+            // Crea la leyenda del gráfico (https://www.amcharts.com/docs/v5/charts/percent-charts/legend-percent-series/)
+            var leyenda = chart.children.push(am5.Legend.new(root, {
+                centerX: am5.percent(50),
+                x: am5.percent(50),
+                marginTop: 15,
+                marginBottom: 15,
+            }));            
+            leyenda.data.setAll(serie.dataItems);
+
+            // Inicia una animación al aparecer el gráfico (https://www.amcharts.com/docs/v5/concepts/animations/)
+            contenedorGrafico.classList.remove("hidden")
+            serie.appear(1000, 100)
+
+            //
+            // Crea los datos de facturas, gastos y beneficio para que sirva para las series del gráfico.
+            // Devuelve un objeto `{ facturas, gastos, beneficio }`.
+            //
+            function crearDatos(clientes) {
+
+                const MIN_FACTURADO_CLIENTE = 1000
+
+                let datosClientesRelevantes = clientes
+                    .filter(cliente => parseFloat(cliente.total_facturado) >= MIN_FACTURADO_CLIENTE)
+                
+                let datosOtrosClientes = clientes
+                    .filter(cliente => parseFloat(cliente.total_facturado) < MIN_FACTURADO_CLIENTE)
+                    .reduce((acumulado, cliente) => {
+                        return {                   
+                            nombre: "Otros",
+                            total_facturado: parseFloat(acumulado.total_facturado) 
+                                           + parseFloat(cliente.total_facturado)
+                        }})
+
+                datosClientesRelevantes.push(datosOtrosClientes)
+                    
+                datosClientesRelevantes = datosClientesRelevantes.map(cliente => {
+                    return {
+                        value: parseFloat(cliente.total_facturado),
+                        category: cliente.nombre
+                    }})
+
+                return datosClientesRelevantes
+            }
+
+            //
+            // Crea la serie de datos de facturas para el gráfico.
+            //
+            function agregarDatosClientes(datosClientes) {
+
+                var serie = chart.series.push(
+                    am5percent.PieSeries.new(root, {
+                        valueField: "value",
+                        categoryField: "category",
+                        alignLabels: false
+                }));
+                
+                serie.labels.template.setAll({ textType: "circular", centerX: 0, centerY: 0 });
+
+                // Establece los datos de la serie (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Setting_data)
+                serie.data.setAll(datosClientes)
+
+                return serie
             }
         }
     }
