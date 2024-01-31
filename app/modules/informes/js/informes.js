@@ -487,6 +487,12 @@ function doInformes() {
 
                             target.set("forceHidden", (valuePercent < 1))
                             tick.set("forceHidden", (valuePercent < 1))
+
+                            // Si sale fuera del área de dibujo, oculto
+                            if (y < -chart.height() / 2)
+                                tick.set("forceHidden", true)
+                            else
+                                tick.set("forceHidden", false)
                         }
                         return y
                     }
