@@ -88,10 +88,10 @@ function doInformes() {
         // los datos.
         //
         function getRangoDeFechas(facturacion, gastos) {
-            
+
             const fechaInicioFacturas = facturacion["fechaInicio"]
             const fechaInicioGastos = gastos["fechaInicio"]
-            
+
             fechaInicio = fechaInicioFacturas < fechaInicioGastos ? fechaInicioFacturas : fechaInicioGastos
 
             const fechaFinFacturas = facturacion["fechaFin"]
@@ -120,10 +120,10 @@ function doInformes() {
             const beneficio = facturado - gastado
             pTotalBeneficio.textContent = formatoMoneda(beneficio)
 
-            // Fechas de inicio y fin            
+            // Fechas de inicio y fin
             const spanFechaInicio = contenedorResumen.querySelector("#informe-fecha-inicio")
             spanFechaInicio.textContent = formatoFechaLargo(fechaInicio)
-            
+
             const spanFechaFin = contenedorResumen.querySelector("#informe-fecha-fin")
             spanFechaFin.textContent = formatoFechaLargo(fechaFin)
 
@@ -147,8 +147,8 @@ function doInformes() {
             root.setThemes([ am5themes_Animated.new(root), tema ])
 
             // Crea el formateador de moneda y la localización española
-            root.numberFormatter.set("numberFormat", "#.###,00' €'");
-            root.locale = am5locales_es_ES;
+            root.numberFormatter.set("numberFormat", "#.###,00' €'")
+            root.locale = am5locales_es_ES
 
             // Crea el gráfico (https://www.amcharts.com/docs/v5/charts/xy-chart/)
             let chart = root.container.children.push(
@@ -170,7 +170,7 @@ function doInformes() {
                 baseInterval: { timeUnit: "day", count: 1 },
                 renderer: am5xy.AxisRendererX.new(root, {
                     minorGridEnabled: true,
-                    minGridDistance: 200,    
+                    minGridDistance: 200,
                     minorLabelsEnabled: true
                 }),
                 tooltip: am5.Tooltip.new(root, { })
@@ -219,7 +219,7 @@ function doInformes() {
                     // Anota lo facturado como positivo
                     movimientos.push([fecha, facturado])
                 }
-                
+
                 let datosGastos = []
                 for (let gastoMasFecha of gastos["gastosPorFecha"]) {
 
@@ -237,10 +237,10 @@ function doInformes() {
 
                 // Contabiliza todos los movimientos por fecha
                 let beneficios = {}
-                let balance = 0;
+                let balance = 0
                 for (let [fecha, movimiento] of movimientos.toSorted()) {
 
-                    balance += movimiento;
+                    balance += movimiento
                     beneficios[fecha] = balance
                 }
 
@@ -271,7 +271,7 @@ function doInformes() {
                         stroke: am5.color(0x409000),
                         tooltip: am5.Tooltip.new(root, { labelText: "{valueY}" })
                     }))
-    
+
                 // Viñetas
                 serieFacturas.bullets.push(function () {
                     let bulletCircle = am5.Circle.new(root, { radius: 5, fill: serieFacturas.get("fill") })
@@ -299,7 +299,7 @@ function doInformes() {
                         stroke: am5.color(0x910000),
                         tooltip: am5.Tooltip.new(root, { labelText: "{valueY}" })
                     }))
-    
+
                 // Viñetas
                 serieGastos.bullets.push(function () {
                     let bulletCircle = am5.Circle.new(root, { radius: 5, fill: serieGastos.get("fill") })
@@ -330,21 +330,21 @@ function doInformes() {
                             pointerOrientation: "horizontal"
                         })
                     }))
-    
+
                 // Estilo de línea y área
-                serieBeneficio.strokes.template.setAll({ strokeWidth: 3 });
-                serieBeneficio.fills.template.setAll({ fillOpacity: 0.5, visible: true });
+                serieBeneficio.strokes.template.setAll({ strokeWidth: 3 })
+                serieBeneficio.fills.template.setAll({ fillOpacity: 0.5, visible: true })
 
                 // Intervalos (-inf, 0) en rojo y [0, +inf) en azul
-                var rangoNegativo = yAxis.makeDataItem({ value: -1000000000, endValue: 0 });
-                var range = serieBeneficio.createAxisRange(rangoNegativo);
+                var rangoNegativo = yAxis.makeDataItem({ value: -1000000000, endValue: 0 })
+                var range = serieBeneficio.createAxisRange(rangoNegativo)
 
-                range.strokes.template.setAll({ stroke: am5.color(0xff621f), strokeWidth: 3 });
+                range.strokes.template.setAll({ stroke: am5.color(0xff621f), strokeWidth: 3 })
                 range.fills.template.setAll({
                     fill: am5.color(0xff621f),
                     fillOpacity: 0.5,
                     visible: true
-                });
+                })
 
                 serieBeneficio.data.setAll(datosBeneficio)
 
@@ -390,15 +390,15 @@ function doInformes() {
             root.setThemes([ am5themes_Animated.new(root) ])
 
             // Crea el formateador de moneda y la localización española
-            root.numberFormatter.set("numberFormat", "#.###,00' €'");
-            root.locale = am5locales_es_ES;
+            root.numberFormatter.set("numberFormat", "#.###,00' €'")
+            root.locale = am5locales_es_ES
 
             // Crea el gráfico (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/)
             var chart = root.container.children.push(
                 am5percent.PieChart.new(root, {
                     layout: root.verticalLayout,
                     innerRadius: am5.percent(50)
-                }));
+                }))
 
 
             // Añade la serie a representar (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Series)
@@ -412,7 +412,7 @@ function doInformes() {
                     centerX: am5.percent(50),
                     marginTop: 15,
                     marginBottom: 15
-                }))            
+                }))
             leyenda.data.setAll(serie.dataItems)
 
             // Inicia una animación al aparecer el gráfico (https://www.amcharts.com/docs/v5/concepts/animations/)
@@ -429,18 +429,18 @@ function doInformes() {
 
                 let datosClientesRelevantes = clientes
                     .filter(cliente => parseFloat(cliente.total_facturado) >= MIN_FACTURADO_CLIENTE)
-                
+
                 let datosOtrosClientes = clientes
                     .filter(cliente => parseFloat(cliente.total_facturado) < MIN_FACTURADO_CLIENTE)
                     .reduce((acumulado, cliente) => {
-                        return {                   
+                        return {
                             nombre: "Otros",
-                            total_facturado: parseFloat(acumulado.total_facturado) 
+                            total_facturado: parseFloat(acumulado.total_facturado)
                                            + parseFloat(cliente.total_facturado)
                         }})
 
                 datosClientesRelevantes.push(datosOtrosClientes)
-                    
+
                 datosClientesRelevantes = datosClientesRelevantes.map(cliente => {
                     return {
                         facturado: parseFloat(cliente.total_facturado),
@@ -461,7 +461,7 @@ function doInformes() {
                         categoryField: "nombre",
                         legendValueText: ""         // En la leyenda omite el valor (%)
                 }))
-                
+
                 root.tooltipContainer.children.push(
                     am5.Label.new(root, {
                         x: am5.p50,
