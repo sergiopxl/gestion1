@@ -406,13 +406,14 @@ function doInformes() {
             let serie = agregarDatosClientes(datosClientes)
 
             // Crea la leyenda del gráfico (https://www.amcharts.com/docs/v5/charts/percent-charts/legend-percent-series/)
-            var leyenda = chart.children.push(am5.Legend.new(root, {
-                centerX: am5.percent(50),
-                x: am5.percent(50),
-                marginTop: 15,
-                marginBottom: 15,
-            }));            
-            leyenda.data.setAll(serie.dataItems);
+            var leyenda = chart.children.push(
+                am5.Legend.new(root, {
+                    x: am5.percent(50),
+                    centerX: am5.percent(50),
+                    marginTop: 15,
+                    marginBottom: 15
+                }))            
+            leyenda.data.setAll(serie.dataItems)
 
             // Inicia una animación al aparecer el gráfico (https://www.amcharts.com/docs/v5/concepts/animations/)
             contenedorGrafico.classList.remove("hidden")
@@ -442,8 +443,8 @@ function doInformes() {
                     
                 datosClientesRelevantes = datosClientesRelevantes.map(cliente => {
                     return {
-                        value: parseFloat(cliente.total_facturado),
-                        category: cliente.nombre
+                        facturado: parseFloat(cliente.total_facturado),
+                        nombre: cliente.nombre
                     }})
 
                 return datosClientesRelevantes
@@ -456,12 +457,40 @@ function doInformes() {
 
                 var serie = chart.series.push(
                     am5percent.PieSeries.new(root, {
-                        valueField: "value",
-                        categoryField: "category",
-                        alignLabels: false
-                }));
+                        valueField: "facturado",
+                        categoryField: "nombre",
+                        legendValueText: ""         // En la leyenda omite el valor (%)
+                }))
                 
-                serie.labels.template.setAll({ textType: "circular", centerX: 0, centerY: 0 });
+                root.tooltipContainer.children.push(
+                    am5.Label.new(root, {
+                        x: am5.p50,
+                        y: am5.p50,
+                        centerX: am5.p50,
+                        centerY: am5.p50,
+                        fill: am5.color(0x000000),
+                        fontSize: 50
+                    }))
+
+                serie.slices.template.set("tooltipText", "{category}: [bold]{value}[/] ({valuePercentTotal.formatNumber('0.00')}%)")
+                serie.labels.template.set("text", "{category}: [bold]{value}[/]")
+
+                serie.labels.template.adapters.add("y", (y, target) => {
+
+                    let dataItem = target.dataItem
+                    if (dataItem) {
+                        let tick = dataItem.get("tick")
+                        if (tick) {
+
+                            // Menos del 1%, oculto
+                            const valuePercent = dataItem.get("valuePercentTotal")
+
+                            target.set("forceHidden", (valuePercent < 1))
+                            tick.set("forceHidden", (valuePercent < 1))
+                        }
+                        return y
+                    }
+                })
 
                 // Establece los datos de la serie (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Setting_data)
                 serie.data.setAll(datosClientes)
