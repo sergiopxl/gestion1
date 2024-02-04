@@ -7,6 +7,9 @@
   <title>Gestion | Proveedores</title>
   <script src="../../assets/js/api_roots.js"></script>
   <script src="../../assets/js/navigation.js" defer></script>
+  <script src="../../assets/js/paginacion.js" defer></script>
+  <script src="../../assets/js/modal.js" defer></script>
+  <script src="../../assets/js/loader.js" defer></script>
   <script src="js/proveedores.js" defer></script>
   <link rel="stylesheet" href="../../assets/css/theme.css">
 </head>
@@ -18,9 +21,43 @@
     </nav>
   </header>
 
+  <div id="acciones" class="acciones-pagina">
+    <div class="btn-success nuevo-proveedor-boton">Nuevo proveedor</div>
+
+    <div id="paginacion"></div>
+
+    <search id="buscador">
+      <form>
+        <input type="text" id="buscador-input" placeholder="Buscar por Nombre o CIF">
+        <button id="buscador-boton" class="btn-info" type="submit">Buscar</button>
+      </form>
+    </search>
+  </div>
+
   <h1 id="h1-apartado">Proveedores</h1>
   <main>
   </main>
+
+  <!-- Plantilla para las filas de Proveedor -->
+  <div class="proveedor-row hidden">
+    <div class="proveedor-row-datos">
+      <div class="proveedor-botones">
+        <button class="btn-info proveedor-botones-editar">Editar</button>
+      </div>
+      <p class="proveedor-datos-nombre"></p>
+      <p class="proveedor-datos-cif"></p>
+      <p class="proveedor-datos-tlf"></p>
+      <p class="proveedor-datos-direccion"></p>
+      <p class="proveedor-datos-servicio"></p>
+    </div>
+    <div class="proveedor-row-contactos">
+      <div class="contactos-contacto">
+        <p class="contacto-nombre"></p>
+        <p class="contacto-tlf"></p>
+        <p class="contacto-email"></p>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
