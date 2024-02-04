@@ -16,6 +16,10 @@ const apiUrlProveedoresUpdate = "http://localhost/gestion1/api/proveedores_updat
 
 const apiUrlProveedoresServiciosGet = "http://localhost/gestion1/api/proveedores_servicios_get.php"
 
+const apiUrlProveedoresContactoPut = "http://localhost/gestion1/api/proveedores_contactos_put.php"
+const apiUrlProveedoresContactoUpdate = "http://localhost/gestion1/api/proveedores_contactos_update.php"
+const apiUrlProveedoresContactoDelete = "http://localhost/gestion1/api/proveedores_contactos_delete.php"
+
 const apiUrlAvisosGet = "http://localhost/gestion1/api/avisos_get.php"
 const apiUrlFacturasGet = "http://localhost/gestion1/api/facturas_get.php"
 const apiUrlGastosGet = "http://localhost/gestion1/api/gastos_get.php"
