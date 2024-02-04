@@ -149,6 +149,12 @@ function doProveedores() {
         const campoServicio = formNuevoProveedor.querySelector("[name = 'select-proveedor-servicio']")
         getServiciosProveedores(campoServicio)
 
+        const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
+        botonEnviar.addEventListener("click", e => {
+            e.preventDefault()
+            new Modal("¿Seguro que quiere guardar los datos?", "confirmacion", guardarNuevoProveedor)
+        })
+
         // Cambiamos la vista a la de creación
         const titulo = document.querySelector("#h1-apartado")
         titulo.textContent = "Nuevo proveedor"
@@ -156,6 +162,31 @@ function doProveedores() {
         barraAcciones.classList.add("hidden")
         contenedorListado.innerHTML = ""
         contenedorListado.append(bloqueFormulario)
+
+        //
+        // Crea el nuevo Proveedor con los datos del formulario.
+        //
+        function guardarNuevoProveedor() {
+
+            const datosFormulario = new FormData(formNuevoProveedor)
+            const jsonDatosForm = JSON.stringify(Object.fromEntries(datosFormulario.entries()))
+
+            fetch(apiUrlProveedoresPut, { method: "PUT", body: jsonDatosForm })
+                .then(respuesta => {
+
+                    if (!respuesta.ok)
+                        throw new Error(`Error intentando crear el proveedor (${respuesta.status})`)
+                    else
+                        return respuesta.json()
+                })
+                .then(data => {
+                    new Modal(data, "informacion")
+                })
+                .catch(error => {
+                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`
+                    new Modal(mensajeError, "error")
+                })
+        }
     }
 
     //
@@ -182,6 +213,10 @@ function doProveedores() {
 
         const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
         botonEnviar.textContent = "Guardar cambios"
+        botonEnviar.addEventListener("click", e => {
+            e.preventDefault()
+            new Modal("¿Seguro que quiere efectuar los cambios?", "confirmacion", guardarUpdateProveedor)
+        })
 
         // Cambiamos la vista a la de edición
         const titulo = document.querySelector("#h1-apartado")
@@ -190,6 +225,31 @@ function doProveedores() {
         barraAcciones.classList.add("hidden")
         contenedorListado.innerHTML = ""
         contenedorListado.append(bloqueFormulario)
+
+        //
+        // Actualiza un Proveedor con los datos del formulario.
+        //
+        function guardarUpdateProveedor() {
+
+            const datosFormulario = new FormData(formEditarProveedor)
+            const jsonDatosForm = JSON.stringify(Object.fromEntries(datosFormulario.entries()))
+
+            fetch(apiUrlProveedoresUpdate, { method: "UPDATE", body: jsonDatosForm })
+                .then(respuesta => {
+
+                    if (!respuesta.ok)
+                        throw new Error(`Error intentando actualizar el proveedor (${respuesta.status})`)
+                    else
+                        return respuesta.json()
+                })
+                .then(data => {
+                    new Modal(data, "informacion")
+                })
+                .catch(error => {
+                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`
+                    new Modal(mensajeError, "error")
+                })
+        }
     }
 
     //
