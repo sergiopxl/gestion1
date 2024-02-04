@@ -15,7 +15,7 @@ $error = false;
 if (isset($_GET["estadisticas"])) {
 
     if ($_GET["estadisticas"] == "cliente") {
-        
+
         // Estadísticas de facturas por cliente
 
         $sqlMejoresClientes = "SELECT facturas_tb.id_cliente, clientes_tb.nombre, SUM(facturas_tb.baseimponible) AS total_facturado
@@ -32,10 +32,9 @@ if (isset($_GET["estadisticas"])) {
             if ($limite > 0)
                 $sqlMejoresClientes .= " LIMIT $limite";
         }
-        
 
         $respuestaMejoresClientes = mysqli_query($conn, $sqlMejoresClientes);
-            
+
         if ($respuestaMejoresClientes) {
             while ($fila = mysqli_fetch_assoc($respuestaMejoresClientes)) {
                 $respuesta[] = $fila;
@@ -52,31 +51,31 @@ if (isset($_GET["estadisticas"])) {
                                      MIN(CAST(fecha_emision AS DATE)) AS fecha_inicio,
                                      MAX(CAST(fecha_emision AS DATE)) AS fecha_fin
                               FROM facturas_tb";
-    
+
         $respuestaTotalFacturado = mysqli_query($conn, $sqlTotalFacturado);
-    
+
         if ($respuestaTotalFacturado) {
             $fila = mysqli_fetch_assoc($respuestaTotalFacturado);
             $respuesta = $fila;
         }
         else $error = true;
-    
+
         // Consulta el subtotal facturado por fecha
-        $sqlFacturasPorFecha = "SELECT SUM(baseimponible * (1 + iva / 100)) AS facturado, 
-                                       fecha_emision AS fecha, 
+        $sqlFacturasPorFecha = "SELECT SUM(baseimponible * (1 + iva / 100)) AS facturado,
+                                       fecha_emision AS fecha,
                                        COUNT(*) as num_facturas
                                 FROM facturas_tb
                                 GROUP BY fecha";
-        
+
         $respuestaFacturasPorFecha = mysqli_query($conn, $sqlFacturasPorFecha);
-    
+
         if ($respuestaFacturasPorFecha) {
-    
+
             $facturasPorFecha = [];
             while ($fila = mysqli_fetch_assoc($respuestaFacturasPorFecha)) {
                 $facturasPorFecha[] = $fila;
             }
-    
+
             $respuesta["facturas_por_fecha"] = $facturasPorFecha;
         }
         else $error = true;
