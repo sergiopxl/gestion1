@@ -30,7 +30,7 @@ function doPaginacion(paginaActual, registrosPorPagina, numRegistros, accion) {
 
     // Crea un elemento por cada página de resultados
     const numPaginas = Math.ceil( numRegistros / registrosPorPagina )
-    for (let pag = 1; pag < numPaginas; pag++) {
+    for (let pag = 1; pag <= numPaginas; pag++) {
 
         const elemento = new ElementoPaginacion(pag == paginaActual, pag)
 
