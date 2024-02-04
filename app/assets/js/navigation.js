@@ -17,6 +17,10 @@ function doNavigation(){
       url : "../../modules/facturas/index.html"
     },
     {
+      literal : "proveedores",
+      url : "../../modules/proveedores/index.html"
+    },
+    {
       literal : "comunicaciones",
       url : "../../modules/comunicaciones/index.html"
     },
