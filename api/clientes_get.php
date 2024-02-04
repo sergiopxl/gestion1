@@ -15,12 +15,13 @@ $condicion = " WHERE activo = 1 ";
 // Búsqueda
 if (isset($_GET["buscar"])) {
     $busqueda = $_GET["buscar"];
-    $condicion = " WHERE activo = 1 AND (UPPER(clientes_tb.nombre) LIKE UPPER('%$busqueda%') OR UPPER(clientes_tb.cif) LIKE UPPER('%$busqueda%')) ";
+    $condicion .= "AND (UPPER(clientes_tb.nombre) LIKE UPPER('%$busqueda%') OR 
+                        UPPER(clientes_tb.cif) LIKE UPPER('%$busqueda%')) ";
 }
 
 // Paginación
-$inicio = $_GET["inicio"];
-$porPagina = $_GET["porpagina"];
+$inicio = $_GET["inicio"] ?? 0;
+$porPagina = $_GET["porpagina"] ?? 20;
 
 $limite = " LIMIT $inicio, $porPagina";
 
@@ -61,7 +62,7 @@ while ($cliente = mysqli_fetch_assoc($resultadoClientes)) {
     $cliente["contactos"] = $contactos;
 
     // Facturación total + IVA
-    $sqlFacturacion = "SELECT SUM(baseimponible * (iva + 100) / 100) AS facturacion
+    $sqlFacturacion = "SELECT SUM(baseimponible * (1 + iva / 100)) AS facturacion
                        FROM facturas_tb
                        WHERE id_cliente = " . $cliente["id"];
 
