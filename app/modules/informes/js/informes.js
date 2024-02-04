@@ -25,6 +25,7 @@ function doInformes() {
                 getRangoDeFechas(datosFacturacion, datosGastos)
                 printResumen(datosFacturacion, datosGastos)
                 printGraficoBeneficios(datosFacturacion, datosGastos)
+                printGraficoBeneficiosPorMes(datosFacturacion, datosGastos)
 
                 printGraficoFacturacionPorCliente(datosFacturacionPorCliente)
                 printGraficoGastosPorProveedor(datosGastosPorProveedor)
@@ -357,6 +358,180 @@ function doInformes() {
                 serieBeneficio.data.setAll(datosBeneficio)
 
                 return serieBeneficio
+            }
+        }
+
+        // === Estadísticas de beneficio por meses ====================================================
+
+        //
+        // Imprime el gráfico de categorización de facturas y gastos por meses.
+        //
+        function printGraficoBeneficiosPorMes(facturacion, gastos) {
+            const contenedorGrafico = document.querySelector("#grafico-beneficios-mes")
+
+            // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
+            let root = am5.Root.new(contenedorGrafico)
+
+            // Establece el tema a usar (https://www.amcharts.com/docs/v5/concepts/themes/)
+            root.setThemes([am5themes_Animated.new(root)])
+
+            // Crea el formateador de moneda y la localización española
+            root.numberFormatter.set("numberFormat", "#.###,00' €'")
+            root.locale = am5locales_es_ES
+
+            // Crea el gráfico (https://www.amcharts.com/docs/v5/charts/xy-chart/)
+            let chart = root.container.children.push(
+                am5xy.XYChart.new(root, {
+                    paddingLeft: 0,
+                    paddingRight: 1
+                }))
+
+            // Configura el cursor (https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/)
+            let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}))
+            cursor.lineY.set("visible", false)
+
+            // Crea los ejes (https://www.amcharts.com/docs/v5/charts/xy-chart/axes/)
+            var xRenderer = am5xy.AxisRendererX.new(root, {
+                minGridDistance: 30,
+                minorGridEnabled: true
+            });
+            xRenderer.labels.template.setAll({
+                rotation: -90,
+                centerY: am5.p50,
+                centerX: am5.p100,
+                paddingRight: 15
+            });
+            xRenderer.grid.template.setAll({ location: 1 })
+
+            let xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+                maxDeviation: 0.3,
+                categoryField: "mes",
+                renderer: xRenderer,
+                tooltip: am5.Tooltip.new(root, {})
+            }))
+
+            var yRenderer = am5xy.AxisRendererY.new(root, { strokeOpacity: 0.1 })
+
+            var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                maxDeviation: 0.3,
+                renderer: yRenderer
+            }));
+
+            // Añade las series a representar (https://www.amcharts.com/docs/v5/charts/xy-chart/series/)
+            const datos = crearDatos()
+            let serieGastos = agregarDatosGastos(datos)
+            let serieFacturas = agregarDatosFacturas(datos)
+
+            // Inicia una animación al aparecer el gráfico (https://www.amcharts.com/docs/v5/concepts/animations/)
+            contenedorGrafico.classList.remove("hidden")
+            serieGastos.appear(1000)
+            serieFacturas.appear(1000)
+            chart.appear(1000, 100)
+
+            //
+            // Crea los datos de facturas y gastos categorizados por mes para que sirva para
+            // las series del gráfico.
+            //
+            function crearDatos() {
+
+                const nombreMes = nombresDeMeses()
+
+                let facturasPorMes = []
+                let gastosPorMes = []
+
+                for (let facturaMasFecha of facturacion["facturasPorFecha"]) {
+
+                    const mes = new Date(facturaMasFecha.fecha).getMonth()
+                    const facturado = parseFloat(facturaMasFecha.facturado)
+
+                    facturasPorMes[mes] = (facturasPorMes[mes] ?? 0) + facturado
+
+                    // Factura devuelta: contabilizamos como gasto para el gráfico
+                    if (facturado < 0)
+                        gastosPorMes[mes] = (gastosPorMes[mes] ?? 0) + facturado
+                }
+                for (let gastoMasFecha of gastos["gastosPorFecha"]) {
+
+                    const mes = new Date(gastoMasFecha.fecha).getMonth()
+                    const gastado = parseFloat(gastoMasFecha.gastado)
+
+                    gastosPorMes[mes] = (gastosPorMes[mes] ?? 0) - gastado
+                }
+
+                let datosFacturas = []
+                for (let mes = 0; mes < 12; mes++) {
+                    if (facturasPorMes[mes] || gastosPorMes[mes])
+                        datosFacturas.push({
+                            mes: nombreMes[mes],
+                            facturado: facturasPorMes[mes] ?? 0,
+                            gastado: gastosPorMes[mes] ?? 0
+                        })
+                }
+
+                return datosFacturas
+            }
+
+            //
+            // Crea la serie de datos de facturas para el gráfico.
+            // Ésta se dibujará normalmente en verde. Sin embargo, para facturas devueltas (que cuentan como
+            // negativo), si el volumen total facturado para el mes es negativo, se dibujará como valor
+            // negativo en color anaranjado (para distinguirlo de los gastos).
+            //
+            function agregarDatosFacturas(datosFacturas) {
+
+                let serieFacturas = chart.series.push(
+                    am5xy.ColumnSeries.new(root, {
+                        name: "Facturas",
+                        xAxis: xAxis,
+                        yAxis: yAxis,
+                        valueYField: "facturado",
+                        sequencedInterpolation: true,
+                        categoryXField: "mes",
+                        clustered: false,
+                        fill: am5.color(0x409000),      // Verde
+                        stroke: am5.color(0x409000),
+                        tooltip: am5.Tooltip.new(root, { labelText: "{categoryX}: [bold]{valueY}[/]" })
+                    }))
+
+                // Intervalos (-inf, 0) en naranja y [0, +inf) en verde
+                var rangoNegativo = yAxis.makeDataItem({ value: -1000000000, endValue: 0 })
+                var range = serieFacturas.createAxisRange(rangoNegativo)
+
+                range.columns.template.setAll({ stroke: am5.color(0x914d00), fill: am5.color(0x914d00) })
+
+                serieFacturas.columns.template.setAll({ cornerRadiusTL: 5, cornerRadiusTR: 5, strokeOpacity: 0 });
+
+                xAxis.data.setAll(datosFacturas)
+                serieFacturas.data.setAll(datosFacturas)
+
+                return serieFacturas
+            }
+
+            //
+            // Crea la serie de datos de gastos para el gráfico.
+            //
+            function agregarDatosGastos(datosGastos) {
+
+                let serieGastos = chart.series.push(
+                    am5xy.ColumnSeries.new(root, {
+                        name: "Gastos",
+                        xAxis: xAxis,
+                        yAxis: yAxis,
+                        valueYField: "gastado",
+                        sequencedInterpolation: true,
+                        categoryXField: "mes",
+                        clustered: false,
+                        fill: am5.color(0x910000),      // Rojo
+                        stroke: am5.color(0x910000),
+                        tooltip: am5.Tooltip.new(root, { labelText: "{categoryX}: [bold]{valueY}[/]" })
+                    }))
+
+                serieGastos.columns.template.setAll({ cornerRadiusTL: 5, cornerRadiusTR: 5, strokeOpacity: 0 });
+
+                xAxis.data.setAll(datosGastos)
+                serieGastos.data.setAll(datosGastos)
+
+                return serieGastos
             }
         }
 
