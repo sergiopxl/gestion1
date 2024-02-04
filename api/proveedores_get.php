@@ -44,7 +44,7 @@ $resultadoProveedores = mysqli_query($conn, $sqlProveedores);
 
 $proveedores = [];
 
-// Para cada proveedor, consulta sus contactos
+// Para cada proveedor, consulta sus contactos y el gasto total
 while ($proveedor = mysqli_fetch_assoc($resultadoProveedores)) {
 
     // Contactos
@@ -60,6 +60,19 @@ while ($proveedor = mysqli_fetch_assoc($resultadoProveedores)) {
     }
 
     $proveedor["contactos"] = $contactos;
+
+    // Gasto total + IVA
+    $sqlGasto = "SELECT SUM(baseimponible * (1 + iva / 100)) AS gasto
+                 FROM gastos_tb
+                 WHERE id_empresa = " . $proveedor["id"];
+
+    $resultadoGasto = mysqli_query($conn, $sqlGasto);
+
+    if ($resultadoGasto) {
+        $fila = mysqli_fetch_assoc($resultadoGasto);
+        $proveedor["gasto"] = $fila["gasto"] ?? 0;
+    }
+
     $proveedores[] = $proveedor;
 }
 

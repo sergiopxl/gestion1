@@ -125,6 +125,8 @@ function doProveedores() {
             proveedorContenedor.querySelector(".proveedor-datos-tlf").textContent = proveedor.telefono;
             proveedorContenedor.querySelector(".proveedor-datos-direccion").textContent = proveedor.direccion;
             proveedorContenedor.querySelector(".proveedor-datos-servicio").textContent = `Servicio: ${proveedor.servicio}`;
+            if (proveedor.gasto && proveedor.gasto > 0)
+                proveedorContenedor.querySelector(".proveedor-datos-gasto").textContent = `Gasto total: ${formatoMoneda(proveedor.gasto)}`;
 
             printListaContactos(proveedorContenedor, proveedor.contactos)
 
