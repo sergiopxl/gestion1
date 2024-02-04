@@ -146,6 +146,9 @@ function doProveedores() {
         const bloqueFormulario = newBloqueFormulario()
         const formNuevoProveedor = bloqueFormulario.querySelector(".proveedor-formulario")
 
+        // Para un nuevo Proveedor, ocultamos temporalmente la interfaz de modificación de los Contactos
+        bloqueFormulario.querySelector(".proveedor-contactos-contenedor-formulario").innerHTML = ""
+
         const campoServicio = formNuevoProveedor.querySelector("[name = 'select-proveedor-servicio']")
         getServiciosProveedores(campoServicio)
 
@@ -218,6 +221,9 @@ function doProveedores() {
             new Modal("¿Seguro que quiere efectuar los cambios?", "confirmacion", guardarUpdateProveedor)
         })
 
+        // Mostramos los contactos
+        setContactos()
+
         // Cambiamos la vista a la de edición
         const titulo = document.querySelector("#h1-apartado")
         titulo.textContent = "Editar proveedor"
@@ -249,6 +255,50 @@ function doProveedores() {
                     const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`
                     new Modal(mensajeError, "error")
                 })
+        }
+
+        //
+        // Compone la interfaz para mostrar, editar y eliminar los Contactos de un Proveedor.
+        //
+        function setContactos() {
+
+            const contenedorContactos = bloqueFormulario.querySelector(".proveedor-contactos-contenedor-formulario")
+            const contactoFormulario = contenedorContactos.querySelector(".proveedor-contactos-form")
+
+            const botonNuevoContacto = contenedorContactos.querySelector(".nuevo-contacto-boton")
+            botonNuevoContacto.addEventListener("click", doNuevoContacto)
+
+            proveedor.contactos.forEach(contacto => {
+                const nuevoFormularioContacto = contactoFormulario.cloneNode(true)
+
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-id']").value = contacto.id
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-nombre']").value = contacto.name
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-apellido1']").value = contacto.apell1
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-apellido2']").value = contacto.apell2
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-telefono']").value = contacto.phone1
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-email']").value = contacto.mail1
+
+                nuevoFormularioContacto.classList.remove("hidden")
+                contenedorContactos.append(nuevoFormularioContacto)
+            })
+
+            //
+            // Crea un formulario para crear un nuevo Contacto y lo añade a la interfaz.
+            //
+            function doNuevoContacto() {
+
+                const nuevoFormularioContacto = contactoFormulario.cloneNode(true)
+
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-idProveedor']").value = proveedor.id
+
+                const botonEnviar = nuevoFormularioContacto.querySelector("button.enviar")
+                botonEnviar.textContent = "Crear contacto"
+                const botonEliminar = nuevoFormularioContacto.querySelector("button.eliminar")
+                botonEliminar.classList.add("hidden")
+
+                nuevoFormularioContacto.classList.remove("hidden")
+                contactoFormulario.after(nuevoFormularioContacto)
+            }
         }
     }
 

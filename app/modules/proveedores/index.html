@@ -89,7 +89,36 @@
       </fieldset>
       <button class="btn-success formulario-boton-enviar">Crear proveedor</button>
     </form>
-  </div>
+    <div class="proveedor-contactos-contenedor-formulario">
+      <button class="btn-info nuevo-contacto-boton">Nuevo contacto</button>
+
+      <form action="" class="proveedor-contactos-form hidden">
+        <input type="hidden" name="input-contacto-idProveedor">
+        <input type="hidden" name="input-contacto-id">
+        <fieldset>
+          <label for="input-contacto-nombre">Nombre</label>
+          <input type="text" name="input-contacto-nombre">
+        </fieldset>
+        <fieldset>
+          <label for="input-contacto-apellido1">Primer apellido</label>
+          <input type="text" name="input-contacto-apellido1">
+        </fieldset>
+        <fieldset>
+          <label for="input-contacto-apellido2">Segundo apellido</label>
+          <input type="text" name="input-contacto-apellido2">
+        </fieldset>
+        <fieldset>
+          <label for="input-contacto-telefono">Telefono</label>
+          <input type="text" name="input-contacto-telefono">
+        </fieldset>
+        <fieldset>
+          <label for="input-contacto-email">Email</label>
+          <input type="text" name="input-contacto-email">
+        </fieldset>
+        <button class="btn-success enviar">Guardar cambios</button>
+        <button class="btn-error eliminar">Eliminar contacto</button>
+      </form>
+    </div>
   </div>
 </body>
 
