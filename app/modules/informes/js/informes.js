@@ -12,14 +12,22 @@ function doInformes() {
     //
     function getEstadisticas() {
 
-        Promise.all([cargarDatosFacturacion(), cargarDatosGastos(), cargarDatosFacturacionPorCliente()])
-            .then(([datosFacturacion, datosGastos, datosFacturacionPorCliente]) => {
+        const datosEstadisticos = [
+            cargarDatosFacturacion(),
+            cargarDatosGastos(),
+            cargarDatosFacturacionPorCliente(),
+            cargarDatosGastosPorProveedor()
+        ]
+
+        Promise.all(datosEstadisticos)
+            .then(([datosFacturacion, datosGastos, datosFacturacionPorCliente, datosGastosPorProveedor]) => {
 
                 getRangoDeFechas(datosFacturacion, datosGastos)
                 printResumen(datosFacturacion, datosGastos)
                 printGraficoBeneficios(datosFacturacion, datosGastos)
 
                 printGraficoFacturacionPorCliente(datosFacturacionPorCliente)
+                printGraficoGastosPorProveedor(datosGastosPorProveedor)
             })
             .catch(error => {
                 console.error("Error cargando las estadísticas: " + error)
@@ -420,8 +428,10 @@ function doInformes() {
             serie.appear(1000, 100)
 
             //
-            // Crea los datos de facturas, gastos y beneficio para que sirva para las series del gráfico.
-            // Devuelve un objeto `{ facturas, gastos, beneficio }`.
+            // Crea los datos de facturas agrupadas por cliente para los clientes más relevantes
+            // y crea también un cliente "Otros" con los menos relevantes, para que sirva para las
+            // series del gráfico.
+            // Devuelve un array de objetos `[ { nombre, total_facturado }, ... ]`.
             //
             function crearDatos(clientes) {
 
@@ -500,6 +510,163 @@ function doInformes() {
 
                 // Establece los datos de la serie (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Setting_data)
                 serie.data.setAll(datosClientes)
+
+                return serie
+            }
+        }
+
+        // === Estadísticas de Proveedores que más facturan ===========================================
+
+        //
+        // Carga los datos estadísticos de gastos agrupados por proveedor de forma asíncrona.
+        //
+        function cargarDatosGastosPorProveedor() {
+            return new Promise((resolve, reject) => {
+
+                fetch(`${apiUrlGastosGet}?estadisticas=proveedor`, { method: "GET" })
+                    .then(respuesta => {
+                        if (!respuesta.ok)
+                            throw new Error(`Error en la solicitud: ${respuesta.status}`)
+
+                        else return respuesta.json()
+                    })
+                    .then(proveedores => {
+                        resolve(proveedores)
+                    })
+                    .catch(error => {
+                        const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+                        reject(mensajeError)
+                    })
+            })
+        }
+
+        //
+        // Imprime el gráfico de proveedores en los que más se gasta.
+        //
+        function printGraficoGastosPorProveedor(proveedores) {
+            const contenedorGrafico = document.querySelector("#grafico-proveedores")
+
+            // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
+            let root = am5.Root.new(contenedorGrafico)
+
+            // Establece el tema a usar (https://www.amcharts.com/docs/v5/concepts/themes/)
+            root.setThemes([am5themes_Animated.new(root)])
+
+            // Crea el formateador de moneda y la localización española
+            root.numberFormatter.set("numberFormat", "#.###,00' €'")
+            root.locale = am5locales_es_ES
+
+            // Crea el gráfico (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/)
+            var chart = root.container.children.push(
+                am5percent.PieChart.new(root, {
+                    layout: root.verticalLayout,
+                    innerRadius: am5.percent(50)
+                }))
+
+
+            // Añade la serie a representar (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Series)
+            const datosProveedores = crearDatos(proveedores)
+            let serie = agregarDatosProveedores(datosProveedores)
+
+            // Crea la leyenda del gráfico (https://www.amcharts.com/docs/v5/charts/percent-charts/legend-percent-series/)
+            var leyenda = chart.children.push(
+                am5.Legend.new(root, {
+                    x: am5.percent(50),
+                    centerX: am5.percent(50),
+                    marginTop: 15,
+                    marginBottom: 15
+                }))
+            leyenda.data.setAll(serie.dataItems)
+
+            // Inicia una animación al aparecer el gráfico (https://www.amcharts.com/docs/v5/concepts/animations/)
+            contenedorGrafico.classList.remove("hidden")
+            serie.appear(1000, 100)
+
+            //
+            // Crea los datos de gastos agrupados por proveedor para los proveedores más relevantes
+            // y crea también un proveedor "Otros" con los menos relevantes, para que sirva para las
+            // series del gráfico.
+            // Devuelve un array de objetos `[ { nombre, total_gastado }, ... ]`.
+            //
+            function crearDatos(proveedores) {
+
+                const MIN_GASTADO_PROVEEDOR = 500
+
+                let datosProveedoresRelevantes = proveedores
+                    .filter(proveedor => parseFloat(proveedor.total_gastado) >= MIN_GASTADO_PROVEEDOR)
+
+                let datosOtrosProveedores = proveedores
+                    .filter(proveedor => parseFloat(proveedor.total_gastado) < MIN_GASTADO_PROVEEDOR)
+                    .reduce((acumulado, proveedor) => {
+                        return {
+                            nombre: "Otros",
+                            total_gastado: parseFloat(acumulado.total_gastado)
+                                         + parseFloat(proveedor.total_gastado)
+                        }
+                    })
+
+                datosProveedoresRelevantes.push(datosOtrosProveedores)
+
+                datosProveedoresRelevantes = datosProveedoresRelevantes.map(proveedor => {
+                    return {
+                        gastado: parseFloat(proveedor.total_gastado),
+                        nombre: proveedor.nombre
+                    }
+                })
+
+                return datosProveedoresRelevantes
+            }
+
+            //
+            // Crea la serie de datos de gastos para el gráfico.
+            //
+            function agregarDatosProveedores(datosProveedores) {
+
+                var serie = chart.series.push(
+                    am5percent.PieSeries.new(root, {
+                        valueField: "gastado",
+                        categoryField: "nombre",
+                        legendValueText: ""         // En la leyenda omite el valor (%)
+                    }))
+
+                root.tooltipContainer.children.push(
+                    am5.Label.new(root, {
+                        x: am5.p50,
+                        y: am5.p50,
+                        centerX: am5.p50,
+                        centerY: am5.p50,
+                        fill: am5.color(0x000000),
+                        fontSize: 50
+                    }))
+
+                serie.slices.template.set("tooltipText", "{category}: [bold]{value}[/] ({valuePercentTotal.formatNumber('0.00')}%)")
+                serie.labels.template.set("text", "{category}: [bold]{value}[/]")
+
+                serie.labels.template.adapters.add("y", (y, target) => {
+
+                    let dataItem = target.dataItem
+                    if (dataItem) {
+                        let tick = dataItem.get("tick")
+                        if (tick) {
+
+                            // Menos del 1%, oculto
+                            const valuePercent = dataItem.get("valuePercentTotal")
+
+                            target.set("forceHidden", (valuePercent < 1))
+                            tick.set("forceHidden", (valuePercent < 1))
+
+                            // Si sale fuera del área de dibujo, oculto
+                            if (y < -chart.height() / 2)
+                                tick.set("forceHidden", true)
+                            else
+                                tick.set("forceHidden", false)
+                        }
+                        return y
+                    }
+                })
+
+                // Establece los datos de la serie (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Setting_data)
+                serie.data.setAll(datosProveedores)
 
                 return serie
             }
