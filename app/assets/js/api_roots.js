@@ -12,6 +12,8 @@ const apiUrlClientesContactoDelete = "http://localhost/gestion1/api/clientes_con
 
 const apiUrlProveedoresGet = "http://localhost/gestion1/api/proveedores_get.php"
 
+const apiUrlProveedoresServiciosGet = "http://localhost/gestion1/api/proveedores_servicios_get.php"
+
 const apiUrlAvisosGet = "http://localhost/gestion1/api/avisos_get.php"
 const apiUrlFacturasGet = "http://localhost/gestion1/api/facturas_get.php"
 const apiUrlGastosGet = "http://localhost/gestion1/api/gastos_get.php"

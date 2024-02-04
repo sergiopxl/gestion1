@@ -60,6 +60,37 @@
       </div>
     </div>
   </div>
+
+  <!-- Vista para la edición de proveedores -->
+  <div id="bloque-formulario" class="hidden">
+    <form class="proveedor-formulario" action="" method="post">
+      <input type="hidden" name="input-proveedor-id">
+      <fieldset>
+        <label for="input-proveedor-nombre">Nombre</label>
+        <input type="text" name="input-proveedor-nombre" required="required">
+      </fieldset>
+      <fieldset>
+        <label for="input-proveedor-cif">CIF</label>
+        <input type="text" name="input-proveedor-cif" required="required">
+      </fieldset>
+      <fieldset>
+        <label for="input-proveedor-tlf">Teléfono</label>
+        <input type="text" name="input-proveedor-tlf">
+      </fieldset>
+      <fieldset>
+        <label for="input-proveedor-direccion">Dirección</label>
+        <input type="text" name="input-proveedor-direccion">
+      </fieldset>
+      <fieldset>
+        <label for="select-proveedor-servicio">Servicio</label>
+        <select name="select-proveedor-servicio" required="required">
+          <option value="0" selected disabled>Selecciona un servicio</option>
+        </select>
+      </fieldset>
+      <button class="btn-success formulario-boton-enviar">Crear proveedor</button>
+    </form>
+  </div>
+  </div>
 </body>
 
 </html>

@@ -11,6 +11,10 @@ function doProveedores() {
     const templateProveedor = document.querySelector(".proveedor-row")
     const templateContacto = document.querySelector(".contactos-contacto")
 
+    // Prepara el botón de crear Proveedor nuevo
+    const botonNuevoProveedor = document.querySelector("#acciones > .nuevo-proveedor-boton")
+    botonNuevoProveedor.addEventListener("click", () => doNuevoProveedor())
+
     // Prepara el buscador de proveedores
     const buscador = document.querySelector("#buscador form")
     const buscadorTexto = document.querySelector("#buscador-input")
@@ -132,6 +136,97 @@ function doProveedores() {
 
             contenedorListado.append(proveedorContenedor)
         });
+    }
+
+    //
+    // Muestra el formulario de creación de nuevo Proveedor.
+    //
+    function doNuevoProveedor() {
+
+        const bloqueFormulario = newBloqueFormulario()
+        const formNuevoProveedor = bloqueFormulario.querySelector(".proveedor-formulario")
+
+        const campoServicio = formNuevoProveedor.querySelector("[name = 'select-proveedor-servicio']")
+        getServiciosProveedores(campoServicio)
+
+        // Cambiamos la vista a la de creación
+        const titulo = document.querySelector("#h1-apartado")
+        titulo.textContent = "Nuevo proveedor"
+        const barraAcciones = document.querySelector("#acciones")
+        barraAcciones.classList.add("hidden")
+        contenedorListado.innerHTML = ""
+        contenedorListado.append(bloqueFormulario)
+    }
+
+    //
+    // Edita el Proveedor seleccionado en la lista de Proveedores.
+    //
+    function doEditar(proveedor) {
+
+        const bloqueFormulario = newBloqueFormulario()
+        const formEditarProveedor = bloqueFormulario.querySelector(".proveedor-formulario")
+
+        // Datos del proveedor
+        const campoId = formEditarProveedor.querySelector("[name = 'input-proveedor-id']")
+        campoId.value = proveedor.id
+        const campoNombre = formEditarProveedor.querySelector("[name = 'input-proveedor-nombre']")
+        campoNombre.value = proveedor.nombre
+        const campoCIF = formEditarProveedor.querySelector("[name = 'input-proveedor-cif']")
+        campoCIF.value = proveedor.cif
+        const campoTelefono = formEditarProveedor.querySelector("[name = 'input-proveedor-tlf']")
+        campoTelefono.value = proveedor.telefono
+        const campoDireccion = formEditarProveedor.querySelector("[name = 'input-proveedor-direccion']")
+        campoDireccion.value = proveedor.direccion
+        const campoServicio = formEditarProveedor.querySelector("[name = 'select-proveedor-servicio']")
+        getServiciosProveedores(campoServicio, proveedor)
+
+        const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
+        botonEnviar.textContent = "Guardar cambios"
+
+        // Cambiamos la vista a la de edición
+        const titulo = document.querySelector("#h1-apartado")
+        titulo.textContent = "Editar proveedor"
+        const barraAcciones = document.querySelector("#acciones")
+        barraAcciones.classList.add("hidden")
+        contenedorListado.innerHTML = ""
+        contenedorListado.append(bloqueFormulario)
+    }
+
+    //
+    // Llama a la API para obtener los Servicios disponibles para el Proveedor.
+    //
+    function getServiciosProveedores(selectServicio, proveedor) {
+
+        fetch(apiUrlProveedoresServiciosGet, { method: "GET" })
+            .then(respuesta => respuesta.json()
+                .then(servicios =>
+                    servicios.forEach(servicio => {
+
+                        const opcionServicio = document.createElement("option")
+                        opcionServicio.value = servicio.id
+                        opcionServicio.textContent = servicio.name
+
+                        if (proveedor && servicio.id == proveedor.id_servicio)
+                            opcionServicio.setAttribute("selected", "selected")
+
+                        selectServicio.append(opcionServicio)
+                    })
+                )
+            )
+    }
+
+    //
+    // Crea un contenedor HTML #bloque-formulario clonado, asegurándose de que cambia el id por una class
+    // y lo hace visible.
+    //
+    function newBloqueFormulario() {
+
+        const bloqueFormulario = document.querySelector("#bloque-formulario").cloneNode(true)
+        bloqueFormulario.id = ""
+        bloqueFormulario.classList.add("bloque-formulario")
+        bloqueFormulario.classList.remove("hidden")
+
+        return bloqueFormulario
     }
 
     //
