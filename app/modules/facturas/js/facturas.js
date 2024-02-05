@@ -1,4 +1,5 @@
 import { navegacion } from "../../../assets/js/navegacion.js"
+import { paginacion } from "../../../assets/js/paginacion.js"
 import { Loader } from "../../../assets/js/loader.js"
 import { Modal } from "../../../assets/js/modal.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
@@ -9,6 +10,9 @@ console.log("facturas.js 1.1")
 
 navegacion()
 
+let paginaActual = 1
+const resultadosPorPagina = 20
+
 const contenedorMain = document.querySelector("main")
 const plantillaFacturaRow = document.querySelector("#factura-template")
 const plantillaFacturaItem = document.querySelector("#factura-item-template")
@@ -17,12 +21,28 @@ const plantillaFacturaItem = document.querySelector("#factura-item-template")
 // Carga las Facturas.
 // Imprime las Facturas en la interfaz.
 //
-function getFacturas() {
+function getFacturas(pagina) {
     
+    // Volvemos la vista a la parte superior cuando se cambia de página
+    scroll({ top: 0, left: 0, behavior: "smooth" })
+
+    // Paginación
+    if (pagina)
+        paginaActual = pagina
+
+    const inicio = paginaActual > 1
+        ? (paginaActual - 1) * resultadosPorPagina
+        : 0
+    const parametroInicio = `?inicio=${inicio}`
+    let parametroPorPagina = `&porpagina=${resultadosPorPagina}`
+
+    // Hace la llamada GET al API e imprime los resultados
+    const url = UrlFacturasGet + parametroInicio + parametroPorPagina
+
     // Muestra un mensaje si la carga tarda
     const loader = new Loader({ mensaje: "Cargando facturas..." })
 
-    fetch(UrlFacturasGet, { method: "GET" })
+    fetch(url, { method: "GET" })
         .then(respuesta => {
 
             if (!respuesta.ok)
@@ -32,7 +52,7 @@ function getFacturas() {
         })
         .then(facturas => {
 
-            printFacturas(facturas)
+            printFacturas(facturas.numero_facturas, facturas.facturas)
             loader.destroy()
         })
         .catch(error => {
@@ -46,12 +66,16 @@ function getFacturas() {
 //
 // Imprime la lista de las Facturas en la interfaz.
 //
-function printFacturas(facturas) {
+function printFacturas(numFacturas, facturas) {
 
     contenedorMain.innerHTML = ""
 
+    // Preparamos la paginación
+    document.querySelector("#paginacion").innerHTML = "<ul></ul>"
+    paginacion(paginaActual, resultadosPorPagina, numFacturas, getFacturas)
+
     // Imprime una fila por cada factura
-    for (let factura of facturas.facturas) {
+    for (let factura of facturas) {
 
         const facturaRow = plantillaFacturaRow.cloneNode(true)
         facturaRow.setAttribute("id", "")
