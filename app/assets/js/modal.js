@@ -1,12 +1,10 @@
-"use strict"
-
-console.log("modal.js 1.2")
+console.log("modal.js 1.3")
 
 /**
  * Representa un cuadro de diálogo modal para pedir confirmación del usuario, mostrar
  * información o presentar un error.
  */
-class Modal {
+export class Modal {
 
     tipo;
 

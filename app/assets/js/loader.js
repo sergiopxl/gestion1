@@ -1,6 +1,4 @@
-"use strict"
-
-console.log("loader.js 2.0")
+console.log("loader.js 2.1")
 
 /**
  * Representa una interfaz de carga que se puede mostrar mientras se lleva a cabo
@@ -11,7 +9,7 @@ console.log("loader.js 2.0")
  * const loader = new Loader({ milisegundos: 100, mensaje: "Cargando"})
  * loader.destroy()
  */
-class Loader {
+export class Loader {
 
     canceled = false;
 

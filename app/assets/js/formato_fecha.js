@@ -1,8 +1,10 @@
-"use strict"
+console.log("formato_fecha.js 1.1")
 
-console.log("formato_fecha.js 1.0")
-
-const formatoFecha = new Intl.DateTimeFormat('es-ES', {
+/**
+ * Formato de fecha preconfigurado para convertir fechas al formato localizado en español
+ * de España (p.ej. `1 de mayo de 2021`).
+ */
+export const formatoFecha = new Intl.DateTimeFormat('es-ES', {
     day: "numeric",
     month: "long",
     year: "numeric"
@@ -14,7 +16,7 @@ const nombresDeMes = []
  * @param {Date} fecha - Fecha a formatear
  * @returns Cadena de texto con la fecha formateada
  */
-function formatoFechaLargo(fecha) {
+export function formatoFechaLargo(fecha) {
     return formatoFecha.format(fecha)
 }
 
@@ -22,7 +24,7 @@ function formatoFechaLargo(fecha) {
  * Devuelve la lista de los meses localizados al español.
  * @returns {String[]} Array con los nombres de los meses localizados
  */
-function nombresDeMeses() {
+export function nombresDeMeses() {
 
     // Si es la primera llamada, llena el array con los nombres
     if (nombresDeMes.length == 0)
