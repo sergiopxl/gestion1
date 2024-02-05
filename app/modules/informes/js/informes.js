@@ -1,6 +1,6 @@
 import { navegacion } from "../../../assets/js/navegacion.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
-import { formatoFechaLargo, nombresDeMeses } from "../../../assets/js/formato_fecha.js"
+import { fechaLarga, nombresDeMeses } from "../../../assets/js/formato_fecha.js"
 import * as api from "../../../assets/js/api_roots.js"
 
 console.log("informes.js v1.1")
@@ -134,10 +134,10 @@ function getEstadisticas() {
 
         // Fechas de inicio y fin
         const spanFechaInicio = contenedorResumen.querySelector("#informe-fecha-inicio")
-        spanFechaInicio.textContent = formatoFechaLargo(fechaInicio)
+        spanFechaInicio.textContent = fechaLarga(fechaInicio)
 
         const spanFechaFin = contenedorResumen.querySelector("#informe-fecha-fin")
-        spanFechaFin.textContent = formatoFechaLargo(fechaFin)
+        spanFechaFin.textContent = fechaLarga(fechaFin)
 
         contenedorResumen.classList.remove("hidden")
     }

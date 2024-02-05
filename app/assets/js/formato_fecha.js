@@ -2,13 +2,23 @@ console.log("formato_fecha.js 1.1")
 
 /**
  * Formato de fecha preconfigurado para convertir fechas al formato localizado en español
- * de España (p.ej. `1 de mayo de 2021`).
+ * de España en formato largo (p.ej. `1 de mayo de 2021`).
  */
-export const formatoFecha = new Intl.DateTimeFormat('es-ES', {
+const formatoFechaLargo = new Intl.DateTimeFormat('es-ES', {
     day: "numeric",
     month: "long",
     year: "numeric"
 })
+/**
+ * Formato de fecha preconfigurado para convertir fechas al formato localizado en español
+ * de España en formato corto (p.ej. `1 de mayo de 2021`).
+ */
+const formatoFechaCorto = new Intl.DateTimeFormat('es-ES', {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric"
+})
+
 const nombresDeMes = []
 
 /**
@@ -16,8 +26,17 @@ const nombresDeMes = []
  * @param {Date} fecha - Fecha a formatear
  * @returns Cadena de texto con la fecha formateada
  */
-export function formatoFechaLargo(fecha) {
-    return formatoFecha.format(fecha)
+export function fechaLarga(fecha) {
+    return formatoFechaLargo.format(fecha)
+}
+
+/**
+ * Formatea un Date a una cadena de fecha española estilo `1/5/2021`.
+ * @param {Date} fecha - Fecha a formatear
+ * @returns Cadena de texto con la fecha formateada
+ */
+export function fechaCorta(fecha) {
+    return formatoFechaCorto.format(fecha)
 }
 
 /**
