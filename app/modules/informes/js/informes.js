@@ -33,9 +33,9 @@ function getEstadisticas() {
             printGraficoFacturacionPorCliente(datosFacturacionPorCliente)
             printGraficoGastosPorProveedor(datosGastosPorProveedor)
         })
-        // .catch(error => {
-        //     console.error("Error cargando las estadísticas: " + error)
-        // })
+        .catch(error => {
+            console.error("Error cargando las estadísticas: " + error)
+        })
 
     // === Estadísticas de Facturas / Gastos / Beneficios =======================================
 
