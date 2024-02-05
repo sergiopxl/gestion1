@@ -1,0 +1,68 @@
+.factura-row {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  gap: 0.5rem;
+
+  border: 1px solid $color-gris-medio;
+  margin-bottom: 0.5rem;
+
+  &:nth-of-type(odd) {
+    background-color: $color-gris-suave;
+  }
+
+  p {
+    margin: 0.6rem 0;
+  }
+
+  .factura-botones {
+    flex: 1 0 100%;
+  }
+
+  .factura-resumen-datos {
+    display: flex;
+    flex: 1 0 50%;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    border-right: 1px dashed $color-gris-medio; // Línea separadora
+    padding: 0.5rem;
+
+    .factura-resumen {
+      background-color: lighten($color-azul, 40%);
+      padding: 0.5rem;
+      border-radius: 0.25rem;
+    }
+  }
+
+  .factura-items {
+    flex-grow: 1;
+    flex-shrink: 1;
+
+    padding-right: 0.55rem;
+
+    .factura-item {
+      margin-bottom: 1.4rem;
+
+      p {
+        margin: 0.6rem 0;
+      }
+
+      .item-importe {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.bloque-formulario {
+  display: flex;
+
+  fieldset {
+    display: flex;
+  }
+
+  label {
+    min-width: 16ch;
+  }
+}

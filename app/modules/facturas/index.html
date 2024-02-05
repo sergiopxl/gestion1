@@ -17,8 +17,51 @@
     </nav>
   </header>
 
+  <section id="acciones" class="acciones-pagina hidden">
+    <div id="nuevo-cliente-btn" class="btn-success">Nueva factura</div>
+    <div id="paginacion"></div>
+    <div id="buscador">
+      <input type="text" id="buscador-input">
+      <button class="btn-info" id="buscador-boton">Buscar</button>
+    </div>
+  </section>
+
+  <h1 id="h1-apartado">Facturas</h1>
   <main>
-    <h1 id="h1-apartado">Facturas</h1>
   </main>
+
+  <!-- Plantilla para las filas del listado de Facturas -->
+  <div id="factura-template" class="factura-row hidden">
+
+    <div class="factura-resumen-datos">
+      <div class="factura-botones">
+        <button class="factura-editar-button btn-info">Editar</button>
+        <button class="factura-enviado-button btn-info">Marcar como enviado</button>
+        <button class="factura-pagar-button btn-info">Registrar pago</button>
+      </div>
+
+      <div class="factura-resumen">
+        <p class="factura-numero"></p>
+        <p class="factura-cliente"></p>
+        <p class="factura-estado"></p>
+        <p class="factura-importe"></p>
+        <p class="factura-descripcion"></p>
+      </div>
+
+      <div class="factura-fechas">
+        <p class="factura-fecha-emision"></p>
+        <p class="factura-fecha-envio"></p>
+      </div>
+    </div>
+
+    <div class="factura-items">
+      <div id="factura-item-template" class="factura-item">
+        <input type="hidden" name="input-item-id">
+        <p class="item-descripcion"></p>
+        <p class="item-importe"></p>
+      </div>
+    </div>
+
+  </div>
 </body>
 </html>
