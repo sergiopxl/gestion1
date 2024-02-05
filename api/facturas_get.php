@@ -82,6 +82,59 @@ if (isset($_GET["estadisticas"])) {
     }
 }
 
+// Listado de facturas
+else {
+
+    // Paginación
+    $inicio = $_GET["inicio"] ?? 0;
+    $porPagina = $_GET["porpagina"] ?? 20;
+
+    $limite = " LIMIT $inicio, $porPagina";
+
+    // Consulta cuántos clientes hay en total
+    $sqlNumFacturas = "SELECT COUNT(*) AS numero_facturas FROM facturas_tb";
+    $respuestaNumFacturas = mysqli_query($conn, $sqlNumFacturas);
+
+    if ($respuestaNumFacturas) {
+        $fila = mysqli_fetch_assoc($respuestaNumFacturas);
+        $respuesta["numero_facturas"] = $fila["numero_facturas"];
+    }
+
+    // Obtiene la lista de facturas
+    $sqlFacturas = "SELECT facturas_tb.*, clientes_tb.nombre as cliente, facturas_estados_tb.nombre as estado
+                      FROM `facturas_tb`
+                      LEFT JOIN clientes_tb ON clientes_tb.id = facturas_tb.id_cliente
+                      LEFT JOIN facturas_estados_tb ON facturas_estados_tb.id = facturas_tb.id_estado " .
+                    $limite;
+
+    $facturas = [];
+    $respuestaFacturas = mysqli_query($conn, $sqlFacturas);
+    if ($respuestaFacturas) {
+        while ($factura = mysqli_fetch_assoc($respuestaFacturas)) {
+
+            $idFactura = $factura["id"];
+            $sqlFacturaItems = "SELECT * FROM facturas_items_tb WHERE id_factura = $idFactura";
+
+            // Consultamos los "items" de la factura
+            $facturaItems = [];
+            $respuestaItems = mysqli_query($conn, $sqlFacturaItems);
+
+            if ($respuestaItems) {
+                while ($item = mysqli_fetch_assoc($respuestaItems)) {
+                    $facturaItems[] = $item;
+                }
+            }
+            else $error = true;
+
+            $factura["items"] = $facturaItems;
+            $facturas[] = $factura;
+        }
+    }
+    else $error = true;
+
+    $respuesta["facturas"] = $facturas;
+}
+
 if (!$error)
     echo json_encode($respuesta);
 else
