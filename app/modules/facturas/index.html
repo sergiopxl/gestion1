@@ -32,7 +32,6 @@
 
   <!-- Plantilla para las filas del listado de Facturas -->
   <div id="factura-template" class="factura-row hidden">
-
     <div class="factura-resumen-datos">
       <div class="factura-botones">
         <button class="factura-editar-button btn-info">Editar</button>
@@ -61,7 +60,52 @@
         <p class="item-importe"></p>
       </div>
     </div>
+  </div>
 
+  <!-- Plantilla para la interfaz de nueva Factura -->
+  <div id="factura-new-template" class="editor-factura hidden">
+    <header>
+      <input type="hidden" name="input-baseimponible">
+      <fieldset>
+        <label for="input-iva">IVA</label>
+        <input type="number" min="0" max="100" required name="input-iva" id="input-iva">
+        %
+      </fieldset>
+
+      <div class="base-imponible-vista"></div>
+      <div class="importe-total"></div>
+
+      <input type="hidden" name="input-id-cliente">
+      <div class="cliente-vista">
+        Cliente: <span></span>
+      </div>
+      <button id="buscar-cliente-btn">Buscar cliente</button>
+
+      <div class="contacto">
+        <select name="contacto-select">
+          <option value="" selected disabled> Seleccione contacto</option>
+        </select>
+      </div>
+
+      <fieldset>
+        <label for="input-fecha-emision">Fecha emisión</label>
+        <input type="date" required name="input-fecha-emision" id="input-fecha-emision">
+      </fieldset>
+    </header>
+
+    <div class="listado-conceptos">
+      <div id="concepto-template" class="factura-concepto hidden">
+        <fieldset>
+          <label for="">Descripcion</label>
+          <textarea name="descripcion-concepto" id="" cols="30" rows="2" required></textarea>
+        </fieldset>
+        <fieldset>
+          <label for="">importe</label>
+          <input type="number" min="0" required name="input-importe">
+        </fieldset>
+        <button class="eliminar-concepto">Eliminar</button>
+      </div>
+    </div>
   </div>
 </body>
 </html>

@@ -1,7 +1,7 @@
 .factura-row {
   display: flex;
   flex-direction: row;
-  align-items: start;
+  align-items: flex-start;
   gap: 0.5rem;
 
   border: 1px solid $color-gris-medio;
@@ -55,14 +55,32 @@
   }
 }
 
-.bloque-formulario {
-  display: flex;
+.editor-factura {
 
-  fieldset {
+  fieldset { border: 0; }
+
+  header {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #666;
   }
 
-  label {
-    min-width: 16ch;
+  .listado-conceptos {
+    .factura-concepto {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      fieldset {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+
+        textarea { width: 90%; }
+      }
+    }
   }
 }
