@@ -1,4 +1,25 @@
-console.log("modal.js 1.5")
+console.log("modal.js 1.6")
+
+/**
+ * Define opciones para configurar un `Modal`.
+ */
+export class ModalOptions {
+
+    /**
+     * Clase CSS a aplicar al `Modal`.
+     * Si se deja `undefined`, se usará la clase adecuada al tipo de diálogo modal, si éste tiene una.
+     */
+    class
+
+    /**
+     * Contenido HTML para el botón "Aceptar". Por defecto será el texto `Aceptar`.
+     */
+    botonAceptarContent = "Aceptar"
+    /**
+     * Contenido HTML para el botón "Cancelar". Por defecto será el texto `Cancelar`.
+     */
+    botonCancelarContent = "Cancelar"
+}
 
 /**
  * Representa un cuadro de diálogo modal con contenido personalizado.
@@ -21,13 +42,17 @@ export class Modal {
      * @param {function} accion - Una función a ejecutar en caso de que se quiera que el usuario acepte o confirme algo.
      *                            Si se especifica, el diálogo presentará dos botones (Aceptar y Cancelar).
      * @param {object} params - Un objeto con los argumentos a pasar a la  accion.
+     * @param {ModalOptions?} opciones - Opciones para configurar el diálogo.
      */
-    constructor(contenido, accion, params) {
+    constructor(contenido, accion, params, opciones) {
 
         this.fondo.classList.add("modal-fondo")
 
         this.contendor.classList.add("modal-contenedor")
         this.contenido.classList.add("modal-contenido")
+
+        // Si no se especifican opciones, usamos las opciones por defecto
+        opciones ??= new ModalOptions()
 
         // Contenido: Directamente el contenido HTML indicado
         if (typeof(contenido) === "string")
@@ -40,9 +65,9 @@ export class Modal {
         else throw new Error(`Modal: El contenido no es ni HTML ni elementos del DOM`)
 
         this.botonAceptar.classList.add("btn-aceptar")
-        this.botonAceptar.textContent = "Aceptar"
+        this.botonAceptar.innerHTML = opciones.botonAceptarContent
         this.botonCancelar.classList.add("btn-cancelar")
-        this.botonCancelar.textContent = "Cancelar"
+        this.botonCancelar.innerHTML = opciones.botonCancelarContent
 
         // Por defecto, ambos botones destruyen el diálogo y
         // Aceptar ejecuta la acción si se ha especificado
@@ -65,6 +90,10 @@ export class Modal {
 
         this.contendor.append(this.contenido, this.botonera)
         this.fondo.append(this.contendor)
+
+        // Establecemos la clase CSS si se ha especificado
+        if (opciones.class)
+            this.contendor.classList.add(opciones.class)
     }
 
     //
@@ -124,13 +153,14 @@ export class InfoBox extends Modal {
      * Inicializa y muestra un diálogo modal de información.
      *
      * @param {string} texto - Texto a mostrar en el diálogo.
+     * @param {ModalOptions?} opciones - Opciones para configurar el diálogo.
      */
-    constructor(texto) {
+    constructor(texto, opciones) {
 
         if (typeof(texto) !== "string")
             throw new Error(`Modal: El contenido debe ser texto`)
 
-        super(`<p>${texto}</p>`)
+        super(`<p>${texto}</p>`, null, null, opciones)
 
         this.contendor.classList.add("informacion")
 
@@ -158,15 +188,16 @@ export class ConfirmBox extends Modal {
      * @param {string} texto - Texto a mostrar en el diálogo.
      * @param {function} accion - Una función a ejecutar en caso de que el usuario confirme la acción.
      * @param {object} params - Un objeto con los argumentos a pasar a la accion.
+     * @param {ModalOptions?} opciones - Opciones para configurar el diálogo.
      */
-    constructor(texto, accion, params) {
+    constructor(texto, accion, params, opciones) {
 
         if (typeof(texto) !== "string")
             throw new Error(`Modal: El contenido debe ser texto`)
         if (accion === undefined)
             throw new Error(`Modal: Se requiere accion`)
 
-        super(`<p>${texto}</p>`, accion, params)
+        super(`<p>${texto}</p>`, accion, params, opciones)
 
         this.contendor.classList.add("confirmacion")
 
@@ -181,7 +212,7 @@ export class ConfirmBox extends Modal {
      * @param {function} accion - Una función a ejecutar en caso de que el usuario confirme la acción.
      * @param {object} params - Un objeto con los argumentos a pasar a la accion.
      */
-    static mostrar(texto) {
+    static mostrar(texto, accion, params) {
         new ConfirmBox(texto, accion, params).mostrar()
     }
 }
@@ -195,13 +226,14 @@ export class ErrorBox extends Modal {
      * Inicializa y muestra un diálogo modal de error.
      *
      * @param {string} texto - Texto a mostrar en el diálogo.
+     * @param {ModalOptions?} opciones - Opciones para configurar el diálogo.
      */
-    constructor(texto) {
+    constructor(texto, opciones) {
 
         if (typeof(texto) !== "string")
             throw new Error(`Modal: El contenido debe ser texto`)
 
-        super(`<p>${texto}</p>`)
+        super(`<p>${texto}</p>`, null, null, opciones)
 
         this.contendor.classList.add("error")
 
