@@ -12,33 +12,55 @@ $respuesta = [];
 
 $condicion = " WHERE activo = 1 ";
 
+// Cliente por Id
+$buscarPorId = false;
+
+if (isset($_GET["id"])) {
+    $buscarPorId = true;
+    $idCliente = $_GET["id"];
+    $condicion .= " AND clientes_tb.id = $idCliente ";
+}
+
+// Determina si se deben devolver los Contactos de los Clientes o si se debe calcular
+// la facturación para cada Cliente
+$simple = isset($_GET["simple"]);
+
 // Búsqueda
 if (isset($_GET["buscar"])) {
     $busqueda = $_GET["buscar"];
-    $condicion .= "AND (UPPER(clientes_tb.nombre) LIKE UPPER('%$busqueda%') OR 
-                        UPPER(clientes_tb.cif) LIKE UPPER('%$busqueda%')) ";
+    $condicion .= " AND (UPPER(clientes_tb.nombre) LIKE UPPER('%$busqueda%') OR
+                         UPPER(clientes_tb.cif) LIKE UPPER('%$busqueda%')) ";
 }
 
 // Paginación
 $inicio = $_GET["inicio"] ?? 0;
 $porPagina = $_GET["porpagina"] ?? 20;
 
-$limite = " LIMIT $inicio, $porPagina";
+$limite = $buscarPorId ? "" : " LIMIT $inicio, $porPagina";
 
-// Consulta cuántos clientes hay en total
-$sqlNumClientes = "SELECT COUNT(*) AS numero_clientes FROM clientes_tb $condicion";
-$respuestaNumClientes = mysqli_query($conn, $sqlNumClientes);
+// Consulta cuántos Clientes hay en total
+if ($buscarPorId) {
+    $respuesta["numero_clientes"] = 1;
+} else {
+    $sqlNumClientes = "SELECT COUNT(*) AS numero_clientes FROM clientes_tb $condicion";
+    $respuestaNumClientes = mysqli_query($conn, $sqlNumClientes);
 
-if ($respuestaNumClientes) {
-    $fila = mysqli_fetch_assoc($respuestaNumClientes);
-    $respuesta["numero_clientes"] = $fila["numero_clientes"];
+    if ($respuestaNumClientes) {
+        $fila = mysqli_fetch_assoc($respuestaNumClientes);
+        $respuesta["numero_clientes"] = $fila["numero_clientes"];
+    }
 }
 
-// Consulta los clientes solicitados
-$sqlClientes = "SELECT clientes_tb.*, clientes_sectores_tb.nombre AS sector
-                FROM `clientes_tb`
-                LEFT JOIN clientes_sectores_tb ON clientes_tb.id_sector = clientes_sectores_tb.id
-                $condicion $limite";
+// Consulta los Clientes solicitados
+
+// En el modo "simple", sólo se devuelve el Id, Nombre y CIF
+$sqlClientes = $simple
+    ? "SELECT id, nombre, cif FROM `clientes_tb` $condicion $limite"
+
+    : "SELECT clientes_tb.*, clientes_sectores_tb.nombre AS sector
+         FROM `clientes_tb`
+         LEFT JOIN clientes_sectores_tb ON clientes_tb.id_sector = clientes_sectores_tb.id
+       $condicion $limite";
 
 $resultadoClientes = mysqli_query($conn, $sqlClientes);
 
@@ -47,30 +69,37 @@ $clientes = [];
 // Para cada cliente, consulta sus contactos y su facturación total
 while ($cliente = mysqli_fetch_assoc($resultadoClientes)) {
 
-    // Contactos
-    $sqlContactos = "SELECT * FROM clientes_contactos_tb
-                     WHERE id_cliente = " . $cliente["id"] . "
-                     ORDER BY id DESC";
+    if (!$simple) {
 
-    $resultadoContactos = mysqli_query($conn, $sqlContactos);
-    
-    $contactos = [];
-    while ($contacto = mysqli_fetch_assoc($resultadoContactos)) {
-        $contactos[] = $contacto;
-    }
+        // En modo simple, no buscamos los Contactos del Cliente
 
-    $cliente["contactos"] = $contactos;
+        // Contactos
+        $sqlContactos = "SELECT * FROM clientes_contactos_tb
+                         WHERE id_cliente = " . $cliente["id"] . "
+                         ORDER BY id DESC";
 
-    // Facturación total + IVA
-    $sqlFacturacion = "SELECT SUM(baseimponible * (1 + iva / 100)) AS facturacion
-                       FROM facturas_tb
-                       WHERE id_cliente = " . $cliente["id"];
+        $resultadoContactos = mysqli_query($conn, $sqlContactos);
 
-    $resultadoFacturacion = mysqli_query($conn, $sqlFacturacion);
+        $contactos = [];
+        while ($contacto = mysqli_fetch_assoc($resultadoContactos)) {
+            $contactos[] = $contacto;
+        }
 
-    if ($resultadoFacturacion) {
-        $fila = mysqli_fetch_assoc($resultadoFacturacion);
-        $cliente["facturacion"] = $fila["facturacion"] ?? 0;
+        $cliente["contactos"] = $contactos;
+
+        // En modo simple, no calculamos la facturación para el Cliente
+
+        // Facturación total + IVA
+        $sqlFacturacion = "SELECT SUM(baseimponible * (1 + iva / 100)) AS facturacion
+                           FROM facturas_tb
+                           WHERE id_cliente = " . $cliente["id"];
+
+        $resultadoFacturacion = mysqli_query($conn, $sqlFacturacion);
+
+        if ($resultadoFacturacion) {
+            $fila = mysqli_fetch_assoc($resultadoFacturacion);
+            $cliente["facturacion"] = $fila["facturacion"] ?? 0;
+        }
     }
 
     $clientes[] = $cliente;
