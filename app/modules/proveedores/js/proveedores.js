@@ -2,7 +2,7 @@ import { navegacion } from "../../../assets/js/navegacion.js"
 import { paginacion } from "../../../assets/js/paginacion.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
 import { Loader } from "../../../assets/js/loader.js"
-import { Modal } from "../../../assets/js/modal.js"
+import * as modals from "../../../assets/js/modal.js"
 import * as api from "../../../assets/js/api_roots.js"
 
 console.log("proveedores.js v1.0")
@@ -82,8 +82,7 @@ function getProveedores(pagina, busqueda) {
         .catch(error => {
 
             loader.destroy()
-            const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`
-            new Modal(mensajeError, "error")
+            modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`)
         })
 }
 
@@ -160,7 +159,7 @@ function doNuevoProveedor() {
     const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
     botonEnviar.addEventListener("click", e => {
         e.preventDefault()
-        new Modal("¿Seguro que quiere guardar los datos?", "confirmacion", guardarNuevoProveedor)
+        modals.ConfirmBox.mostrar("¿Seguro que quiere guardar los datos?", guardarNuevoProveedor)
     })
 
     // Cambiamos la vista a la de creación
@@ -188,11 +187,10 @@ function doNuevoProveedor() {
                     return respuesta.json()
             })
             .then(data => {
-                new Modal(data, "informacion")
+                modals.InfoBox.mostrar(data)
             })
             .catch(error => {
-                const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`
-                new Modal(mensajeError, "error")
+                modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`)
             })
     }
 }
@@ -223,7 +221,7 @@ function doEditar(proveedor) {
     botonEnviar.textContent = "Guardar cambios"
     botonEnviar.addEventListener("click", e => {
         e.preventDefault()
-        new Modal("¿Seguro que quiere efectuar los cambios?", "confirmacion", guardarUpdateProveedor)
+        modals.ConfirmBox.mostrar("¿Seguro que quiere efectuar los cambios?", guardarUpdateProveedor)
     })
 
     // Mostramos los contactos
@@ -254,11 +252,10 @@ function doEditar(proveedor) {
                     return respuesta.json()
             })
             .then(data => {
-                new Modal(data, "informacion")
+                modals.InfoBox.mostrar(data)
             })
             .catch(error => {
-                const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`
-                new Modal(mensajeError, "error")
+                modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`)
             })
     }
 
@@ -286,12 +283,12 @@ function doEditar(proveedor) {
             const botonEnviar = nuevoFormularioContacto.querySelector("button.enviar")
             botonEnviar.addEventListener("click", e => {
                 e.preventDefault()
-                new Modal("¿Seguro que quiere efectuar los cambios?", "confirmacion", () => guardarUpdateContacto(nuevoFormularioContacto))
+                modals.ConfirmBox.mostrar("¿Seguro que quiere efectuar los cambios?", () => guardarUpdateContacto(nuevoFormularioContacto))
             })
             const botonEliminar = nuevoFormularioContacto.querySelector("button.eliminar")
             botonEliminar.addEventListener("click", e => {
                 e.preventDefault()
-                new Modal("¿Seguro que quiere eliminar el contacto?", "confirmacion", () => eliminarContacto(nuevoFormularioContacto, contacto.id))
+                modals.ConfirmBox.mostrar("¿Seguro que quiere eliminar el contacto?", () => eliminarContacto(nuevoFormularioContacto, contacto.id))
             })
 
             nuevoFormularioContacto.classList.remove("hidden")
@@ -311,7 +308,7 @@ function doEditar(proveedor) {
             botonEnviar.textContent = "Crear contacto"
             const funCrearContacto = e => {
                 e.preventDefault()
-                new Modal("¿Seguro que quiere crear el contacto con estos datos?", "confirmacion", guardarNuevoContacto)
+                modals.ConfirmBox.mostrar("¿Seguro que quiere crear el contacto con estos datos?", guardarNuevoContacto)
             }
             botonEnviar.addEventListener("click", funCrearContacto)
             const botonEliminar = nuevoFormularioContacto.querySelector("button.eliminar")
@@ -337,7 +334,7 @@ function doEditar(proveedor) {
                             return respuesta.json()
                     })
                     .then(data => {
-                        new Modal(data.mensaje, "informacion")
+                        modals.InfoBox.mostrar(data.mensaje)
 
                         // Establecemos el Id que la BD ha asignado al nuevo Contacto
                         const idNuevoContacto = data.id
@@ -347,7 +344,7 @@ function doEditar(proveedor) {
                         botonEliminar.classList.remove("hidden")
                         botonEliminar.addEventListener("click", e => {
                             e.preventDefault()
-                            new Modal("¿Seguro que quiere eliminar el contacto?", "confirmacion", () => eliminarContacto(nuevoFormularioContacto, idNuevoContacto))
+                            modals.ConfirmBox.mostrar("¿Seguro que quiere eliminar el contacto?", () => eliminarContacto(nuevoFormularioContacto, idNuevoContacto))
                         })
 
                         // Cambiamos el botón de crear Contacto por el de modificar
@@ -355,12 +352,11 @@ function doEditar(proveedor) {
                         botonEnviar.removeEventListener("click", funCrearContacto)
                         botonEnviar.addEventListener("click", e => {
                             e.preventDefault()
-                            new Modal("¿Seguro que quiere modificar el contacto con estos datos?", "confirmacion", () => guardarUpdateContacto(nuevoFormularioContacto))
+                            modals.ConfirmBox.mostrar("¿Seguro que quiere modificar el contacto con estos datos?", () => guardarUpdateContacto(nuevoFormularioContacto))
                         })
                     })
                     .catch(error => {
-                        const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`
-                        new Modal(mensajeError, "error")
+                        modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`)
                     })
             }
         }
@@ -382,11 +378,10 @@ function doEditar(proveedor) {
                         return respuesta.json()
                 })
                 .then(data => {
-                    new Modal(data, "informacion")
+                    modals.InfoBox.mostrar(data)
                 })
                 .catch(error => {
-                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`
-                    new Modal(mensajeError, "error")
+                    modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`)
                 })
         }
 
@@ -406,11 +401,10 @@ function doEditar(proveedor) {
                 .then(data => {
 
                     formContacto.parentElement.removeChild(formContacto)
-                    new Modal(data, "informacion")
+                    modals.InfoBox.mostrar(data)
                 })
                 .catch(error => {
-                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`
-                    new Modal(mensajeError, "error")
+                    modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al proveedor.`)
                 })
         }
     }
