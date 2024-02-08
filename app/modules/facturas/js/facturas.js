@@ -1,10 +1,10 @@
 import { navegacion } from "../../../assets/js/navegacion.js"
 import { paginacion } from "../../../assets/js/paginacion.js"
 import { Loader } from "../../../assets/js/loader.js"
-import { Modal } from "../../../assets/js/modal.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
 import { fechaCorta } from "../../../assets/js/formato_fecha.js"
-import { UrlFacturasGet } from "../../../assets/js/api_roots.js"
+import * as modals from "../../../assets/js/modal.js"
+import * as datos from "./datos.js"
 
 console.log("facturas.js 1.1")
 
@@ -24,7 +24,7 @@ botonNuevaFactura.addEventListener("click", () => nuevaFactura())
 // Carga las Facturas.
 // Imprime las Facturas en la interfaz.
 //
-function getFacturas(pagina) {
+async function getFacturas(pagina) {
 
     // Volvemos la vista a la parte superior cuando se cambia de página
     scroll({ top: 0, left: 0, behavior: "smooth" })
@@ -33,37 +33,19 @@ function getFacturas(pagina) {
     if (pagina)
         paginaActual = pagina
 
-    const inicio = paginaActual > 1
-        ? (paginaActual - 1) * resultadosPorPagina
-        : 0
-    const parametroInicio = `?inicio=${inicio}`
-    let parametroPorPagina = `&porpagina=${resultadosPorPagina}`
-
-    // Hace la llamada GET al API e imprime los resultados
-    const url = UrlFacturasGet + parametroInicio + parametroPorPagina
-
     // Muestra un mensaje si la carga tarda
     const loader = new Loader({ mensaje: "Cargando facturas..." })
 
-    fetch(url, { method: "GET" })
-        .then(respuesta => {
-
-            if (!respuesta.ok)
-                throw new Error(`Error en la solicitud: ${respuesta.status}`)
-            else
-                return respuesta.json()
-        })
-        .then(facturas => {
-
-            printFacturas(facturas.numero_facturas, facturas.facturas)
-            loader.destroy()
-        })
-        .catch(error => {
-
-            loader.destroy()
-            const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-            new Modal(mensajeError, "error")
-        })
+    try {
+        const datosFacturas = await datos.cargarFacturas(paginaActual, resultadosPorPagina)
+        printFacturas(datosFacturas.numero_facturas, datosFacturas.facturas)
+    }
+    catch (error) {
+        modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+    }
+    finally {
+        loader.destroy()
+    }
 }
 
 //
@@ -287,10 +269,7 @@ function nuevaFactura() {
 
             // Si tenemos algún error, la factura NO es válida
             if (errores != "") {
-                const mensajeError = "<p><strong>No se puede guardar la Factura porque contiene datos no válidos</strong></p>"
-                                   + errores
-
-                new Modal(mensajeError, "error")
+                modals.ErrorBox.mostrar("<p><strong>No se puede guardar la Factura porque contiene datos no válidos</strong></p>" + errores)
                 return false
             }
 
