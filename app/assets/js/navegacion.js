@@ -6,7 +6,7 @@ console.log("navigation.js 1.2")
  * que contenga un elemento `<ul>`. Éste será donde se inserten los elementos de la
  * barra como `<li>`s.
  */
-export function navegacion() {
+export function navegacion(apartadoActual) {
 
     const apartados = [
         {
@@ -42,6 +42,10 @@ export function navegacion() {
 
         navegacionA.textContent = apartado.literal
         navegacionA.href = apartado.url
+
+        if (apartado.literal === apartadoActual) {
+            navegacionLi.classList.add("activo")
+        }
 
         navegacionLi.append(navegacionA)
         navegacionContenedor.append(navegacionLi)

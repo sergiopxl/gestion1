@@ -8,7 +8,7 @@ import { UrlFacturasGet } from "../../../assets/js/api_roots.js"
 
 console.log("facturas.js 1.1")
 
-navegacion()
+navegacion("facturas")
 
 let paginaActual = 1
 const resultadosPorPagina = 20

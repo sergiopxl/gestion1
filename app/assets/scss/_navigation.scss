@@ -20,5 +20,9 @@
     padding: 0.4rem;
 
     text-transform: capitalize;
+
+    &.activo {
+      background-color: $color-gris-suave;
+    }
   }
 }

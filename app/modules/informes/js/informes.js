@@ -5,7 +5,7 @@ import * as api from "../../../assets/js/api_roots.js"
 
 console.log("informes.js v1.1")
 
-navegacion()
+navegacion("informes")
 
 let fechaInicio = new Date(0)
 let fechaFin = new Date(0)

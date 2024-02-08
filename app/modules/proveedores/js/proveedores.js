@@ -7,7 +7,7 @@ import * as api from "../../../assets/js/api_roots.js"
 
 console.log("proveedores.js v1.0")
 
-navegacion()
+navegacion("proveedores")
 
 let paginaActual = 1
 const resultadosPorPagina = 20

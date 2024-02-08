@@ -7,7 +7,7 @@ import * as api from "../../../assets/js/api_roots.js"
 
 console.log("clientes.js v1.1")
 
-navegacion()
+navegacion("clientes")
 
 let paginaActual = 1
 const resultadosPorPagina = 20
