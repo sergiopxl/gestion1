@@ -48,7 +48,7 @@ export function nombresDeMeses() {
     // Si es la primera llamada, llena el array con los nombres
     if (nombresDeMes.length == 0)
         for (let mesNum = 0; mesNum < 12; mesNum++) {
-            const partes = formatoFecha.formatToParts(new Date(2000, mesNum, 1));
+            const partes = formatoFechaLargo.formatToParts(new Date(2000, mesNum, 1));
             const mes = partes.find(parte => parte.type === 'month').value;
             nombresDeMes.push(mes);
         }
