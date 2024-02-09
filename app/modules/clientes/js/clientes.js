@@ -3,7 +3,7 @@ import { paginacion } from "../../../assets/js/paginacion.js"
 import { Loader } from "../../../assets/js/loader.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
 import * as modals from "../../../assets/js/modal.js"
-import * as api from "../../../assets/js/api_roots.js"
+import * as datos from "./datos.js"
 
 console.log("clientes.js v1.1")
 
@@ -36,7 +36,7 @@ buscador.addEventListener("submit", e => {
 // Carga los Clientes de forma paginada y, opcionalmente, filtrados con una cadena de búsqueda.
 // Imprime los Clientes en la interfaz, resaltando la búsqueda.
 //
-function getClientes(pagina, busqueda) {
+async function getClientes(pagina, busqueda) {
 
     // Volvemos la vista a la parte superior cuando se cambia de página
     scroll({ top: 0, left: 0, behavior: "smooth" })
@@ -45,45 +45,22 @@ function getClientes(pagina, busqueda) {
     if (pagina)
         paginaActual = pagina
 
-    const inicio = paginaActual > 1
-        ? (paginaActual - 1) * resultadosPorPagina
-        : 0
-    const parametroInicio = `?inicio=${inicio}`
-    let parametroPorPagina = `&porpagina=${resultadosPorPagina}`
-
     // Búsqueda
-    let busquedaActiva = false
-    let parametroBusqueda = ""
-    if (busqueda && busqueda != "") {
-        parametroBusqueda = `&buscar=${busqueda}`
-        parametroPorPagina = "&porpagina=99999"
-        busquedaActiva = true
-    }
-
-    // Hace la llamada GET al API e imprime los resultados
-    const url = api.UrlClientesGet + parametroInicio + parametroPorPagina + parametroBusqueda
+    let busquedaActiva = (busqueda && busqueda != "")
 
     // Muestra un "Cargando clientes..." si la carga tarda
     const loader = new Loader({ mensaje: "Cargando clientes..." })
 
-    fetch(url, { method: "GET" })
-        .then(respuesta => {
-
-            if (!respuesta.ok)
-                throw new Error(`Error en la solicitud: ${respuesta.status}`)
-            else
-                return respuesta.json()
-        })
-        .then(clientes => {
-
-            printListaClientes(clientes.numero_clientes, clientes.clientes, busquedaActiva, busqueda)
-            loader.destroy()
-        })
-        .catch(error => {
-
-            loader.destroy()
-            modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
-        })
+    try {
+        const datosClientes = await datos.cargarClientes(paginaActual, resultadosPorPagina, busqueda)
+        printListaClientes(datosClientes.numero_clientes, datosClientes.clientes, busquedaActiva, busqueda)
+    }
+    catch (error) {
+        modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+    }
+    finally {
+        loader.destroy()
+    }
 }
 
 //
@@ -175,25 +152,16 @@ function doNuevoCliente() {
     //
     // Crea el nuevo Cliente con los datos del formulario.
     //
-    function guardarNuevoCliente() {
+    async function guardarNuevoCliente() {
 
-        const datosFormulario = new FormData(formNuevoCliente)
-        const jsonDatosForm = JSON.stringify(Object.fromEntries(datosFormulario.entries()))
+        try {
+            const respuesta = await datos.guardarNuevoCliente(formNuevoCliente)
 
-        fetch(api.UrlClientesPut, { method: "PUT", body: jsonDatosForm })
-            .then(respuesta => {
-
-                if (!respuesta.ok)
-                    throw new Error(`Error intentando crear el cliente (${respuesta.status})`)
-                else
-                    return respuesta.json()
-            })
-            .then(data => {
-                modals.InfoBox.mostrar(data)
-            })
-            .catch(error => {
-                modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
-            })
+            modals.InfoBox.mostrar(respuesta)
+        }
+        catch (error) {
+            modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+        }
     }
 }
 
@@ -240,25 +208,16 @@ function doEditar(cliente) {
     //
     // Actualiza un Cliente con los datos del formulario.
     //
-    function guardarUpdateCliente() {
+    async function guardarUpdateCliente() {
 
-        const datosFormulario = new FormData(formEditarCliente)
-        const jsonDatosForm = JSON.stringify(Object.fromEntries(datosFormulario.entries()))
+        try {
+            const respuesta = await datos.actualizarCliente(formEditarCliente)
 
-        fetch(api.UrlClientesUpdate, { method: "UPDATE", body: jsonDatosForm })
-            .then(respuesta => {
-
-                if (!respuesta.ok)
-                    throw new Error(`Error intentando actualizar el cliente (${respuesta.status})`)
-                else
-                    return respuesta.json()
-            })
-            .then(data => {
-                modals.InfoBox.mostrar(data)
-            })
-            .catch(error => {
-                modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
-            })
+            modals.InfoBox.mostrar(respuesta)
+        }
+        catch (error) {
+            modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+        }
     }
 
     //
@@ -322,92 +281,68 @@ function doEditar(cliente) {
             //
             // Crea un Contacto nuevo con los datos del formulario.
             //
-            function guardarNuevoContacto() {
+            async function guardarNuevoContacto() {
 
-                const datosFormulario = new FormData(nuevoFormularioContacto)
-                const jsonDatosForm = JSON.stringify(Object.fromEntries(datosFormulario.entries()))
+                let respuesta;
 
-                fetch(api.UrlClientesContactoPut, { method: "PUT", body: jsonDatosForm })
-                    .then(respuesta => {
+                try {
+                    respuesta = await datos.guardarNuevoContacto(nuevoFormularioContacto)
+                    modals.InfoBox.mostrar(respuesta.mensaje)
+                }
+                catch (error) {
+                    modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+                    return
+                }
 
-                        if (!respuesta.ok)
-                            throw new Error(`Error intentando crear el contacto (${respuesta.status})`)
-                        else
-                            return respuesta.json()
-                    })
-                    .then(data => {
-                        modals.InfoBox.mostrar(data.mensaje)
+                // Establecemos el Id que la BD ha asignado al nuevo Contacto
+                const idNuevoContacto = respuesta.id
+                nuevoFormularioContacto.querySelector("[name = 'input-contacto-id']").value = idNuevoContacto
 
-                        // Establecemos el Id que la BD ha asignado al nuevo Contacto
-                        const idNuevoContacto = data.id
-                        nuevoFormularioContacto.querySelector("[name = 'input-contacto-id']").value = idNuevoContacto
+                // Activamos el botón para eliminar el Contacto
+                botonEliminar.classList.remove("hidden")
+                botonEliminar.addEventListener("click", e => {
+                    e.preventDefault()
+                    modals.ConfirmBox.mostrar("¿Seguro que quiere eliminar el contacto?", () => eliminarContacto(nuevoFormularioContacto, idNuevoContacto))
+                })
 
-                        // Activamos el botón para eliminar el Contacto
-                        botonEliminar.classList.remove("hidden")
-                        botonEliminar.addEventListener("click", e => {
-                            e.preventDefault()
-                            modals.ConfirmBox.mostrar("¿Seguro que quiere eliminar el contacto?", () => eliminarContacto(nuevoFormularioContacto, idNuevoContacto))
-                        })
-
-                        // Cambiamos el botón de crear Contacto por el de modificar
-                        botonEnviar.textContent = "Guardar cambios"
-                        botonEnviar.removeEventListener("click", funCrearContacto)
-                        botonEnviar.addEventListener("click", e => {
-                            e.preventDefault()
-                            modals.ConfirmBox.mostrar("¿Seguro que quiere modificar el contacto con estos datos?", () => guardarUpdateContacto(nuevoFormularioContacto))
-                        })
-                    })
-                    .catch(error => {
-                        modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
-                    })
+                // Cambiamos el botón de crear Contacto por el de modificar
+                botonEnviar.textContent = "Guardar cambios"
+                botonEnviar.removeEventListener("click", funCrearContacto)
+                botonEnviar.addEventListener("click", e => {
+                    e.preventDefault()
+                    modals.ConfirmBox.mostrar("¿Seguro que quiere modificar el contacto con estos datos?", () => guardarUpdateContacto(nuevoFormularioContacto))
+                })
             }
         }
 
         //
         // Actualiza un Contacto con los datos del formulario.
         //
-        function guardarUpdateContacto(formContacto) {
+        async function guardarUpdateContacto(formContacto) {
 
-            const datosFormulario = new FormData(formContacto)
-            const jsonDatosForm = JSON.stringify(Object.fromEntries(datosFormulario.entries()))
-
-            fetch(api.UrlClientesContactoUpdate, { method: "UPDATE", body: jsonDatosForm })
-                .then(respuesta => {
-
-                    if (!respuesta.ok)
-                        throw new Error(`Error intentando actualizar el contacto (${respuesta.status})`)
-                    else
-                        return respuesta.json()
-                })
-                .then(data => {
-                    modals.InfoBox.mostrar(data)
-                })
-                .catch(error => {
-                    modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
-                })
+            try {
+                const respuesta = await datos.actualizarContacto(formContacto)
+                modals.InfoBox.mostrar(respuesta)
+            }
+            catch (error) {
+                modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+            }
         }
 
         //
         // Elimina el Contacto indicado en el formulario.
         //
-        function eliminarContacto(formContacto, contactoId) {
+        async function eliminarContacto(formContacto, contactoId) {
 
-            fetch(`${api.UrlClientesContactoDelete}?contacto-id=${contactoId}`, { method: "DELETE" })
-                .then(respuesta => {
+            try {
+                const respuesta = await datos.eliminarContacto(contactoId)
 
-                    if (!respuesta.ok)
-                        throw new Error(`Error intentando eliminar el contacto (${respuesta.status})`)
-                    else
-                        return respuesta.json()
-                })
-                .then(data => {
-
-                    formContacto.parentElement.removeChild(formContacto)
-                    modals.InfoBox.mostrar(data)
-                })
-                .catch(error => {
-                    modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
-                })
+                formContacto.parentElement.removeChild(formContacto)
+                modals.InfoBox.mostrar(respuesta)
+            }
+            catch (error) {
+                modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+            }
         }
     }
 }
@@ -415,24 +350,28 @@ function doEditar(cliente) {
 //
 // Llama a la API para obtener los Sectores disponibles para el Cliente.
 //
-function getSectoresClientes(selectSector, cliente) {
+async function getSectoresClientes(selectSector, cliente) {
 
-    fetch(api.UrlClientesSectoresGet, { method: "GET" })
-        .then(respuesta => respuesta.json()
-        .then(sectores =>
-            sectores.forEach(sector => {
+    let sectores = []
 
-                const opcionSector = document.createElement("option")
-                opcionSector.value = sector.id
-                opcionSector.textContent = sector.nombre
+    try {
+        sectores = await datos.cargarSectores()
+    }
+    catch (error) {
+        modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+    }
 
-                if (cliente && sector.id == cliente.id_sector)
-                    opcionSector.setAttribute("selected", "selected")
+    sectores.forEach(sector => {
 
-                selectSector.append(opcionSector)
-            })
-        )
-    )
+        const opcionSector = document.createElement("option")
+        opcionSector.value = sector.id
+        opcionSector.textContent = sector.nombre
+
+        if (cliente && sector.id == cliente.id_sector)
+            opcionSector.setAttribute("selected", "selected")
+
+        selectSector.append(opcionSector)
+    })
 }
 
 //

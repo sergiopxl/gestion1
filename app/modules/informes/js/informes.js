@@ -1,7 +1,7 @@
 import { navegacion } from "../../../assets/js/navegacion.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
 import { fechaLarga, nombresDeMeses } from "../../../assets/js/formato_fecha.js"
-import * as api from "../../../assets/js/api_roots.js"
+import * as datos from "./datos.js"
 
 console.log("informes.js v1.1")
 
@@ -13,86 +13,62 @@ let fechaFin = new Date(0)
 //
 // Carga las estadísticas de Facturas y Gastos para poder realizar informes y gráficos.
 //
-function getEstadisticas() {
+async function getEstadisticas() {
 
-    const datosEstadisticos = [
-        cargarDatosFacturacion(),
-        cargarDatosGastos(),
-        cargarDatosFacturacionPorCliente(),
-        cargarDatosGastosPorProveedor()
-    ]
+    let datosEstadisticos
 
-    Promise.all(datosEstadisticos)
-        .then(([datosFacturacion, datosGastos, datosFacturacionPorCliente, datosGastosPorProveedor]) => {
+    try {
+        datosEstadisticos = await Promise.all([
+            cargarDatosFacturacion(),
+            cargarDatosGastos(),
+            cargarDatosFacturacionPorCliente(),
+            cargarDatosGastosPorProveedor(),
+        ])
+    }
+    catch (error) {
+        console.error("Error cargando las estadísticas: " + error)
+    }
 
-            getRangoDeFechas(datosFacturacion, datosGastos)
-            printResumen(datosFacturacion, datosGastos)
-            printGraficoBeneficios(datosFacturacion, datosGastos)
-            printGraficoBeneficiosPorMes(datosFacturacion, datosGastos)
+    const [datosFacturacion, datosGastos, datosFacturacionPorCliente, datosGastosPorProveedor] = datosEstadisticos
 
-            printGraficoFacturacionPorCliente(datosFacturacionPorCliente)
-            printGraficoGastosPorProveedor(datosGastosPorProveedor)
-        })
-        .catch(error => {
-            console.error("Error cargando las estadísticas: " + error)
-        })
+    getRangoDeFechas(datosFacturacion, datosGastos)
+    printResumen(datosFacturacion, datosGastos)
+    printGraficoBeneficios(datosFacturacion, datosGastos)
+    printGraficoBeneficiosPorMes(datosFacturacion, datosGastos)
+
+    printGraficoFacturacionPorCliente(datosFacturacionPorCliente)
+    printGraficoGastosPorProveedor(datosGastosPorProveedor)
 
     // === Estadísticas de Facturas / Gastos / Beneficios =======================================
 
     //
     // Carga los datos estadísticos de facturación de forma asíncrona.
     //
-    function cargarDatosFacturacion() {
-        return new Promise((resolve, reject) => {
+    async function cargarDatosFacturacion() {
 
-            fetch(`${api.UrlFacturasGet}?estadisticas`, { method: "GET" })
-                .then(respuesta => {
-                    if (!respuesta.ok)
-                        throw new Error(`Error en la solicitud: ${respuesta.status}`)
-
-                    else return respuesta.json()
-                })
-                .then(facturacion => {
-                    resolve({
-                        totalFacturas: parseFloat(facturacion["total_facturas"]),
-                        fechaInicio: new Date(facturacion["fecha_inicio"]),
-                        fechaFin: new Date(facturacion["fecha_fin"]),
-                        facturasPorFecha: facturacion["facturas_por_fecha"]
-                    })
-                })
-                .catch(error => {
-                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                    reject(mensajeError)
-                })
-        })
+        try {
+            const datosFacturacion = await datos.cargarFacturacionPorFecha()
+            return datosFacturacion
+        }
+        catch (error) {
+            const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+            throw new Error(mensajeError)
+        }
     }
 
     //
     // Carga los datos estadísticos de gastos de forma asíncrona.
     //
-    function cargarDatosGastos() {
-        return new Promise((resolve, reject) => {
+    async function cargarDatosGastos() {
 
-            fetch(`${api.UrlGastosGet}?estadisticas`, { method: "GET" })
-                .then(respuesta => {
-                    if (!respuesta.ok)
-                        throw new Error(`Error en la solicitud: ${respuesta.status}`)
-
-                    else return respuesta.json()
-                })
-                .then(gastos => {
-                    resolve({
-                        totalGastos: parseFloat(gastos["total_gastos"]),
-                        fechaInicio: new Date(gastos["fecha_inicio"]),
-                        fechaFin: new Date(gastos["fecha_fin"]),
-                        gastosPorFecha: gastos["gastos_por_fecha"]
-                    })
-                })
-                .catch(error => {
-                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                    reject(mensajeError)
-                })
-        })
+        try {
+            const datosGastos = await datos.cargarGastosPorFecha()
+            return datosGastos
+        }
+        catch (error) {
+            const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+            throw new Error(mensajeError)
+        }
     }
 
     //
@@ -543,24 +519,16 @@ function getEstadisticas() {
     //
     // Carga los datos estadísticos de facturas agrupadas por cliente de forma asíncrona.
     //
-    function cargarDatosFacturacionPorCliente() {
-        return new Promise((resolve, reject) => {
+    async function cargarDatosFacturacionPorCliente() {
 
-            fetch(`${api.UrlFacturasGet}?estadisticas=cliente`, { method: "GET" })
-                .then(respuesta => {
-                    if (!respuesta.ok)
-                        throw new Error(`Error en la solicitud: ${respuesta.status}`)
-
-                    else return respuesta.json()
-                })
-                .then(clientes => {
-                    resolve(clientes)
-                })
-                .catch(error => {
-                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                    reject(mensajeError)
-                })
-        })
+        try {
+            const datosFacturasPorCliente = await datos.cargarDatosFacturacionPorCliente()
+            return datosFacturasPorCliente
+        }
+        catch (error) {
+            const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+            throw new Error(mensajeError)
+        }
     }
 
     //
@@ -585,7 +553,6 @@ function getEstadisticas() {
                 layout: root.verticalLayout,
                 innerRadius: am5.percent(50)
             }))
-
 
         // Añade la serie a representar (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Series)
         const datosClientes = crearDatos(clientes)
@@ -699,24 +666,16 @@ function getEstadisticas() {
     //
     // Carga los datos estadísticos de gastos agrupados por proveedor de forma asíncrona.
     //
-    function cargarDatosGastosPorProveedor() {
-        return new Promise((resolve, reject) => {
+    async function cargarDatosGastosPorProveedor() {
 
-            fetch(`${api.UrlGastosGet}?estadisticas=proveedor`, { method: "GET" })
-                .then(respuesta => {
-                    if (!respuesta.ok)
-                        throw new Error(`Error en la solicitud: ${respuesta.status}`)
-
-                    else return respuesta.json()
-                })
-                .then(proveedores => {
-                    resolve(proveedores)
-                })
-                .catch(error => {
-                    const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
-                    reject(mensajeError)
-                })
-        })
+        try {
+            const datosGastosPorProveedor = await datos.cargarDatosGastosPorProveedor()
+            return datosGastosPorProveedor
+        }
+        catch (error) {
+            const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+            throw new Error(mensajeError)
+        }
     }
 
     //
@@ -741,7 +700,6 @@ function getEstadisticas() {
                 layout: root.verticalLayout,
                 innerRadius: am5.percent(50)
             }))
-
 
         // Añade la serie a representar (https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Series)
         const datosProveedores = crearDatos(proveedores)

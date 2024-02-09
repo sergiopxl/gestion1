@@ -2,7 +2,7 @@ import * as api from "../../../assets/js/api_roots"
 
 /**
  * Llama a la API para obtener el listado de Facturas.
- * 
+ *
  * @param {number} pagina - El número de página a mostrar, empezando en la página 1.
  * @param {number} resultadosPorPagina - El número de facturas a mostrar por página.
  * @returns Objeto con los datos de las facturas.
@@ -29,7 +29,7 @@ export async function cargarFacturas(pagina, resultadosPorPagina) {
 
 /**
  * Llama a la API para buscar aquellos Clientes que concuerden con una búsqueda.
- * 
+ *
  * @param {string} busqueda - Texto a buscar en el nombre de los Clientes o en el CIF.
  * @returns Objeto con los datos de las Clientes.
  */
@@ -51,7 +51,7 @@ export async function buscarClientes(busqueda) {
 
 /**
  * Llama a la API para obtener el Cliente con el Id especificado.
- * 
+ *
  * @param {number} id - Identificador del Cliente a buscar.
  * @returns Objeto con los datos del Cliente.
  */
