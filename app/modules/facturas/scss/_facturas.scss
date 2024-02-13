@@ -84,3 +84,40 @@
     }
   }
 }
+
+.buscador-clientes {
+
+  min-width: 40vw;
+
+  input {
+    width: 100%;
+  }
+
+  .buscador-clientes-resultados {
+
+    margin: 0.6rem 0;
+
+    width: 100%;
+    max-height: 50vh;
+    overflow-y: scroll;
+  }
+
+  .buscador-clientes-resultado {
+    background-color: $color-gris-suave;
+    margin: 0.4rem;
+    padding: 0.2rem;
+    border-radius: 0.2rem;
+
+    p {
+      margin: 0;
+    }
+
+    &:hover {
+      background-color: #e2e2ff;
+    }
+  }
+}
+.buscador-clientes-modal {
+  border-color: $color-violeta !important;
+  background: linear-gradient(0deg, lighten($color-violeta, 50%) 0%, #FFF 35%) !important;
+}

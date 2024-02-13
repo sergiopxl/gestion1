@@ -65,6 +65,6 @@ export async function cargarClientePorId(id) {
     if (!respuesta.ok)
         throw new Error(`Error en la solicitud: ${respuesta.status}`)
 
-    const json = await respuesta.json()
-    return json
+    const jsonClientes = await respuesta.json()
+    return jsonClientes.clientes[0]
 }

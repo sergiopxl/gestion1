@@ -16,6 +16,7 @@ const resultadosPorPagina = 20
 const contenedorMain = document.querySelector("main")
 const plantillaFacturaRow = document.querySelector("#factura-template")
 const plantillaFacturaItem = document.querySelector("#factura-item-template")
+const plantillaBuscadorClientes = document.querySelector("#buscador-clientes")
 
 const botonNuevaFactura = document.querySelector("#nueva-factura-btn")
 botonNuevaFactura.addEventListener("click", () => nuevaFactura())
@@ -139,6 +140,9 @@ function nuevaFactura() {
     })
 
     // Controlamos el botón de búsqueda de Cliente
+    let clienteSeleccionado = null
+    const inputIdCliente = divNuevaFactura.querySelector("input[name = 'input-id-cliente']")
+    const vistaCliente = divNuevaFactura.querySelector(".cliente-vista")
     divNuevaFactura.querySelector("#buscar-cliente-btn").addEventListener("click", buscarCliente)
 
     contenedorMain.append(divNuevaFactura)
@@ -303,12 +307,89 @@ function nuevaFactura() {
     //
     // Muestra un diálogo modal para que el usuario elija un Cliente al que asignar la Factura.
     //
-    function buscarCliente(contenedorConceptos) {
+    function buscarCliente() {
 
-        // TODO: Mostrar un modal con un buscador de Clientes para seleccionar uno
+        // Clonamos la interfaz del buscador
+        const interfazBuscador = plantillaBuscadorClientes.cloneNode(true)
+        interfazBuscador.setAttribute("id", "")
+        interfazBuscador.classList.remove("hidden")
 
-        function getClientes(consulta) {
-            // TODO: Llama a la API para buscar Clientes
+        const contenedorResultados = interfazBuscador.querySelector(".buscador-clientes-resultados")
+        const plantillaResultado = contenedorResultados.querySelector(".buscador-clientes-resultado")
+
+        const campoBusqueda = interfazBuscador.querySelector(".buscador-clientes-busqueda")
+        campoBusqueda.addEventListener("input", busquedaCambiada)
+
+        // Controlamos cuándo se selecciona un Cliente
+        contenedorResultados.addEventListener("click", clienteSeleccionado)
+
+        // Creamos un modal con dicha interfaz
+        const modalBuscador = new modals.Modal(interfazBuscador, () => {}, null, {
+            class: "buscador-clientes-modal",
+            mostrarBotonAceptar: false
+        })
+        modalBuscador.mostrar()
+
+        //
+        // Función llamada cada vez que cambia el campo de búsqueda para actualizar los resultados.
+        //
+        async function busquedaCambiada(evento) {
+            
+            if (evento.target.value.length > 2) {
+
+                const busqueda = evento.target.value
+
+                const clientes = await datos.buscarClientes(campoBusqueda.value)
+                
+                contenedorResultados.innerHTML = ""
+
+                for (let cliente of clientes.clientes) {
+                    const resultadoCliente = plantillaResultado.cloneNode(true)
+                    resultadoCliente.classList.remove("hidden")
+
+                    const htmlNombre = `<strong>${resaltar(cliente.nombre, busqueda)}</strong>`
+                    resultadoCliente.querySelector(".buscador-clientes-nombre").innerHTML = htmlNombre
+                    const htmlCIF = `CIF: ${resaltar(cliente.cif, busqueda)}`
+                    resultadoCliente.querySelector(".buscador-clientes-cif").innerHTML = htmlCIF
+
+                    resultadoCliente.dataset.clienteId = cliente.id
+
+                    contenedorResultados.append(resultadoCliente)
+                }
+            }
+        }
+
+        //
+        // Función llamada cuando se hace clic en un Cliente para seleccionarlo.
+        //
+        function clienteSeleccionado(evento) {
+
+            const cliente = evento.target.closest(".buscador-clientes-resultado")
+            const clienteId = cliente?.dataset?.clienteId
+
+            if (clienteId) {
+                modalBuscador.cerrar()
+                seleccionarCliente(parseInt(clienteId))
+            }
+        }
+    }
+
+    //
+    // Selecciona el Cliente con el Id indicado y lo muestra en la interfaz.
+    //
+    async function seleccionarCliente(id) {
+
+        try {
+            const cliente = await datos.cargarClientePorId(id)
+
+            inputIdCliente.value = id
+            vistaCliente.innerHTML = `Cliente: <span>${cliente.nombre}</span>`
+
+            clienteSeleccionado = cliente
+            console.log(cliente)
+        }
+        catch (error) {
+            modals.ErrorBox.mostrar("Ha habido un problema obteniendo información del Cliente")
         }
     }
 
@@ -362,6 +443,28 @@ function nuevaFactura() {
         importeTotal = importeTotal * (1 + (iva / 100))
         vistaImporteTotal.textContent = formatoMoneda(importeTotal)
     }
+}
+
+//
+// Devuelve un HTML donde aparecen resaltados los términos de búsqueda.
+//
+function resaltar(texto, busqueda) {
+
+    let buscar = busqueda.toLowerCase()
+    let cadenaResaltada = ""
+
+    let posBusqueda = 0
+    while ((posBusqueda = texto.toLowerCase().indexOf(buscar)) >= 0) {
+
+        cadenaResaltada += texto.substring(0, posBusqueda)
+
+        const resaltado = texto.substring(posBusqueda, posBusqueda + buscar.length)
+        cadenaResaltada += `<span class="resaltar">${resaltado}</span>`
+
+        texto = texto.substring(posBusqueda + buscar.length)
+    }
+
+    return cadenaResaltada + texto
 }
 
 getFacturas()
