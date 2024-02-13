@@ -12,13 +12,34 @@ export class ModalOptions {
     class
 
     /**
+     * Indica si se debe mostrar el botón "Aceptar" en el diálogo.
+     */
+    mostrarBotonAceptar = true
+    /**
+     * Indica si se debe mostrar el botón "Cancelar" en el diálogo.
+     * NOTA: Si no se muestra el botón "Cancelar", debe existir otra forma de cerrar el
+     * diálogo o no se podrá salir de él.
+     */
+    mostrarBotonCancelar = true
+
+    /**
      * Contenido HTML para el botón "Aceptar". Por defecto será el texto `Aceptar`.
      */
-    botonAceptarContent = "Aceptar"
+    botonAceptarContent = ModalOptions.defaultBotonAceptarContent
     /**
      * Contenido HTML para el botón "Cancelar". Por defecto será el texto `Cancelar`.
      */
-    botonCancelarContent = "Cancelar"
+    botonCancelarContent = ModalOptions.defaultBotonCancelarContent
+
+
+    /**
+     * Contenido HTML por defecto para el botón "Aceptar".
+     */
+    static defaultBotonAceptarContent = "Aceptar"
+    /**
+     * Contenido HTML por defecto para el botón "Cancelar".
+     */
+    static defaultBotonCancelarContent = "Cancelar"
 }
 
 /**
@@ -65,13 +86,14 @@ export class Modal {
         else throw new Error(`Modal: El contenido no es ni HTML ni elementos del DOM`)
 
         this.botonAceptar.classList.add("btn-aceptar")
-        this.botonAceptar.innerHTML = opciones.botonAceptarContent
+        this.botonAceptar.innerHTML = opciones.botonAceptarContent ?? ModalOptions.defaultBotonAceptarContent
         this.botonCancelar.classList.add("btn-cancelar")
-        this.botonCancelar.innerHTML = opciones.botonCancelarContent
+        this.botonCancelar.innerHTML = opciones.botonCancelarContent ?? ModalOptions.defaultBotonCancelarContent
 
         // Por defecto, ambos botones destruyen el diálogo y
         // Aceptar ejecuta la acción si se ha especificado
-        this.botonera.append(this.botonAceptar)
+        if (opciones.mostrarBotonAceptar)
+            this.botonera.append(this.botonAceptar)
         this.botonAceptar.addEventListener("click", e => {
             e.preventDefault()
 
@@ -81,7 +103,7 @@ export class Modal {
             this.cerrar()
         })
         // Sólo mostramos el 2º botón si "Aceptar" debe ejecutar una acción distinta a "Cancelar"
-        if (accion)
+        if (accion && opciones.mostrarBotonCancelar)
             this.botonera.append(this.botonCancelar)
         this.botonCancelar.addEventListener("click", e => {
             e.preventDefault()
