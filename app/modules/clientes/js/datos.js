@@ -1,4 +1,4 @@
-import * as api from "../../../assets/js/api_roots"
+import * as api from "../../../assets/js/api_roots.js"
 
 /**
  * Llama a la API para obtener el listado de Clientes.
