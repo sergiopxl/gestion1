@@ -60,19 +60,56 @@
   fieldset { border: 0; }
 
   header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
 
     padding-bottom: 1rem;
     border-bottom: 1px solid #666;
+
+    .factura-importe {
+      font-size: 1.25em;
+
+      margin: 1rem 0;
+      padding: 0.6rem;
+
+      background-color: $color-gris-suave;
+
+      display: flex;
+      justify-content: space-around;
+    }
+
+    fieldset {
+      display: grid;
+      align-items: center;
+      grid-template-columns: 1fr 3fr;
+      gap: 1.2rem;
+
+      & > div {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      .cliente-vista { padding: 0 1rem; }
+    }
+
+    input, select, button { max-width: 20vw; }
+
+    label { text-align: right; }
+
+    #input-iva { max-width: 10vw; }
   }
 
   .listado-conceptos {
+
+    padding-top: 1rem;
+
     .factura-concepto {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
+
+      &:nth-of-type(even) {
+        background-color: $color-gris-suave;
+      }
 
       fieldset {
         display: flex;

@@ -66,29 +66,34 @@
   <div id="factura-new-template" class="editor-factura hidden">
     <header>
       <input type="hidden" name="input-baseimponible">
+
+      <div class="factura-importe hidden">
+        <div class="base-imponible-vista"></div>
+        <div class="importe-total"></div>
+      </div>
+
       <fieldset>
-        <label for="input-iva">IVA</label>
+        <label for="input-iva">% IVA</label>
         <input type="number" min="0" max="100" required name="input-iva" id="input-iva">
-        %
       </fieldset>
 
-      <div class="base-imponible-vista"></div>
-      <div class="importe-total"></div>
-
       <input type="hidden" name="input-id-cliente">
-      <div class="cliente-vista">
-        Cliente: <span></span>
-      </div>
-      <button id="buscar-cliente-btn">Buscar cliente</button>
-
-      <div class="contacto">
-        <select name="contacto-select">
-          <option value="" selected disabled> Seleccione contacto</option>
+      <fieldset>
+        <label>Cliente:</label>
+        <div>
+          <button id="buscar-cliente-btn">Buscar cliente</button>
+          <div class="cliente-vista">No hay ningún cliente seleccionado</div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <label for="contacto-select">Contacto:</label>
+        <select name="contacto-select" disabled>
+          <option value="0" selected disabled>Seleccione contacto</option>
         </select>
-      </div>
+      </fieldset>
 
       <fieldset>
-        <label for="input-fecha-emision">Fecha emisión</label>
+        <label for="input-fecha-emision">Fecha emisión:</label>
         <input type="date" required name="input-fecha-emision" id="input-fecha-emision">
       </fieldset>
     </header>

@@ -334,13 +334,13 @@ function nuevaFactura() {
         // Función llamada cada vez que cambia el campo de búsqueda para actualizar los resultados.
         //
         async function busquedaCambiada(evento) {
-            
+
             if (evento.target.value.length > 2) {
 
                 const busqueda = evento.target.value
 
                 const clientes = await datos.buscarClientes(campoBusqueda.value)
-                
+
                 contenedorResultados.innerHTML = ""
 
                 for (let cliente of clientes.clientes) {
@@ -382,8 +382,9 @@ function nuevaFactura() {
         try {
             const cliente = await datos.cargarClientePorId(id)
 
+            // Establecemos el Cliente seleccionado
             inputIdCliente.value = id
-            vistaCliente.innerHTML = `Cliente: <span>${cliente.nombre}</span>`
+            vistaCliente.innerHTML = `<strong>${cliente.nombre}</strong>`
 
             clienteSeleccionado = cliente
             console.log(cliente)
@@ -399,16 +400,16 @@ function nuevaFactura() {
     //
     function calcularImporteTotal() {
 
-        const vistaBaseImponible = document.querySelector(".base-imponible-vista")
-        const vistaImporteTotal = document.querySelector(".importe-total")
+        const vistaImporteFactura = document.querySelector(".factura-importe")
+        const vistaBaseImponible = vistaImporteFactura.querySelector(".base-imponible-vista")
+        const vistaImporteTotal = vistaImporteFactura.querySelector(".importe-total")
 
         // IVA
         const campoIVA = document.querySelector("#input-iva")
         const iva = parseFloat(campoIVA.value)
 
         if (campoIVA.value === "" || isNaN(iva)) {
-            vistaBaseImponible.textContent = ""
-            vistaImporteTotal.textContent = ""
+            ocultarImporteTotal()
             return
         }
 
@@ -418,8 +419,7 @@ function nuevaFactura() {
         const conceptos = contenedorConceptos.querySelectorAll(".factura-concepto")
 
         if (conceptos.length === 0) {
-            vistaBaseImponible.textContent = ""
-            vistaImporteTotal.textContent = ""
+            ocultarImporteTotal()
             return
         }
 
@@ -430,8 +430,7 @@ function nuevaFactura() {
             const importe = parseFloat(campoImporte.value)
 
             if (campoImporte.value === "" || isNaN(importe)) {
-                vistaBaseImponible.textContent = ""
-                vistaImporteTotal.textContent = ""
+                ocultarImporteTotal()
                 return
             }
 
@@ -439,9 +438,19 @@ function nuevaFactura() {
         }
 
         // Calculamos la base imponible y el importe total (+IVA)
-        vistaBaseImponible.textContent = formatoMoneda(importeTotal)
+        vistaImporteFactura.classList.remove("hidden")
+        vistaBaseImponible.innerHTML = `Base imponible: <strong>${formatoMoneda(importeTotal)}</strong>`
         importeTotal = importeTotal * (1 + (iva / 100))
-        vistaImporteTotal.textContent = formatoMoneda(importeTotal)
+        vistaImporteTotal.innerHTML = `Importe total: <strong>${formatoMoneda(importeTotal)}</strong>`
+
+        //
+        // Oculta la vista del importe total de la Factura.
+        //
+        function ocultarImporteTotal() {
+            vistaBaseImponible.textContent = ""
+            vistaImporteTotal.textContent = ""
+            vistaImporteFactura.classList.add("hidden")
+        }
     }
 }
 
