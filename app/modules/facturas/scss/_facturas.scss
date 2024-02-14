@@ -107,17 +107,14 @@
       align-items: flex-start;
       justify-content: space-between;
 
+      padding: 0.4rem;
+      gap: 0.4rem;
+
       &:nth-of-type(even) {
         background-color: $color-gris-suave;
       }
 
-      fieldset {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-
-        textarea { width: 90%; }
-      }
+      textarea { width: 90%; }
     }
   }
 }

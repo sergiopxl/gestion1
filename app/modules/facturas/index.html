@@ -100,14 +100,10 @@
 
     <div class="listado-conceptos">
       <div id="concepto-template" class="factura-concepto hidden">
-        <fieldset>
-          <label for="">Descripcion</label>
-          <textarea name="descripcion-concepto" id="" cols="30" rows="2" required></textarea>
-        </fieldset>
-        <fieldset>
-          <label for="">importe</label>
-          <input type="number" min="0" required name="input-importe">
-        </fieldset>
+        <textarea name="descripcion-concepto" cols="30" rows="2" required
+                  placeholder="Descripción del concepto"></textarea>
+        <input name="input-importe" type="number" min="0" required
+               placeholder="Importe">
         <button class="eliminar-concepto">Eliminar</button>
       </div>
     </div>
