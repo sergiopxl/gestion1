@@ -145,6 +145,8 @@ function nuevaFactura() {
     const vistaCliente = divNuevaFactura.querySelector(".cliente-vista")
     divNuevaFactura.querySelector("#buscar-cliente-btn").addEventListener("click", buscarCliente)
 
+    const selectContactos = divNuevaFactura.querySelector("select[name = 'contacto-select']")
+
     contenedorMain.append(divNuevaFactura)
 
     const plantillaNuevoConcepto = document.querySelector("#concepto-template")
@@ -202,13 +204,13 @@ function nuevaFactura() {
                 datos.iva = iva
 
             // Cliente
-            const idCliente = 0
+            const idCliente = clienteSeleccionado?.id ?? 0
 
             if (idCliente != 0)
                 datos.idCliente = idCliente
 
             // Contacto del Cliente
-            const idContacto = 0
+            const idContacto = selectContactos.value
 
             if (idContacto != 0)
                 datos.idContacto = idContacto
@@ -387,7 +389,21 @@ function nuevaFactura() {
             vistaCliente.innerHTML = `<strong>${cliente.nombre}</strong>`
 
             clienteSeleccionado = cliente
-            console.log(cliente)
+
+            // Limpiamos y poblamos el selector de Contactos
+            selectContactos.disabled = false
+            const _ = [...document.querySelector("select").options]
+                .filter(option => option.value != 0)
+                .forEach(option => option.remove())
+
+            for (let contacto of cliente.contactos) {
+
+                const optionContacto = document.createElement("option")
+                optionContacto.setAttribute("value", contacto.id)
+                optionContacto.textContent = `${contacto.nombre} ${contacto.apellido1} ${contacto.apellido2}`
+
+                selectContactos.append(optionContacto)
+            }
         }
         catch (error) {
             modals.ErrorBox.mostrar("Ha habido un problema obteniendo información del Cliente")
