@@ -68,3 +68,22 @@ export async function cargarClientePorId(id) {
     const jsonClientes = await respuesta.json()
     return jsonClientes.clientes[0]
 }
+
+/**
+ * Llama a la API para crear una nueva Factura.
+ *
+ * @param {object} datosNuevaFactura - Objeto con los datos de la nueva Factura.
+ * @returns Objeto con los datos de la nueva Factura.
+ */
+export async function guardarNuevaFactura(datosNuevaFactura) {
+
+    const jsonDatosFactura = JSON.stringify(datosNuevaFactura)
+
+    const respuesta = await fetch(api.UrlFacturasPut, { method: "PUT", body: jsonDatosFactura })
+
+    if (!respuesta.ok)
+        throw new Error(`Error intentando crear la factura (${respuesta.status})`)
+
+    const json = await respuesta.json()
+    return json
+}

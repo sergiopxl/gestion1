@@ -145,6 +145,8 @@ function nuevaFactura() {
     const vistaCliente = divNuevaFactura.querySelector(".cliente-vista")
     divNuevaFactura.querySelector("#buscar-cliente-btn").addEventListener("click", buscarCliente)
 
+    let baseImponible = 0
+
     const selectContactos = divNuevaFactura.querySelector("select[name = 'contacto-select']")
 
     contenedorMain.append(divNuevaFactura)
@@ -173,20 +175,24 @@ function nuevaFactura() {
     //
     // Llama a la API para guardar la nueva Factura.
     //
-    function guardarNuevaFactura() {
+    async function guardarNuevaFactura() {
 
-        const datos = componerObjetoFactura()
+        // Recalculamos la base imponible y, con el IVA, el importe total
+        calcularImporteTotal()
+
+        const datosFactura = componerObjetoFactura()
 
         // Validamos
-        if (validarFactura(datos)) {
+        if (validarFactura(datosFactura)) {
 
-            console.log(datos)
-
-            const json = JSON.stringify(datos)
-            console.log(json)
-
-            // TODO: Enviar datos al API
-            // TODO: Informar del resultado
+            try {
+                const respuesta = await datos.guardarNuevaFactura(datosFactura)
+                console.log(respuesta)
+                modals.InfoBox.mostrar("Factura creada correctamente.")
+            }
+            catch (error) {
+                modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+            }
         }
 
         //
@@ -202,6 +208,10 @@ function nuevaFactura() {
 
             if (campoIVA.value !== "" && !isNaN(iva))
                 datos.iva = iva
+
+            // Base imponible
+            if (baseImponible != 0)
+                datos.baseImponible = baseImponible
 
             // Cliente
             const idCliente = clienteSeleccionado?.id ?? 0
@@ -455,14 +465,16 @@ function nuevaFactura() {
 
         // Calculamos la base imponible y el importe total (+IVA)
         vistaImporteFactura.classList.remove("hidden")
+        baseImponible = importeTotal
         vistaBaseImponible.innerHTML = `Base imponible: <strong>${formatoMoneda(importeTotal)}</strong>`
-        importeTotal = importeTotal * (1 + (iva / 100))
+        importeTotal = baseImponible * (1 + (iva / 100))
         vistaImporteTotal.innerHTML = `Importe total: <strong>${formatoMoneda(importeTotal)}</strong>`
 
         //
         // Oculta la vista del importe total de la Factura.
         //
         function ocultarImporteTotal() {
+            baseImponible = 0
             vistaBaseImponible.textContent = ""
             vistaImporteTotal.textContent = ""
             vistaImporteFactura.classList.add("hidden")

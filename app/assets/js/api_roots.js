@@ -18,7 +18,9 @@ export const UrlProveedoresContactoPut = "http://localhost/gestion1/api/proveedo
 export const UrlProveedoresContactoUpdate = "http://localhost/gestion1/api/proveedores_contactos_update.php"
 export const UrlProveedoresContactoDelete = "http://localhost/gestion1/api/proveedores_contactos_delete.php"
 
-export const UrlAvisosGet = "http://localhost/gestion1/api/avisos_get.php"
 export const UrlFacturasGet = "http://localhost/gestion1/api/facturas_get.php"
+export const UrlFacturasPut = "http://localhost/gestion1/api/facturas_put.php"
+
+export const UrlAvisosGet = "http://localhost/gestion1/api/avisos_get.php"
 export const UrlGastosGet = "http://localhost/gestion1/api/gastos_get.php"
 export const UrlComunicacionesGet = "http://localhost/gestion1/api/comunicaciones_get.php"
