@@ -104,7 +104,6 @@
 
     .factura-concepto {
       display: flex;
-      align-items: flex-start;
       justify-content: space-between;
 
       padding: 0.4rem;
@@ -113,6 +112,8 @@
       &:nth-of-type(even) {
         background-color: $color-gris-suave;
       }
+
+      input, textarea, button { height: 2rem; }
 
       textarea { width: 90%; }
     }
