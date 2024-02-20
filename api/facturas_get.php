@@ -85,27 +85,41 @@ if (isset($_GET["estadisticas"])) {
 // Listado de facturas
 else {
 
+    // Factura por Id
+    $condicion = "";
+    $buscarPorId = false;
+
+    if (isset($_GET["id"])) {
+        $buscarPorId = true;
+        $idFactura = $_GET["id"];
+        $condicion = " WHERE facturas_tb.id = $idFactura ";
+    }
+
     // Paginación
     $inicio = $_GET["inicio"] ?? 0;
     $porPagina = $_GET["porpagina"] ?? 20;
 
-    $limite = " LIMIT $inicio, $porPagina";
+    $limite = $buscarPorId ? "" : " LIMIT $inicio, $porPagina";
 
     // Consulta cuántos clientes hay en total
-    $sqlNumFacturas = "SELECT COUNT(*) AS numero_facturas FROM facturas_tb";
-    $respuestaNumFacturas = mysqli_query($conn, $sqlNumFacturas);
+    if ($buscarPorId) {
+        $respuesta["numero_facturas"] = 1;
+    } else {
+        $sqlNumFacturas = "SELECT COUNT(*) AS numero_facturas FROM facturas_tb";
+        $respuestaNumFacturas = mysqli_query($conn, $sqlNumFacturas);
 
-    if ($respuestaNumFacturas) {
-        $fila = mysqli_fetch_assoc($respuestaNumFacturas);
-        $respuesta["numero_facturas"] = $fila["numero_facturas"];
+        if ($respuestaNumFacturas) {
+            $fila = mysqli_fetch_assoc($respuestaNumFacturas);
+            $respuesta["numero_facturas"] = $fila["numero_facturas"];
+        }
     }
 
     // Obtiene la lista de facturas
     $sqlFacturas = "SELECT facturas_tb.*, clientes_tb.nombre as cliente, facturas_estados_tb.nombre as estado
                       FROM `facturas_tb`
                       LEFT JOIN clientes_tb ON clientes_tb.id = facturas_tb.id_cliente
-                      LEFT JOIN facturas_estados_tb ON facturas_estados_tb.id = facturas_tb.id_estado " .
-                    $limite;
+                      LEFT JOIN facturas_estados_tb ON facturas_estados_tb.id = facturas_tb.id_estado
+                    $condicion $limite";
 
     $facturas = [];
     $respuestaFacturas = mysqli_query($conn, $sqlFacturas);
