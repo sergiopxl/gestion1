@@ -735,6 +735,14 @@ async function editarFactura(idFactura) {
                 divNuevoConcepto.classList.add("hidden")
                 divNuevoConcepto.dataset.accion = "borrar"
 
+                // Ponemos en su lugar el hueco
+                crearHuecoDeConceptoBorrado(divNuevoConcepto, () => {
+
+                    // Revertimos el borrado del Concepto y lo mostramos
+                    divNuevoConcepto.classList.remove("hidden")
+                    divNuevoConcepto.dataset.accion = "actualizar"
+                })
+
                 calcularImporteTotal()
             })
 
@@ -770,6 +778,33 @@ async function editarFactura(idFactura) {
             primerConcepto.before(divNuevoConcepto)
         else
             contenedorConceptos.append(divNuevoConcepto)
+    }
+
+    //
+    // Crea un "hueco" para un Concepto borrado de forma que se pueda revertir la acción de borrado.
+    //
+    function crearHuecoDeConceptoBorrado(divConcepto, accion) {
+
+        const hueco = document.createElement("div")
+        hueco.classList.add("hueco-concepto")
+
+        const texto = document.createElement("span")
+        texto.textContent = "El concepto ha sido borrado."
+
+        const deshacer = document.createElement("a")
+        deshacer.href = "#"
+        deshacer.textContent = "Deshacer"
+        deshacer.addEventListener("click", e => {
+            e.preventDefault()
+
+            // Ejecuta la acción de deshacer y elimina el hueco
+            accion()
+            hueco.remove()
+        })
+
+        hueco.append(texto, deshacer)
+
+        divConcepto.before(hueco)
     }
 
     //
