@@ -110,8 +110,23 @@
       padding: 0.4rem;
       gap: 0.4rem;
 
-      &:nth-of-type(even) {
-        background-color: $color-gris-suave;
+      &:nth-of-type(even) { background-color: $color-gris-suave; }
+
+      &[data-accion = "crear"] {
+        border-left: 3px solid #0A0;
+        background-color: #DFD;
+
+        &:nth-of-type(even) {
+          background-color: #CEC;
+        }
+      }
+      &[data-accion = "actualizar"] {
+        border-left: 3px solid #AA0;
+        background-color: #FFD;
+
+        &:nth-of-type(even) {
+          background-color: #EEC;
+        }
       }
 
       input, textarea, button { height: 2rem; }
