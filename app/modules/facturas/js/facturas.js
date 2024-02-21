@@ -635,6 +635,9 @@ async function editarFactura(idFactura) {
 
                 const datosConcepto = {}
 
+                // Acción
+                datosConcepto.accion = divConcepto.dataset?.accion ?? "actualizar"
+
                 // Id
                 datosConcepto.id = divConcepto.dataset?.idConcepto ?? 0
 
@@ -709,17 +712,29 @@ async function editarFactura(idFactura) {
 
             const textareaDescripcion = divNuevoConcepto.querySelector("[name = 'descripcion-concepto']")
             textareaDescripcion.value = concepto.descripcion
+            textareaDescripcion.addEventListener("input", () => {
+                // Señalizamos que el concepto debe ser actualizado
+                divNuevoConcepto.dataset.accion = "actualizar"
+            })
 
             const inputImporte = divNuevoConcepto.querySelector("[name = 'input-importe']")
             inputImporte.value = concepto.importe
             inputImporte.addEventListener("input", e => {
+
+                // Señalizamos que el concepto debe ser actualizado
+                divNuevoConcepto.dataset.accion = "actualizar"
+
                 const importe = parseFloat(e.target.value)
                 if (!isNaN(importe))
                     calcularImporteTotal()
             })
 
             divNuevoConcepto.querySelector(".eliminar-concepto").addEventListener("click", () => {
-                divNuevoConcepto.parentNode.removeChild(divNuevoConcepto)
+
+                // Señalizamos que el concepto debe ser borrado y lo ocultamos
+                divNuevoConcepto.classList.add("hidden")
+                divNuevoConcepto.dataset.accion = "borrar"
+
                 calcularImporteTotal()
             })
 
@@ -735,6 +750,9 @@ async function editarFactura(idFactura) {
         const divNuevoConcepto = plantillaNuevoConcepto.cloneNode(true)
         divNuevoConcepto.classList.remove("hidden")
         divNuevoConcepto.setAttribute("id", "")
+
+        // Señalizamos que el concepto es nuevo y se debe crear
+        divNuevoConcepto.dataset.accion = "crear"
 
         divNuevoConcepto.querySelector("[name = 'input-importe']").addEventListener("input", e => {
             const importe = parseFloat(e.target.value)
