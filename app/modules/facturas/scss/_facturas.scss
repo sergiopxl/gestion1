@@ -21,6 +21,7 @@
 
   .factura-resumen-datos {
     display: flex;
+    flex-direction: column;
     flex: 1 0 50%;
     flex-wrap: wrap;
     gap: 0.5rem;
