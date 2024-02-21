@@ -30,9 +30,10 @@ $sqlFacturasUpdate = "UPDATE facturas_tb SET
 $respuestaFacturasUpdate = mysqli_query($conn, $sqlFacturasUpdate);
 
 $datosRespuesta = [];
-$datosRespuesta["mensaje"] = $respuestaFacturasUpdate
-  ? "Registro creado correctamente"
-  : "Tienes un problema";
+$datosRespuesta["mensaje"] = [];
+$datosRespuesta["mensaje"][] = $respuestaFacturasUpdate
+  ? "Factura: Registro creado correctamente"
+  : "Factura: Tienes un problema";
 
 $datosRespuesta["id"] = $idFactura;
 
@@ -40,25 +41,40 @@ $datosRespuesta["id"] = $idFactura;
 foreach ($conceptos as $concepto) {
 
   $idConcepto = $concepto["id"];
+  $accion = $concepto["accion"];
   $descripcion = $concepto["descripcion"];
   $importe = $concepto["importe"];
 
-  $sqlConceptoUpdate = $idConcepto == 0
+  $sqlConceptoUpdate = "";
 
-    // Nuevo concepto
-    ? "INSERT INTO facturas_items_tb
-        (descripcion, cantidad, importe, tipo, id_factura)
-      VALUES
-        ('$descripcion', 0, $importe, 2, $idFactura)"
+  switch ($accion) {
+    case "crear":
+      $sqlConceptoUpdate = "INSERT INTO facturas_items_tb
+                              (descripcion, cantidad, importe, tipo, id_factura)
+                            VALUES
+                              ('$descripcion', 0, $importe, 2, $idFactura)";
+      break;
 
-    // Actualizar concepto existente
-    : "UPDATE facturas_items_tb SET
-         descripcion = '$descripcion',
-         importe = $importe,
-         id_factura = $idFactura
-       WHERE id = $idConcepto";
+    case "actualizar":
+      $sqlConceptoUpdate = "UPDATE facturas_items_tb SET
+                              descripcion = '$descripcion',
+                              importe = $importe,
+                              id_factura = $idFactura
+                            WHERE id = $idConcepto";
+      break;
 
-  $respuestaConceptoUpdate = mysqli_query($conn, $sqlConceptoUpdate);
+    case "borrar":
+      $sqlConceptoUpdate = "DELETE FROM facturas_items_tb
+                            WHERE id = $idConcepto";
+      break;
+  }
+
+  if ($sqlConceptoUpdate)
+    $respuestaConceptoUpdate = mysqli_query($conn, $sqlConceptoUpdate);
+
+  $datosRespuesta["mensaje"][] = $respuestaFacturasUpdate
+    ? "Concepto: Registro creado correctamente"
+    : "Concepto: Tienes un problema";
 }
 
 echo json_encode($datosRespuesta);
