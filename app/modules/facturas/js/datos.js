@@ -1,6 +1,26 @@
 import * as api from "../../../assets/js/api_roots.js"
 
 /**
+ * Llama a la API para obtener la Factura con el Id especificado.
+ *
+ * @param {number} id - Identificador de la Factura a buscar.
+ * @returns Objeto con los datos de la Factura.
+ */
+export async function cargarFacturaPorId(id) {
+
+    // Hace la llamada GET al API para buscar
+    const url = `${api.UrlFacturasGet}?id=${id}`
+
+    const respuesta = await fetch(url, { method: "GET" })
+
+    if (!respuesta.ok)
+        throw new Error(`Error en la solicitud: ${respuesta.status}`)
+
+    const jsonFacturas = await respuesta.json()
+    return jsonFacturas.facturas[0]
+}
+
+/**
  * Llama a la API para obtener el listado de Facturas.
  *
  * @param {number} pagina - El número de página a mostrar, empezando en la página 1.
@@ -83,6 +103,25 @@ export async function guardarNuevaFactura(datosNuevaFactura) {
 
     if (!respuesta.ok)
         throw new Error(`Error intentando crear la factura (${respuesta.status})`)
+
+    const json = await respuesta.json()
+    return json
+}
+
+/**
+ * Llama a la API para actualizar los datos de una Factura y sus Conceptos.
+ *
+ * @param {object} datosFactura - Objeto con los datos de la Factura a actualizar.
+ * @returns Objeto con los datos de la Factura.
+ */
+export async function actualizarFactura(datosFactura) {
+
+    const jsonDatosFactura = JSON.stringify(datosFactura)
+
+    const respuesta = await fetch(api.UrlFacturasUpdate, { method: "UPDATE", body: jsonDatosFactura })
+
+    if (!respuesta.ok)
+        throw new Error(`Error intentando actualizar la factura (${respuesta.status})`)
 
     const json = await respuesta.json()
     return json

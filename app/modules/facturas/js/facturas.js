@@ -72,6 +72,7 @@ function printFacturas(numFacturas, facturas) {
         const importe = baseImponible * (1 + iva)
 
         // Poblamos los datos de la factura y el cliente
+        facturaRow.dataset.idFactura = factura.id
         facturaRow.querySelector(".factura-numero").innerHTML = `Nº <strong>${factura.id}</strong>`
         facturaRow.querySelector(".factura-cliente").innerHTML = `Cliente: <strong>${factura.cliente}</strong>`
         facturaRow.querySelector(".factura-estado").innerHTML = `Estado: <strong>${factura.estado}</strong>`
@@ -86,6 +87,10 @@ function printFacturas(numFacturas, facturas) {
             const fechaEnvio = new Date(factura.fecha_envio)
             facturaRow.querySelector(".factura-fecha-envio").innerHTML = `Envío: <strong>${fechaCorta(fechaEnvio)}</strong>`
         }
+
+        // Controlamos los botones de acción sobre la factura
+        const botonEditar = facturaRow.querySelector(".factura-editar-button")
+        botonEditar.addEventListener("click", doEditarFactura)
 
         const contenedorItems = facturaRow.querySelector(".factura-items")
         contenedorItems.innerHTML = ""
@@ -108,6 +113,17 @@ function printFacturas(numFacturas, facturas) {
         }
 
         contenedorMain.append(facturaRow)
+    }
+
+    //
+    // Función de respuesta a la pulsación del botón de "Editar" la factura.
+    //
+    function doEditarFactura(evento) {
+
+        const rowFactura = evento.target.closest(".factura-row")
+        const facturaId = rowFactura?.dataset?.idFactura ?? 0
+
+        editarFactura(facturaId)
     }
 }
 
@@ -165,12 +181,12 @@ function nuevaFactura() {
     botonNuevoConcepto.classList.add("btn-success")
     botonNuevoConcepto.addEventListener("click", () => crearConcepto())
 
-    const botonGuardarCliente = document.createElement("button")
-    botonGuardarCliente.textContent = "Guardar cambios"
-    botonGuardarCliente.classList.add("btn-success")
-    botonGuardarCliente.addEventListener("click", () => guardarNuevaFactura())
+    const botonGuardarFactura = document.createElement("button")
+    botonGuardarFactura.textContent = "Guardar cambios"
+    botonGuardarFactura.classList.add("btn-success")
+    botonGuardarFactura.addEventListener("click", () => guardarNuevaFactura())
 
-    barraAcciones.append(botonNuevoConcepto, botonGuardarCliente)
+    barraAcciones.append(botonNuevoConcepto, botonGuardarFactura)
 
     //
     // Llama a la API para guardar la nueva Factura.
@@ -314,6 +330,428 @@ function nuevaFactura() {
         })
 
         contenedorConceptos.append(divNuevoConcepto)
+    }
+
+    //
+    // Muestra un diálogo modal para que el usuario elija un Cliente al que asignar la Factura.
+    //
+    function buscarCliente() {
+
+        // Clonamos la interfaz del buscador
+        const interfazBuscador = plantillaBuscadorClientes.cloneNode(true)
+        interfazBuscador.setAttribute("id", "")
+        interfazBuscador.classList.remove("hidden")
+
+        const contenedorResultados = interfazBuscador.querySelector(".buscador-clientes-resultados")
+        const plantillaResultado = contenedorResultados.querySelector(".buscador-clientes-resultado")
+
+        const campoBusqueda = interfazBuscador.querySelector(".buscador-clientes-busqueda")
+        campoBusqueda.addEventListener("input", busquedaCambiada)
+
+        // Controlamos cuándo se selecciona un Cliente
+        contenedorResultados.addEventListener("click", clienteSeleccionado)
+
+        // Creamos un modal con dicha interfaz
+        const modalBuscador = new modals.Modal(interfazBuscador, () => {}, null, {
+            class: "buscador-clientes-modal",
+            mostrarBotonAceptar: false
+        })
+        modalBuscador.mostrar()
+
+        //
+        // Función llamada cada vez que cambia el campo de búsqueda para actualizar los resultados.
+        //
+        async function busquedaCambiada(evento) {
+
+            if (evento.target.value.length > 2) {
+
+                const busqueda = evento.target.value
+
+                const clientes = await datos.buscarClientes(campoBusqueda.value)
+
+                contenedorResultados.innerHTML = ""
+
+                for (let cliente of clientes.clientes) {
+                    const resultadoCliente = plantillaResultado.cloneNode(true)
+                    resultadoCliente.classList.remove("hidden")
+
+                    const htmlNombre = `<strong>${resaltar(cliente.nombre, busqueda)}</strong>`
+                    resultadoCliente.querySelector(".buscador-clientes-nombre").innerHTML = htmlNombre
+                    const htmlCIF = `CIF: ${resaltar(cliente.cif, busqueda)}`
+                    resultadoCliente.querySelector(".buscador-clientes-cif").innerHTML = htmlCIF
+
+                    resultadoCliente.dataset.clienteId = cliente.id
+
+                    contenedorResultados.append(resultadoCliente)
+                }
+            }
+        }
+
+        //
+        // Función llamada cuando se hace clic en un Cliente para seleccionarlo.
+        //
+        function clienteSeleccionado(evento) {
+
+            const cliente = evento.target.closest(".buscador-clientes-resultado")
+            const clienteId = cliente?.dataset?.clienteId
+
+            if (clienteId) {
+                modalBuscador.cerrar()
+                seleccionarCliente(parseInt(clienteId))
+            }
+        }
+    }
+
+    //
+    // Selecciona el Cliente con el Id indicado y lo muestra en la interfaz.
+    //
+    async function seleccionarCliente(id) {
+
+        try {
+            const cliente = await datos.cargarClientePorId(id)
+
+            // Establecemos el Cliente seleccionado
+            inputIdCliente.value = id
+            vistaCliente.innerHTML = `<strong>${cliente.nombre}</strong>`
+
+            clienteSeleccionado = cliente
+
+            // Limpiamos y poblamos el selector de Contactos
+            selectContactos.disabled = false
+            const _ = [...document.querySelector("select").options]
+                .filter(option => option.value != 0)
+                .forEach(option => option.remove())
+
+            for (let contacto of cliente.contactos) {
+
+                const optionContacto = document.createElement("option")
+                optionContacto.setAttribute("value", contacto.id)
+                optionContacto.textContent = `${contacto.nombre} ${contacto.apellido1} ${contacto.apellido2}`
+
+                selectContactos.append(optionContacto)
+            }
+        }
+        catch (error) {
+            modals.ErrorBox.mostrar("Ha habido un problema obteniendo información del Cliente")
+        }
+    }
+
+    //
+    // Calcula el importe total de la Factura teniendo en cuenta los Conceptos de ésta, su cantidad
+    // y aplicando el IVA.
+    //
+    function calcularImporteTotal() {
+
+        const vistaImporteFactura = document.querySelector(".factura-importe")
+        const vistaBaseImponible = vistaImporteFactura.querySelector(".base-imponible-vista")
+        const vistaImporteTotal = vistaImporteFactura.querySelector(".importe-total")
+
+        // IVA
+        const campoIVA = document.querySelector("#input-iva")
+        const iva = parseFloat(campoIVA.value)
+
+        if (campoIVA.value === "" || isNaN(iva)) {
+            ocultarImporteTotal()
+            return
+        }
+
+        let importeTotal = 0
+
+        // Conceptos
+        const conceptos = contenedorConceptos.querySelectorAll(".factura-concepto")
+
+        if (conceptos.length === 0) {
+            ocultarImporteTotal()
+            return
+        }
+
+        for (let divConcepto of conceptos) {
+
+            // Importe
+            const campoImporte = divConcepto.querySelector("[name = 'input-importe']")
+            const importe = parseFloat(campoImporte.value)
+
+            if (campoImporte.value === "" || isNaN(importe)) {
+                ocultarImporteTotal()
+                return
+            }
+
+            importeTotal += importe
+        }
+
+        // Calculamos la base imponible y el importe total (+IVA)
+        vistaImporteFactura.classList.remove("hidden")
+        baseImponible = importeTotal
+        vistaBaseImponible.innerHTML = `Base imponible: <strong>${formatoMoneda(importeTotal)}</strong>`
+        importeTotal = baseImponible * (1 + (iva / 100))
+        vistaImporteTotal.innerHTML = `Importe total: <strong>${formatoMoneda(importeTotal)}</strong>`
+
+        //
+        // Oculta la vista del importe total de la Factura.
+        //
+        function ocultarImporteTotal() {
+            baseImponible = 0
+            vistaBaseImponible.textContent = ""
+            vistaImporteTotal.textContent = ""
+            vistaImporteFactura.classList.add("hidden")
+        }
+    }
+}
+
+//
+// Muestra la interfaz para edirar una Factura.
+//
+async function editarFactura(idFactura) {
+
+    contenedorMain.innerHTML = ""
+
+    document.querySelector("#h1-apartado").textContent = "Editar factura"
+
+    // Obtenemos los datos de la factura
+    const datosFactura = await datos.cargarFacturaPorId(idFactura)
+
+    // Clona y muestra la interfaz con los campos de la Factura
+    const plantillaEditarFactura = document.querySelector("#factura-new-template")
+
+    const divEditarFactura = plantillaEditarFactura.cloneNode(true)
+    divEditarFactura.setAttribute("id", "")
+    divEditarFactura.classList.remove("hidden")
+
+    // Poblamos los campos
+    const campoFechaFactura = divEditarFactura.querySelector("#input-fecha-emision")
+    campoFechaFactura.value = datosFactura["fecha_emision"]
+
+    // Controlamos el IVA para calcular el importe total
+    const campoIVA = divEditarFactura.querySelector("#input-iva")
+    campoIVA.value = parseInt(datosFactura.iva)
+    campoIVA.addEventListener("input", e => {
+        const iva = parseFloat(e.target.value)
+        if (!isNaN(iva))
+            calcularImporteTotal()
+    })
+
+    contenedorMain.append(divEditarFactura)
+
+    // Controlamos el botón de búsqueda de Cliente
+    let clienteSeleccionado = null
+    const inputIdCliente = divEditarFactura.querySelector("input[name = 'input-id-cliente']")
+    const vistaCliente = divEditarFactura.querySelector(".cliente-vista")
+    divEditarFactura.querySelector("#buscar-cliente-btn").addEventListener("click", buscarCliente)
+
+    const selectContactos = divEditarFactura.querySelector("select[name = 'contacto-select']")
+
+    await seleccionarCliente(datosFactura["id_cliente"])
+
+    // Cambia la barra de acciones
+    const barraAcciones = document.querySelector("#acciones")
+    barraAcciones.innerHTML = ""
+
+    // Añade los conceptos de la factura
+    const plantillaNuevoConcepto = document.querySelector("#concepto-template")
+    const contenedorConceptos = divEditarFactura.querySelector(".listado-conceptos")
+    contenedorConceptos.innerHTML = ""
+    agregarConceptos(datosFactura.items)
+
+    // Calculamos el importe total para la factura
+    let baseImponible = 0
+    calcularImporteTotal()
+
+    const botonNuevoConcepto = document.createElement("button")
+    botonNuevoConcepto.textContent = "Nuevo concepto"
+    botonNuevoConcepto.classList.add("btn-success")
+    botonNuevoConcepto.addEventListener("click", () => crearConcepto())
+
+    const botonGuardarFactura = document.createElement("button")
+    botonGuardarFactura.textContent = "Guardar cambios"
+    botonGuardarFactura.classList.add("btn-success")
+    botonGuardarFactura.addEventListener("click", () => guardarFactura())
+
+    barraAcciones.append(botonNuevoConcepto, botonGuardarFactura)
+
+    //
+    // Llama a la API para guardar los cambios en la Factura.
+    //
+    async function guardarFactura() {
+
+        // Recalculamos la base imponible y, con el IVA, el importe total
+        calcularImporteTotal()
+
+        const datosFactura = componerObjetoFactura()
+
+        // Validamos
+        if (validarFactura(datosFactura)) {
+
+            try {
+                const respuesta = await datos.actualizarFactura(datosFactura)
+                console.log(respuesta)
+                modals.InfoBox.mostrar("Factura actualizada correctamente.")
+            }
+            catch (error) {
+                modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+            }
+        }
+
+        //
+        // Convierte los datos de la Factura y sus Conceptos en un objeto que se puede validar o enviar.
+        //
+        function componerObjetoFactura() {
+
+            const datos = {}
+
+            // Id
+            datos.idFactura = idFactura
+
+            // IVA
+            const campoIVA = document.querySelector("#input-iva")
+            const iva = parseFloat(campoIVA.value)
+
+            if (campoIVA.value !== "" && !isNaN(iva))
+                datos.iva = iva
+
+            // Base imponible
+            if (baseImponible != 0)
+                datos.baseImponible = baseImponible
+
+            // Cliente
+            const idCliente = clienteSeleccionado?.id ?? 0
+
+            if (idCliente != 0)
+                datos.idCliente = idCliente
+
+            // Contacto del Cliente
+            const idContacto = selectContactos.value
+
+            if (idContacto != 0)
+                datos.idContacto = idContacto
+
+            // Fecha de emisión
+            if (campoFechaFactura.valueAsDate != null)
+                datos.fechaEmision = campoFechaFactura.value
+
+            // Conceptos
+            datos.conceptos = []
+            const conceptos = contenedorConceptos.querySelectorAll(".factura-concepto")
+            for (let divConcepto of conceptos) {
+
+                const datosConcepto = {}
+
+                // Id
+                datosConcepto.id = divConcepto.dataset?.idConcepto ?? 0
+
+                // Descripción
+                const descripcion = divConcepto.querySelector("[name = 'descripcion-concepto']")
+                datosConcepto.descripcion = descripcion.value
+
+                // Importe
+                const campoImporte = divConcepto.querySelector("[name = 'input-importe']")
+                const importe = parseFloat(campoImporte.value)
+
+                if (campoImporte.value !== "" && !isNaN(importe))
+                    datosConcepto.importe = importe
+
+                datos.conceptos.push(datosConcepto)
+            }
+
+            return datos
+        }
+
+        //
+        // Valida que los datos de la nueva Factura sean correctos.
+        //
+        function validarFactura(datosFactura) {
+
+            let errores = ""
+
+            if (datosFactura.iva === undefined)
+                errores = "No se ha indicado un porcentaje de IVA correcto.<br>"
+
+            if (datosFactura.idCliente === undefined)
+                errores += "No se ha elegido ningún Cliente.<br>"
+            if (datosFactura.idContacto === undefined)
+                errores += "No se ha elegido ningún Contacto.<br>"
+
+            if (datosFactura.fechaEmision === undefined)
+                errores += "No se ha indicado la fecha de emisión.<br>"
+
+            if (datosFactura.conceptos.length === 0)
+                errores += `La factura no tiene ningún concepto.<br>`
+            else
+                datosFactura.conceptos.forEach((datosConcepto, i) => {
+
+                    if (datosConcepto.importe === undefined)
+                        errores += `No se ha indicado importe para el concepto ${i + 1}.<br>`
+
+                    if (datosConcepto.descripcion === undefined)
+                        errores += `No se ha indicado descripción para el concepto ${i + 1}.<br>`
+                })
+
+            // Si tenemos algún error, la factura NO es válida
+            if (errores != "") {
+                modals.ErrorBox.mostrar("<p><strong>No se puede guardar la Factura porque contiene datos no válidos</strong></p>" + errores)
+                return false
+            }
+
+            return true
+        }
+    }
+
+    //
+    // Agrega a la interfaz de edición los Conceptos de la Factura actual.
+    //
+    function agregarConceptos(conceptos) {
+
+        for (let concepto of conceptos) {
+            const divNuevoConcepto = plantillaNuevoConcepto.cloneNode(true)
+            divNuevoConcepto.classList.remove("hidden")
+            divNuevoConcepto.setAttribute("id", "")
+
+            divNuevoConcepto.dataset.idConcepto = concepto.id
+
+            const textareaDescripcion = divNuevoConcepto.querySelector("[name = 'descripcion-concepto']")
+            textareaDescripcion.value = concepto.descripcion
+
+            const inputImporte = divNuevoConcepto.querySelector("[name = 'input-importe']")
+            inputImporte.value = concepto.importe
+            inputImporte.addEventListener("input", e => {
+                const importe = parseFloat(e.target.value)
+                if (!isNaN(importe))
+                    calcularImporteTotal()
+            })
+
+            divNuevoConcepto.querySelector(".eliminar-concepto").addEventListener("click", () => {
+                divNuevoConcepto.parentNode.removeChild(divNuevoConcepto)
+                calcularImporteTotal()
+            })
+
+            contenedorConceptos.append(divNuevoConcepto)
+        }
+    }
+
+    //
+    // Crea un nuevo Concepto para la Factura actual.
+    //
+    function crearConcepto() {
+
+        const divNuevoConcepto = plantillaNuevoConcepto.cloneNode(true)
+        divNuevoConcepto.classList.remove("hidden")
+        divNuevoConcepto.setAttribute("id", "")
+
+        divNuevoConcepto.querySelector("[name = 'input-importe']").addEventListener("input", e => {
+            const importe = parseFloat(e.target.value)
+            if (!isNaN(importe))
+                calcularImporteTotal()
+        })
+
+        divNuevoConcepto.querySelector(".eliminar-concepto").addEventListener("click", () => {
+            divNuevoConcepto.parentNode.removeChild(divNuevoConcepto)
+            calcularImporteTotal()
+        })
+
+        const primerConcepto = contenedorConceptos.querySelector(".factura-concepto")
+        if (primerConcepto)
+            primerConcepto.before(divNuevoConcepto)
+        else
+            contenedorConceptos.append(divNuevoConcepto)
     }
 
     //
