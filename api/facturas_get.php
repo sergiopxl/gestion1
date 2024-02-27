@@ -14,6 +14,13 @@ $error = false;
 // Cálculo de estadísticas de facturación
 if (isset($_GET["estadisticas"])) {
 
+    // Determinamos las fechas de inicio y fin
+    $fechaInicio = $_GET["inicio"] ?? null;
+    $fechaFin = $_GET["fin"] ?? null;
+
+    $condicionFechas = isset($fechaInicio) ? "AND facturas_tb.fecha_emision >= '$fechaInicio' " : "";
+    $condicionFechas .= isset($fechaFin) ? "AND facturas_tb.fecha_emision <= '$fechaFin' " : "";
+
     if ($_GET["estadisticas"] == "cliente") {
 
         // Estadísticas de facturas por cliente
@@ -21,7 +28,9 @@ if (isset($_GET["estadisticas"])) {
         $sqlMejoresClientes = "SELECT facturas_tb.id_cliente, clientes_tb.nombre, SUM(facturas_tb.baseimponible) AS total_facturado
                                  FROM facturas_tb
                                  JOIN clientes_tb ON facturas_tb.id_cliente = clientes_tb.id
-                               WHERE facturas_tb.id_estado = 3
+
+                               WHERE facturas_tb.id_estado = 3 $condicionFechas
+
                                GROUP BY facturas_tb.id_cliente
                                ORDER BY total_facturado DESC";
 
@@ -50,7 +59,11 @@ if (isset($_GET["estadisticas"])) {
         $sqlTotalFacturado = "SELECT SUM(baseimponible * (1 + iva / 100)) AS total_facturas,
                                      MIN(CAST(fecha_emision AS DATE)) AS fecha_inicio,
                                      MAX(CAST(fecha_emision AS DATE)) AS fecha_fin
-                              FROM facturas_tb";
+
+                              FROM facturas_tb
+                              WHERE 1 $condicionFechas";
+
+        // var_dump($sqlTotalFacturado);
 
         $respuestaTotalFacturado = mysqli_query($conn, $sqlTotalFacturado);
 
@@ -65,6 +78,7 @@ if (isset($_GET["estadisticas"])) {
                                        fecha_emision AS fecha,
                                        COUNT(*) as num_facturas
                                 FROM facturas_tb
+                                WHERE 1 $condicionFechas
                                 GROUP BY fecha";
 
         $respuestaFacturasPorFecha = mysqli_query($conn, $sqlFacturasPorFecha);

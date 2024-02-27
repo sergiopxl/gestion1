@@ -14,6 +14,13 @@ $error = false;
 // Cálculo de estadísticas de gastos
 if (isset($_GET["estadisticas"])) {
 
+    // Determinamos las fechas de inicio y fin
+    $fechaInicio = $_GET["inicio"] ?? null;
+    $fechaFin = $_GET["fin"] ?? null;
+
+    $condicionFechas = isset($fechaInicio) ? "AND gastos_tb.fecha_emision >= '$fechaInicio' " : "";
+    $condicionFechas .= isset($fechaFin) ? "AND gastos_tb.fecha_emision <= '$fechaFin' " : "";
+
     if ($_GET["estadisticas"] == "proveedor") {
 
         // Estadísticas de facturas por proveedor
@@ -21,6 +28,9 @@ if (isset($_GET["estadisticas"])) {
         $sqlMejoresProveedores = "SELECT gastos_tb.id_empresa, proveedores_tb.nombre, SUM(gastos_tb.baseimponible) AS total_gastado
                                     FROM gastos_tb
                                     JOIN proveedores_tb ON gastos_tb.id_empresa = proveedores_tb.id
+
+                                  WHERE 1 $condicionFechas
+
                                   GROUP BY gastos_tb.id_empresa
                                   ORDER BY total_gastado DESC";
 
@@ -47,9 +57,11 @@ if (isset($_GET["estadisticas"])) {
 
         // Consulta el total gastado y las fechas de inicio y fin
         $sqlTotalGastado = "SELECT SUM(baseimponible * (1 + iva / 100)) AS total_gastos,
-                                MIN(CAST(fecha_emision AS DATE)) AS fecha_inicio,
-                                MAX(CAST(fecha_emision AS DATE)) AS fecha_fin
-                            FROM gastos_tb";
+                                   MIN(CAST(fecha_emision AS DATE)) AS fecha_inicio,
+                                   MAX(CAST(fecha_emision AS DATE)) AS fecha_fin
+
+                            FROM gastos_tb
+                            WHERE 1 $condicionFechas";
 
         $respuestaTotalGastado = mysqli_query($conn, $sqlTotalGastado);
 
@@ -64,6 +76,7 @@ if (isset($_GET["estadisticas"])) {
                                     fecha_emision AS fecha,
                                     COUNT(*) as num_gastos
                             FROM gastos_tb
+                            WHERE 1 $condicionFechas
                             GROUP BY fecha";
 
         $respuestaGastosPorFecha = mysqli_query($conn, $sqlGastosPorFecha);
