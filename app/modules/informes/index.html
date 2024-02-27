@@ -48,17 +48,27 @@
       </p>
     </section>
 
+    <div class="alerta-sin-datos hidden">
+      No se han encontrado datos para las fechas seleccionadas.
+    </div>
+
     <section id="informes-graficos">
-      <h2>Facturado / Gastado / Beneficio</h2>
-      <div id="grafico-beneficios" class="grafico hidden"></div>
-      <h2>Facturado / Gastado por mes</h2>
-      <div id="grafico-beneficios-mes" class="grafico hidden"></div>
-
-      <h2>Clientes que más facturan</h2>
-      <div id="grafico-clientes" class="grafico hidden"></div>
-
-      <h2>Proveedores en los que más se gasta</h2>
-      <div id="grafico-proveedores" class="grafico hidden"></div>
+      <div id="grafico-beneficios" class="hidden">
+        <h2>Facturado / Gastado / Beneficio</h2>
+        <div class="grafico"></div>
+      </div>
+      <div id="grafico-beneficios-mes" class="hidden">
+        <h2>Facturado / Gastado por mes</h2>
+        <div class="grafico"></div>
+      </div>
+      <div id="grafico-clientes" class="hidden">
+        <h2>Clientes que más facturan</h2>
+        <div class="grafico"></div>
+      </div>
+      <div id="grafico-proveedores" class="hidden">
+        <h2>Proveedores en los que más se gasta</h2>
+        <div class="grafico"></div>
+      </div>
     </section>
   </main>
 
@@ -67,7 +77,7 @@
     <form>
       <label for="fecha-inicio">Desde:</label>
       <input type="date" name="fecha-inicio" id="fecha-inicio">
-      
+
       <label for="fecha-fin">Hasta:</label>
       <input type="date" name="fecha-fin" id="fecha-fin">
     </form>

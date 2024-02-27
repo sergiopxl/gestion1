@@ -57,3 +57,14 @@
     border-color: $color-violeta !important;
     background: linear-gradient(0deg, lighten($color-violeta, 50%) 0%, #FFF 35%) !important;
 }
+
+.alerta-sin-datos {
+    background-color: #FDD;
+    border: 1px solid #FBB;
+    border-radius: 0.8rem;
+
+    text-align: center;
+
+    font-size: 1.3rem;
+    padding: 1rem;
+}

@@ -90,6 +90,28 @@ async function getEstadisticas() {
 
         printGraficoFacturacionPorCliente(datosFacturacionPorCliente)
         printGraficoGastosPorProveedor(datosGastosPorProveedor)
+
+        // Si no se han podido mostrar datos, alertamos al usuario
+        alertarSiNoHayDatos()
+
+        //
+        // Alerta al usuario si no se han podido presentar datos para las opciones seleccionadas.
+        //
+        function alertarSiNoHayDatos() {
+
+            const alerta = document.querySelector(".alerta-sin-datos")
+
+            if (datosFacturacion.facturasPorFecha.length == 0 &&
+                datosGastos.gastosPorFecha.length == 0 &&
+                datosFacturacionPorCliente.length == 0 &&
+                datosGastosPorProveedor.length == 0) {
+
+                alerta.classList.remove("hidden")
+            }
+            else {
+                alerta.classList.add("hidden")
+            }
+        }
     }
 
     // === Resumen de Facturas / Gastos y Fechas ================================================
@@ -133,17 +155,18 @@ async function getEstadisticas() {
         const fechaInicioFacturas = facturacion["fechaInicio"]
         const fechaInicioGastos = gastos["fechaInicio"]
 
-        if (!fechaInicio)
+        if (!fechaInicio) {
             fechaInicio = fechaInicioFacturas < fechaInicioGastos ? fechaInicioFacturas : fechaInicioGastos
+            fechaInicioSeleccionada = fechaInicio
+        }
 
         const fechaFinFacturas = facturacion["fechaFin"]
         const fechaFinGastos = gastos["fechaFin"]
 
-        if (!fechaFin)
+        if (!fechaFin) {
             fechaFin = fechaFinFacturas > fechaFinGastos ? fechaFinFacturas : fechaFinGastos
-
-        fechaInicioSeleccionada = fechaInicio
-        fechaFinSeleccionada = fechaFin
+            fechaFinSeleccionada = fechaFin
+        }
     }
 
     //
@@ -203,6 +226,7 @@ async function getEstadisticas() {
     //
     function printResumen(facturacion, gastos) {
         const contenedorResumen = document.querySelector("#informes-resumen")
+        const contenedorResumenBeneficio = contenedorResumen.querySelector(".informes-resumen-beneficio")
 
         // Total de facturas, gastos y diferencia (beneficio)
         const pTotalFacturas = contenedorResumen.querySelector("#total-facturas")
@@ -210,19 +234,24 @@ async function getEstadisticas() {
         const pTotalBeneficio = contenedorResumen.querySelector("#total-beneficio")
 
         const facturado = facturacion["totalFacturas"]
-        pTotalFacturas.textContent = formatoMoneda(facturado)
+        pTotalFacturas.textContent = !isNaN(facturado) ? formatoMoneda(facturado) : formatoMoneda(0)
         const gastado = gastos["totalGastos"]
-        pTotalGastos.textContent = formatoMoneda(gastado)
+        pTotalGastos.textContent = !isNaN(gastado) ? formatoMoneda(gastado) : formatoMoneda(0)
+
+        if (isNaN(facturado) && isNaN(gastado))
+            contenedorResumenBeneficio.classList.add("hidden")
+        else
+            contenedorResumenBeneficio.classList.remove("hidden")
 
         const beneficio = facturado - gastado
-        pTotalBeneficio.textContent = formatoMoneda(beneficio)
+        pTotalBeneficio.textContent = !isNaN(beneficio) ? formatoMoneda(beneficio) : formatoMoneda(0)
 
         // Fechas de inicio y fin
         const spanFechaInicio = contenedorResumen.querySelector("#informe-fecha-inicio")
-        spanFechaInicio.textContent = fechaLarga(fechaInicio)
+        spanFechaInicio.textContent = fechaLarga(fechaInicioSeleccionada)
 
         const spanFechaFin = contenedorResumen.querySelector("#informe-fecha-fin")
-        spanFechaFin.textContent = fechaLarga(fechaFin)
+        spanFechaFin.textContent = fechaLarga(fechaFinSeleccionada)
 
         contenedorResumen.classList.remove("hidden")
     }
@@ -233,10 +262,15 @@ async function getEstadisticas() {
     // Imprime el gráfico de evolución de facturas y gastos.
     //
     function printGraficoBeneficios(facturacion, gastos) {
+
+        if (facturacion.facturasPorFecha.length == 0 && gastos.gastosPorFecha.length == 0)
+            return
+
         const contenedorGrafico = document.querySelector("#grafico-beneficios")
+        const divGrafico = contenedorGrafico.querySelector(".grafico")
 
         // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
-        let root = am5.Root.new(contenedorGrafico)
+        let root = am5.Root.new(divGrafico)
         rootGraficoBeneficios = root
 
         const tema = am5.Theme.new(root)
@@ -457,11 +491,12 @@ async function getEstadisticas() {
     //
     function destruirGraficoBeneficios() {
         const contenedorGrafico = document.querySelector("#grafico-beneficios")
+        const divGrafico = contenedorGrafico.querySelector(".grafico")
 
         rootGraficoBeneficios?.dispose()
         rootGraficoBeneficios = null
 
-        contenedorGrafico.innerHTML = ""
+        divGrafico.innerHTML = ""
         contenedorGrafico.classList.add("hidden")
     }
 
@@ -471,10 +506,15 @@ async function getEstadisticas() {
     // Imprime el gráfico de categorización de facturas y gastos por meses.
     //
     function printGraficoBeneficiosPorMes(facturacion, gastos) {
+
+        if (facturacion.facturasPorFecha.length == 0 && gastos.gastosPorFecha.length == 0)
+            return
+
         const contenedorGrafico = document.querySelector("#grafico-beneficios-mes")
+        const divGrafico = contenedorGrafico.querySelector(".grafico")
 
         // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
-        let root = am5.Root.new(contenedorGrafico)
+        let root = am5.Root.new(divGrafico)
         rootGraficoBeneficiosMes = root
 
         // Establece el tema a usar (https://www.amcharts.com/docs/v5/concepts/themes/)
@@ -645,11 +685,12 @@ async function getEstadisticas() {
     //
     function destruirGraficoBeneficiosPorMes() {
         const contenedorGrafico = document.querySelector("#grafico-beneficios-mes")
+        const divGrafico = contenedorGrafico.querySelector(".grafico")
 
         rootGraficoBeneficiosMes?.dispose()
         rootGraficoBeneficiosMes = null
 
-        contenedorGrafico.innerHTML = ""
+        divGrafico.innerHTML = ""
         contenedorGrafico.classList.add("hidden")
     }
 
@@ -674,10 +715,15 @@ async function getEstadisticas() {
     // Imprime el gráfico de clientes que más facturan.
     //
     function printGraficoFacturacionPorCliente(clientes) {
+
+        if (clientes.length == 0)
+            return
+
         const contenedorGrafico = document.querySelector("#grafico-clientes")
+        const divGrafico = contenedorGrafico.querySelector(".grafico")
 
         // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
-        let root = am5.Root.new(contenedorGrafico)
+        let root = am5.Root.new(divGrafico)
         rootGraficoFacturasPorCliente = root
 
         // Establece el tema a usar (https://www.amcharts.com/docs/v5/concepts/themes/)
@@ -806,11 +852,12 @@ async function getEstadisticas() {
     //
     function destruirGraficoFacturacionPorCliente() {
         const contenedorGrafico = document.querySelector("#grafico-clientes")
+        const divGrafico = contenedorGrafico.querySelector(".grafico")
 
         rootGraficoFacturasPorCliente?.dispose()
         rootGraficoFacturasPorCliente = null
 
-        contenedorGrafico.innerHTML = ""
+        divGrafico.innerHTML = ""
         contenedorGrafico.classList.add("hidden")
     }
 
@@ -835,10 +882,15 @@ async function getEstadisticas() {
     // Imprime el gráfico de proveedores en los que más se gasta.
     //
     function printGraficoGastosPorProveedor(proveedores) {
+
+        if (proveedores.length == 0)
+            return
+
         const contenedorGrafico = document.querySelector("#grafico-proveedores")
+        const divGrafico = contenedorGrafico.querySelector(".grafico")
 
         // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
-        let root = am5.Root.new(contenedorGrafico)
+        let root = am5.Root.new(divGrafico)
         rootGraficoGastosPorProveedor = root
 
         // Establece el tema a usar (https://www.amcharts.com/docs/v5/concepts/themes/)
@@ -968,11 +1020,12 @@ async function getEstadisticas() {
     //
     function destruirGraficoGastosPorProveedor() {
         const contenedorGrafico = document.querySelector("#grafico-proveedores")
+        const divGrafico = contenedorGrafico.querySelector(".grafico")
 
         rootGraficoGastosPorProveedor?.dispose()
         rootGraficoGastosPorProveedor = null
 
-        contenedorGrafico.innerHTML = ""
+        divGrafico.innerHTML = ""
         contenedorGrafico.classList.add("hidden")
     }
 }
