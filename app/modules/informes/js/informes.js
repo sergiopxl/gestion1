@@ -1,7 +1,7 @@
 import { navegacion } from "../../../assets/js/navegacion.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
 import { fechaLarga, nombresDeMeses } from "../../../assets/js/formato_fecha.js"
-import { Modal, ModalOptions } from "../../../assets/js/modal.js"
+import { Modal } from "../../../assets/js/modal.js"
 import * as datos from "./datos.js"
 
 console.log("informes.js v1.1")
@@ -25,29 +25,56 @@ const plantillaSelectorFechas = document.querySelector("#selector-fechas")
 //
 async function getEstadisticas() {
 
-    let datosEstadisticos
+    await cargarDatosEstadisticos()
 
-    try {
-        datosEstadisticos = await Promise.all([
-            cargarDatosFacturacion(),
-            cargarDatosGastos(),
-            cargarDatosFacturacionPorCliente(),
-            cargarDatosGastosPorProveedor(),
-        ])
+    //
+    // Muestra un resumen de gastos y facturaciones y gráficos con estadísticas de interés.
+    //
+    async function cargarDatosEstadisticos() {
+        let datosEstadisticos
+
+        try {
+            datosEstadisticos = await Promise.all([
+                cargarDatosFacturacion(),
+                cargarDatosGastos(),
+                cargarDatosFacturacionPorCliente(),
+                cargarDatosGastosPorProveedor(),
+            ])
+        }
+        catch (error) {
+            console.error("Error cargando las estadísticas: " + error)
+        }
+
+        const [datosFacturacion, datosGastos, datosFacturacionPorCliente, datosGastosPorProveedor] = datosEstadisticos
+
+        mostrarResumenConGraficos(datosFacturacion, datosGastos, datosFacturacionPorCliente, datosGastosPorProveedor)
     }
-    catch (error) {
-        console.error("Error cargando las estadísticas: " + error)
+
+    //
+    // Destruye los gráficos previo a que sean recreados.
+    //
+    function destruirGraficos() {
+
+        destruirGraficoBeneficios()
+        destruirGraficoBeneficiosPorMes()
+        destruirGraficoFacturacionPorCliente()
+        destruirGraficoGastosPorProveedor()
     }
 
-    const [datosFacturacion, datosGastos, datosFacturacionPorCliente, datosGastosPorProveedor] = datosEstadisticos
+    //
+    // Muestra un resumen de gastos y facturaciones y gráficos con estadísticas de interés.
+    //
+    function mostrarResumenConGraficos(datosFacturacion, datosGastos,
+                                       datosFacturacionPorCliente, datosGastosPorProveedor) {
 
-    getRangoDeFechas(datosFacturacion, datosGastos)
-    printResumen(datosFacturacion, datosGastos)
-    printGraficoBeneficios(datosFacturacion, datosGastos)
-    printGraficoBeneficiosPorMes(datosFacturacion, datosGastos)
+        getRangoDeFechas(datosFacturacion, datosGastos)
 
-    printGraficoFacturacionPorCliente(datosFacturacionPorCliente)
-    printGraficoGastosPorProveedor(datosGastosPorProveedor)
+        printResumen(datosFacturacion, datosGastos)
+        printGraficoBeneficios(datosFacturacion, datosGastos)
+        printGraficoBeneficiosPorMes(datosFacturacion, datosGastos)
+
+        printGraficoFacturacionPorCliente(datosFacturacionPorCliente)
+        printGraficoGastosPorProveedor(datosGastosPorProveedor)
     }
 
     // === Resumen de Facturas / Gastos y Fechas ================================================
@@ -127,13 +154,15 @@ async function getEstadisticas() {
 
         // Creamos un modal con dicha interfaz
         const opcionesModal = {
-            class: "selector-fechas-modal", 
-            mostrarBotonAceptar: true, 
+            class: "selector-fechas-modal",
+            mostrarBotonAceptar: true,
             mostrarBotonCancelar: true
         }
         const modalSelectorFechas = new Modal(interfazSelectorFecha, () => {
-            console.log("Fecha seleccionada")
-        }, null, opcionesModal)
+            destruirGraficos()
+            cargarDatosEstadisticos()
+        },
+        null, opcionesModal)
         modalSelectorFechas.mostrar()
     }
 
