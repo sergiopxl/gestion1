@@ -8,9 +8,9 @@ console.log("informes.js v1.1")
 
 navegacion("informes")
 
-let fechaInicio = new Date(0)
+let fechaInicio
 let fechaInicioSeleccionada = fechaInicio
-let fechaFin = new Date(0)
+let fechaFin
 let fechaFinSeleccionada = fechaFin
 
 let rootGraficoBeneficios
@@ -25,6 +25,21 @@ const plantillaSelectorFechas = document.querySelector("#selector-fechas")
 //
 async function getEstadisticas() {
 
+    // Configuramos los botones de la interfaz de fechas
+    const botonSelectorFechas = document.querySelector("#boton-cambiar-fechas")
+    botonSelectorFechas.addEventListener("click", e => {
+        e.preventDefault()
+        mostrarDialogoDeElegirFechas()
+    })
+    botonSelectorFechas.classList.remove("hidden")
+
+    const botonRestaurarFechas = document.querySelector("#boton-restaurar-fechas")
+    botonRestaurarFechas.addEventListener("click", e => {
+        e.preventDefault()
+        restaurarFechas()
+    })
+
+    // Cargamos todos los informes de todas las fechas
     await cargarDatosEstadisticos()
 
     //
@@ -118,22 +133,17 @@ async function getEstadisticas() {
         const fechaInicioFacturas = facturacion["fechaInicio"]
         const fechaInicioGastos = gastos["fechaInicio"]
 
-        fechaInicio = fechaInicioFacturas < fechaInicioGastos ? fechaInicioFacturas : fechaInicioGastos
+        if (!fechaInicio)
+            fechaInicio = fechaInicioFacturas < fechaInicioGastos ? fechaInicioFacturas : fechaInicioGastos
 
         const fechaFinFacturas = facturacion["fechaFin"]
         const fechaFinGastos = gastos["fechaFin"]
 
-        fechaFin = fechaFinFacturas > fechaFinGastos ? fechaFinFacturas : fechaFinGastos
+        if (!fechaFin)
+            fechaFin = fechaFinFacturas > fechaFinGastos ? fechaFinFacturas : fechaFinGastos
 
         fechaInicioSeleccionada = fechaInicio
         fechaFinSeleccionada = fechaFin
-
-        const botonSelectorFechas = document.querySelector("#boton-cambiar-fechas")
-        botonSelectorFechas.addEventListener("click", e => {
-            e.preventDefault()
-            mostrarDialogoDeElegirFechas()
-        })
-        botonSelectorFechas.classList.remove("hidden")
     }
 
     //
@@ -164,11 +174,27 @@ async function getEstadisticas() {
             fechaInicioSeleccionada = campoFechaInicio.valueAsDate
             fechaFinSeleccionada = campoFechaFin.valueAsDate
 
+            document.querySelector("#boton-restaurar-fechas").classList.remove("hidden")
+
             destruirGraficos()
             cargarDatosEstadisticos(fechaInicioSeleccionada, fechaFinSeleccionada)
         },
         null, opcionesModal)
         modalSelectorFechas.mostrar()
+    }
+
+    //
+    // Restaura la vista para mostrar informe de todas las fechas.
+    //
+    function restaurarFechas() {
+
+        fechaInicioSeleccionada = fechaInicio
+        fechaFinSeleccionada = fechaFin
+
+        document.querySelector("#boton-restaurar-fechas").classList.add("hidden")
+
+        destruirGraficos()
+        cargarDatosEstadisticos(fechaInicio, fechaFin)
     }
 
     //
