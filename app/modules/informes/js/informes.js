@@ -1,7 +1,7 @@
 import { navegacion } from "../../../assets/js/navegacion.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
 import { fechaLarga, nombresDeMeses } from "../../../assets/js/formato_fecha.js"
-import { Modal } from "../../../assets/js/modal.js"
+import { ErrorBox, Modal } from "../../../assets/js/modal.js"
 import * as datos from "./datos.js"
 
 console.log("informes.js v1.1")
@@ -196,6 +196,12 @@ async function getEstadisticas() {
             // Cuando el usuario acepta, establecemos la selección de fechas y recargamos los informes
             fechaInicioSeleccionada = campoFechaInicio.valueAsDate
             fechaFinSeleccionada = campoFechaFin.valueAsDate
+
+            // Validamos que las fechas sean válidas
+            if (fechaInicioSeleccionada > fechaFinSeleccionada) {
+                ErrorBox.mostrar("La fecha de inicio no puede ser posterior a la fecha de fin.")
+                return
+            }
 
             document.querySelector("#boton-restaurar-fechas").classList.remove("hidden")
 
