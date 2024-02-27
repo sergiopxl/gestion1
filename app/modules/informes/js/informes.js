@@ -13,6 +13,11 @@ let fechaInicioSeleccionada = fechaInicio
 let fechaFin = new Date(0)
 let fechaFinSeleccionada = fechaFin
 
+let rootGraficoBeneficios
+let rootGraficoBeneficiosMes
+let rootGraficoFacturasPorCliente
+let rootGraficoGastosPorProveedor
+
 const plantillaSelectorFechas = document.querySelector("#selector-fechas")
 
 //
@@ -43,8 +48,9 @@ async function getEstadisticas() {
 
     printGraficoFacturacionPorCliente(datosFacturacionPorCliente)
     printGraficoGastosPorProveedor(datosGastosPorProveedor)
+    }
 
-    // === Estadísticas de Facturas / Gastos / Beneficios =======================================
+    // === Resumen de Facturas / Gastos y Fechas ================================================
 
     //
     // Carga los datos estadísticos de facturación de forma asíncrona.
@@ -161,6 +167,8 @@ async function getEstadisticas() {
         contenedorResumen.classList.remove("hidden")
     }
 
+    // === Estadísticas de Facturas / Gastos / Beneficios =======================================
+
     //
     // Imprime el gráfico de evolución de facturas y gastos.
     //
@@ -169,6 +177,7 @@ async function getEstadisticas() {
 
         // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
         let root = am5.Root.new(contenedorGrafico)
+        rootGraficoBeneficios = root
 
         const tema = am5.Theme.new(root)
         tema.rule("AxisLabel", ["minor"]).setAll({ dy: 1 })             // Mueve la etiqueta menor un poco hacia abajo
@@ -383,6 +392,19 @@ async function getEstadisticas() {
         }
     }
 
+    //
+    // Destruye el gráfico de evolución de facturas y gastos.
+    //
+    function destruirGraficoBeneficios() {
+        const contenedorGrafico = document.querySelector("#grafico-beneficios")
+
+        rootGraficoBeneficios?.dispose()
+        rootGraficoBeneficios = null
+
+        contenedorGrafico.innerHTML = ""
+        contenedorGrafico.classList.add("hidden")
+    }
+
     // === Estadísticas de beneficio por meses ====================================================
 
     //
@@ -393,6 +415,7 @@ async function getEstadisticas() {
 
         // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
         let root = am5.Root.new(contenedorGrafico)
+        rootGraficoBeneficiosMes = root
 
         // Establece el tema a usar (https://www.amcharts.com/docs/v5/concepts/themes/)
         root.setThemes([am5themes_Animated.new(root)])
@@ -557,6 +580,19 @@ async function getEstadisticas() {
         }
     }
 
+    //
+    // Destruye el gráfico de evolución de facturas y gastos por meses.
+    //
+    function destruirGraficoBeneficiosPorMes() {
+        const contenedorGrafico = document.querySelector("#grafico-beneficios-mes")
+
+        rootGraficoBeneficiosMes?.dispose()
+        rootGraficoBeneficiosMes = null
+
+        contenedorGrafico.innerHTML = ""
+        contenedorGrafico.classList.add("hidden")
+    }
+
     // === Estadísticas de Clientes que más facturan ==============================================
 
     //
@@ -582,6 +618,7 @@ async function getEstadisticas() {
 
         // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
         let root = am5.Root.new(contenedorGrafico)
+        rootGraficoFacturasPorCliente = root
 
         // Establece el tema a usar (https://www.amcharts.com/docs/v5/concepts/themes/)
         root.setThemes([ am5themes_Animated.new(root) ])
@@ -704,6 +741,19 @@ async function getEstadisticas() {
         }
     }
 
+    //
+    // Destruye el gráfico de clientes que más facturan.
+    //
+    function destruirGraficoFacturacionPorCliente() {
+        const contenedorGrafico = document.querySelector("#grafico-clientes")
+
+        rootGraficoFacturasPorCliente?.dispose()
+        rootGraficoFacturasPorCliente = null
+
+        contenedorGrafico.innerHTML = ""
+        contenedorGrafico.classList.add("hidden")
+    }
+
     // === Estadísticas de Proveedores que más facturan ===========================================
 
     //
@@ -729,6 +779,7 @@ async function getEstadisticas() {
 
         // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
         let root = am5.Root.new(contenedorGrafico)
+        rootGraficoGastosPorProveedor = root
 
         // Establece el tema a usar (https://www.amcharts.com/docs/v5/concepts/themes/)
         root.setThemes([am5themes_Animated.new(root)])
@@ -850,6 +901,19 @@ async function getEstadisticas() {
 
             return serie
         }
+    }
+
+    //
+    // Destruye el gráfico de proveedores en los que más se gasta.
+    //
+    function destruirGraficoGastosPorProveedor() {
+        const contenedorGrafico = document.querySelector("#grafico-proveedores")
+
+        rootGraficoGastosPorProveedor?.dispose()
+        rootGraficoGastosPorProveedor = null
+
+        contenedorGrafico.innerHTML = ""
+        contenedorGrafico.classList.add("hidden")
     }
 }
 
