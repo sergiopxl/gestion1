@@ -3,11 +3,16 @@ import * as api from "../../../assets/js/api_roots.js"
 /**
  * Llama a la API para cargar los datos de facturación por fecha.
  *
+ * @param {Date?} fechaInicio - Fecha inicial de la horquilla de datos a pedir.
+ * @param {Date?} fechaFin - Fecha final de la horquilla de datos a pedir.
+ *
  * @returns Objeto con los datos de facturación por fecha.
  */
-export async function cargarFacturacionPorFecha() {
+export async function cargarFacturacionPorFecha(fechaInicio, fechaFin) {
 
-    const respuesta = await fetch(`${api.UrlFacturasGet}?estadisticas`, { method: "GET" })
+    const url = urlConRangoDeFechas(`${api.UrlFacturasGet}?estadisticas`, fechaInicio, fechaFin)
+
+    const respuesta = await fetch(url, { method: "GET" })
 
     if (!respuesta.ok)
         throw new Error(`Error en la solicitud: ${respuesta.status}`)
@@ -25,11 +30,16 @@ export async function cargarFacturacionPorFecha() {
 /**
  * Llama a la API para cargar los datos de gastos por fecha.
  *
+ * @param {Date?} fechaInicio - Fecha inicial de la horquilla de datos a pedir.
+ * @param {Date?} fechaFin - Fecha final de la horquilla de datos a pedir.
+ *
  * @returns Objeto con los datos de gastos por fecha.
  */
-export async function cargarGastosPorFecha() {
+export async function cargarGastosPorFecha(fechaInicio, fechaFin) {
 
-    const respuesta = await fetch(`${api.UrlGastosGet}?estadisticas`, { method: "GET" })
+    const url = urlConRangoDeFechas(`${api.UrlGastosGet}?estadisticas`, fechaInicio, fechaFin)
+
+    const respuesta = await fetch(url, { method: "GET" })
 
     if (!respuesta.ok)
         throw new Error(`Error en la solicitud: ${respuesta.status}`)
@@ -50,9 +60,11 @@ export async function cargarGastosPorFecha() {
  *
  * @returns Objeto con los datos de facturas por cliente.
  */
-export async function cargarDatosFacturacionPorCliente() {
+export async function cargarDatosFacturacionPorCliente(fechaInicio, fechaFin) {
 
-    const respuesta = await fetch(`${api.UrlFacturasGet}?estadisticas=cliente`, { method: "GET" })
+    const url = urlConRangoDeFechas(`${api.UrlFacturasGet}?estadisticas=cliente`, fechaInicio, fechaFin)
+
+    const respuesta = await fetch(url, { method: "GET" })
 
     if (!respuesta.ok)
         throw new Error(`Error en la solicitud: ${respuesta.status}`)
@@ -67,13 +79,28 @@ export async function cargarDatosFacturacionPorCliente() {
  *
  * @returns Objeto con los datos de facturas por cliente.
  */
-export async function cargarDatosGastosPorProveedor() {
+export async function cargarDatosGastosPorProveedor(fechaInicio, fechaFin) {
 
-    const respuesta = await fetch(`${api.UrlGastosGet}?estadisticas=proveedor`, { method: "GET" })
+    const url = urlConRangoDeFechas(`${api.UrlGastosGet}?estadisticas=proveedor`, fechaInicio, fechaFin)
+
+    const respuesta = await fetch(url, { method: "GET" })
 
     if (!respuesta.ok)
         throw new Error(`Error en la solicitud: ${respuesta.status}`)
 
     const jsonGastosPorProveedor = await respuesta.json()
     return jsonGastosPorProveedor
+}
+
+//
+// Compone la URL con los parámetros de URL necesarios para pedir un rango de fechas.
+//
+function urlConRangoDeFechas(url, fechaInicio, fechaFin) {
+
+    const inicio = fechaInicio ? `inicio=${fechaInicio.toISOString().slice(0, 10)}` : ""
+    const fin = fechaFin ? `&fin=${fechaFin.toISOString().slice(0, 10)}` : ""
+
+    return url.includes("?")
+        ? `${url}&${inicio}${fin}`
+        : `${url}?${inicio}${fin}`
 }

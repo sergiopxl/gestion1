@@ -30,15 +30,15 @@ async function getEstadisticas() {
     //
     // Muestra un resumen de gastos y facturaciones y gráficos con estadísticas de interés.
     //
-    async function cargarDatosEstadisticos() {
+    async function cargarDatosEstadisticos(fechaInicio, fechaFin) {
         let datosEstadisticos
 
         try {
             datosEstadisticos = await Promise.all([
-                cargarDatosFacturacion(),
-                cargarDatosGastos(),
-                cargarDatosFacturacionPorCliente(),
-                cargarDatosGastosPorProveedor(),
+                cargarDatosFacturacion(fechaInicio, fechaFin),
+                cargarDatosGastos(fechaInicio, fechaFin),
+                cargarDatosFacturacionPorCliente(fechaInicio, fechaFin),
+                cargarDatosGastosPorProveedor(fechaInicio, fechaFin),
             ])
         }
         catch (error) {
@@ -82,10 +82,10 @@ async function getEstadisticas() {
     //
     // Carga los datos estadísticos de facturación de forma asíncrona.
     //
-    async function cargarDatosFacturacion() {
+    async function cargarDatosFacturacion(fechaInicio, fechaFin) {
 
         try {
-            const datosFacturacion = await datos.cargarFacturacionPorFecha()
+            const datosFacturacion = await datos.cargarFacturacionPorFecha(fechaInicio, fechaFin)
             return datosFacturacion
         }
         catch (error) {
@@ -97,10 +97,10 @@ async function getEstadisticas() {
     //
     // Carga los datos estadísticos de gastos de forma asíncrona.
     //
-    async function cargarDatosGastos() {
+    async function cargarDatosGastos(fechaInicio, fechaFin) {
 
         try {
-            const datosGastos = await datos.cargarGastosPorFecha()
+            const datosGastos = await datos.cargarGastosPorFecha(fechaInicio, fechaFin)
             return datosGastos
         }
         catch (error) {
@@ -159,8 +159,13 @@ async function getEstadisticas() {
             mostrarBotonCancelar: true
         }
         const modalSelectorFechas = new Modal(interfazSelectorFecha, () => {
+
+            // Cuando el usuario acepta, establecemos la selección de fechas y recargamos los informes
+            fechaInicioSeleccionada = campoFechaInicio.valueAsDate
+            fechaFinSeleccionada = campoFechaFin.valueAsDate
+
             destruirGraficos()
-            cargarDatosEstadisticos()
+            cargarDatosEstadisticos(fechaInicioSeleccionada, fechaFinSeleccionada)
         },
         null, opcionesModal)
         modalSelectorFechas.mostrar()
@@ -627,10 +632,10 @@ async function getEstadisticas() {
     //
     // Carga los datos estadísticos de facturas agrupadas por cliente de forma asíncrona.
     //
-    async function cargarDatosFacturacionPorCliente() {
+    async function cargarDatosFacturacionPorCliente(fechaInicio, fechaFin) {
 
         try {
-            const datosFacturasPorCliente = await datos.cargarDatosFacturacionPorCliente()
+            const datosFacturasPorCliente = await datos.cargarDatosFacturacionPorCliente(fechaInicio, fechaFin)
             return datosFacturasPorCliente
         }
         catch (error) {
@@ -788,10 +793,10 @@ async function getEstadisticas() {
     //
     // Carga los datos estadísticos de gastos agrupados por proveedor de forma asíncrona.
     //
-    async function cargarDatosGastosPorProveedor() {
+    async function cargarDatosGastosPorProveedor(fechaInicio, fechaFin) {
 
         try {
-            const datosGastosPorProveedor = await datos.cargarDatosGastosPorProveedor()
+            const datosGastosPorProveedor = await datos.cargarDatosGastosPorProveedor(fechaInicio, fechaFin)
             return datosGastosPorProveedor
         }
         catch (error) {
