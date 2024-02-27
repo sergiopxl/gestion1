@@ -41,7 +41,10 @@
           <p id="total-beneficio"></p>
         </div>
       </div>
-      <p class="informes-resumen-fechas">Desde <span id="informe-fecha-inicio">01/01/2000</span> hasta <span id="informe-fecha-fin">31/12/2023</span></p>
+      <p class="informes-resumen-fechas">
+        Desde <span id="informe-fecha-inicio">01/01/2000</span> hasta <span id="informe-fecha-fin">31/12/2023</span>
+        <a href="#" id="boton-cambiar-fechas" class="hidden">Cambiar</a>
+      </p>
     </section>
 
     <section id="informes-graficos">
@@ -57,6 +60,17 @@
       <div id="grafico-proveedores" class="grafico hidden"></div>
     </section>
   </main>
+
+  <!-- Plantilla para el diálogo de selección de fechas -->
+  <div id="selector-fechas" class="selector-fechas hidden">
+    <form>
+      <label for="fecha-inicio">Desde:</label>
+      <input type="date" name="fecha-inicio" id="fecha-inicio">
+      
+      <label for="fecha-fin">Hasta:</label>
+      <input type="date" name="fecha-fin" id="fecha-fin">
+    </form>
+  </div>
 </body>
 
 </html>

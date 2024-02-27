@@ -1,6 +1,7 @@
 import { navegacion } from "../../../assets/js/navegacion.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
 import { fechaLarga, nombresDeMeses } from "../../../assets/js/formato_fecha.js"
+import { Modal, ModalOptions } from "../../../assets/js/modal.js"
 import * as datos from "./datos.js"
 
 console.log("informes.js v1.1")
@@ -8,7 +9,11 @@ console.log("informes.js v1.1")
 navegacion("informes")
 
 let fechaInicio = new Date(0)
+let fechaInicioSeleccionada = fechaInicio
 let fechaFin = new Date(0)
+let fechaFinSeleccionada = fechaFin
+
+const plantillaSelectorFechas = document.querySelector("#selector-fechas")
 
 //
 // Carga las estadísticas de Facturas y Gastos para poder realizar informes y gráficos.
@@ -86,6 +91,44 @@ async function getEstadisticas() {
         const fechaFinGastos = gastos["fechaFin"]
 
         fechaFin = fechaFinFacturas > fechaFinGastos ? fechaFinFacturas : fechaFinGastos
+
+        fechaInicioSeleccionada = fechaInicio
+        fechaFinSeleccionada = fechaFin
+
+        const botonSelectorFechas = document.querySelector("#boton-cambiar-fechas")
+        botonSelectorFechas.addEventListener("click", e => {
+            e.preventDefault()
+            mostrarDialogoDeElegirFechas()
+        })
+        botonSelectorFechas.classList.remove("hidden")
+    }
+
+    //
+    // Muestra un diálogo modal para que el usuario elija las fechas de inicio y fin
+    // de las estadísticas.
+    //
+    function mostrarDialogoDeElegirFechas() {
+
+        // Clonamos la interfaz del buscador
+        const interfazSelectorFecha = plantillaSelectorFechas.cloneNode(true)
+        interfazSelectorFecha.setAttribute("id", "")
+        interfazSelectorFecha.classList.remove("hidden")
+
+        const campoFechaInicio = interfazSelectorFecha.querySelector("#fecha-inicio")
+        campoFechaInicio.valueAsDate = fechaInicioSeleccionada
+        const campoFechaFin = interfazSelectorFecha.querySelector("#fecha-fin")
+        campoFechaFin.valueAsDate = fechaFinSeleccionada
+
+        // Creamos un modal con dicha interfaz
+        const opcionesModal = {
+            class: "selector-fechas-modal", 
+            mostrarBotonAceptar: true, 
+            mostrarBotonCancelar: true
+        }
+        const modalSelectorFechas = new Modal(interfazSelectorFecha, () => {
+            console.log("Fecha seleccionada")
+        }, null, opcionesModal)
+        modalSelectorFechas.mostrar()
     }
 
     //
