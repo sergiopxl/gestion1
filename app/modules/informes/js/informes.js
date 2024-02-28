@@ -12,6 +12,7 @@ let fechaInicio
 let fechaInicioSeleccionada = fechaInicio
 let fechaFin
 let fechaFinSeleccionada = fechaFin
+let hayFechasSeleccionadas = false
 
 let rootGraficoBeneficios
 let rootGraficoBeneficiosMes
@@ -186,30 +187,35 @@ async function getEstadisticas() {
         campoFechaFin.valueAsDate = fechaFinSeleccionada
 
         // Creamos un modal con dicha interfaz
-        const opcionesModal = {
+        const modalSelectorFechas = new Modal(interfazSelectorFecha, () => establecerFechas(campoFechaInicio, campoFechaFin), null, {
             class: "selector-fechas-modal",
             mostrarBotonAceptar: true,
             mostrarBotonCancelar: true
-        }
-        const modalSelectorFechas = new Modal(interfazSelectorFecha, () => {
-
-            // Cuando el usuario acepta, establecemos la selección de fechas y recargamos los informes
-            fechaInicioSeleccionada = campoFechaInicio.valueAsDate
-            fechaFinSeleccionada = campoFechaFin.valueAsDate
-
-            // Validamos que las fechas sean válidas
-            if (fechaInicioSeleccionada > fechaFinSeleccionada) {
-                ErrorBox.mostrar("La fecha de inicio no puede ser posterior a la fecha de fin.")
-                return
-            }
-
-            document.querySelector("#boton-restaurar-fechas").classList.remove("hidden")
-
-            destruirGraficos()
-            cargarDatosEstadisticos(fechaInicioSeleccionada, fechaFinSeleccionada)
-        },
-        null, opcionesModal)
+        })
         modalSelectorFechas.mostrar()
+    }
+
+    //
+    // Establece el rango de fechas que se haya seleccionado.
+    //
+    function establecerFechas(campoFechaInicio, campoFechaFin) {
+
+        // Cuando el usuario acepta, establecemos la selección de fechas y recargamos los informes
+        fechaInicioSeleccionada = campoFechaInicio.valueAsDate
+        fechaFinSeleccionada = campoFechaFin.valueAsDate
+
+        // Validamos que las fechas sean válidas
+        if (fechaInicioSeleccionada > fechaFinSeleccionada) {
+            ErrorBox.mostrar("La fecha de inicio no puede ser posterior a la fecha de fin.")
+            return
+        }
+
+        document.querySelector("#boton-restaurar-fechas").classList.remove("hidden")
+
+        hayFechasSeleccionadas = true
+
+        destruirGraficos()
+        cargarDatosEstadisticos(fechaInicioSeleccionada, fechaFinSeleccionada)
     }
 
     //
@@ -219,6 +225,8 @@ async function getEstadisticas() {
 
         fechaInicioSeleccionada = fechaInicio
         fechaFinSeleccionada = fechaFin
+
+        hayFechasSeleccionadas = false
 
         document.querySelector("#boton-restaurar-fechas").classList.add("hidden")
 
@@ -274,6 +282,10 @@ async function getEstadisticas() {
 
         const contenedorGrafico = document.querySelector("#grafico-beneficios")
         const divGrafico = contenedorGrafico.querySelector(".grafico")
+
+        // Si hay fechas seleccionadas, informamos de que los datos corresponden sólo al intervalo
+        if (hayFechasSeleccionadas)
+            contenedorGrafico.querySelector(".info-datos-fechas").classList.remove("hidden")
 
         // Crea el elemento raíz del gráfico (https://www.amcharts.com/docs/v5/getting-started/#Root_element)
         let root = am5.Root.new(divGrafico)
@@ -498,12 +510,14 @@ async function getEstadisticas() {
     function destruirGraficoBeneficios() {
         const contenedorGrafico = document.querySelector("#grafico-beneficios")
         const divGrafico = contenedorGrafico.querySelector(".grafico")
+        const infoBeneficios = contenedorGrafico.querySelector(".info-datos-fechas")
 
         rootGraficoBeneficios?.dispose()
         rootGraficoBeneficios = null
 
         divGrafico.innerHTML = ""
         contenedorGrafico.classList.add("hidden")
+        infoBeneficios.classList.add("hidden")
     }
 
     // === Estadísticas de beneficio por meses ====================================================
