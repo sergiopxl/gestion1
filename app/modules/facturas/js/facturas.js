@@ -170,23 +170,32 @@ function nuevaFactura() {
     const plantillaNuevoConcepto = document.querySelector("#concepto-template")
 
     // Cambia la barra de acciones
-    const barraAcciones = document.querySelector("#acciones")
-    barraAcciones.innerHTML = ""
+    cambiarBarraDeAcciones()
 
     const contenedorConceptos = divNuevaFactura.querySelector(".listado-conceptos")
     contenedorConceptos.innerHTML = ""
 
-    const botonNuevoConcepto = document.createElement("button")
-    botonNuevoConcepto.textContent = "Nuevo concepto"
-    botonNuevoConcepto.classList.add("btn-success")
-    botonNuevoConcepto.addEventListener("click", () => crearConcepto())
+    //
+    // Quita la barra de acciones general y muestra las acciones de edición.
+    //
+    function cambiarBarraDeAcciones() {
 
-    const botonGuardarFactura = document.createElement("button")
-    botonGuardarFactura.textContent = "Guardar cambios"
-    botonGuardarFactura.classList.add("btn-success")
-    botonGuardarFactura.addEventListener("click", () => guardarNuevaFactura())
+        const barraAcciones = document.querySelector("#acciones")
+        // barraAcciones.innerHTML = ""
 
-    barraAcciones.append(botonNuevoConcepto, botonGuardarFactura)
+        barraAcciones.querySelector("#nueva-factura-btn").remove()
+        barraAcciones.querySelector("#paginacion").remove()
+        barraAcciones.querySelector("#buscador").remove()
+
+        const accionesCreacion = barraAcciones.querySelector("#acciones-edicion")
+        accionesCreacion.classList.remove("hidden")
+
+        const botonNuevoConcepto = accionesCreacion.querySelector(".boton-nuevo-concepto")
+        botonNuevoConcepto.addEventListener("click", crearConcepto)
+
+        const botonGuardarFactura = accionesCreacion.querySelector(".boton-guardar-factura")
+        botonGuardarFactura.addEventListener("click", guardarNuevaFactura)
+    }
 
     //
     // Llama a la API para guardar la nueva Factura.
@@ -543,8 +552,7 @@ async function editarFactura(idFactura) {
     await seleccionarCliente(datosFactura["id_cliente"])
 
     // Cambia la barra de acciones
-    const barraAcciones = document.querySelector("#acciones")
-    barraAcciones.innerHTML = ""
+    cambiarBarraDeAcciones()
 
     // Añade los conceptos de la factura
     const plantillaNuevoConcepto = document.querySelector("#concepto-template")
@@ -556,17 +564,27 @@ async function editarFactura(idFactura) {
     let baseImponible = 0
     calcularImporteTotal()
 
-    const botonNuevoConcepto = document.createElement("button")
-    botonNuevoConcepto.textContent = "Nuevo concepto"
-    botonNuevoConcepto.classList.add("btn-success")
-    botonNuevoConcepto.addEventListener("click", () => crearConcepto())
+    //
+    // Quita la barra de acciones general y muestra las acciones de creación.
+    //
+    function cambiarBarraDeAcciones() {
 
-    const botonGuardarFactura = document.createElement("button")
-    botonGuardarFactura.textContent = "Guardar cambios"
-    botonGuardarFactura.classList.add("btn-success")
-    botonGuardarFactura.addEventListener("click", () => guardarFactura())
+        const barraAcciones = document.querySelector("#acciones")
+        // barraAcciones.innerHTML = ""
 
-    barraAcciones.append(botonNuevoConcepto, botonGuardarFactura)
+        barraAcciones.querySelector("#nueva-factura-btn").remove()
+        barraAcciones.querySelector("#paginacion").remove()
+        barraAcciones.querySelector("#buscador").remove()
+
+        const accionesCreacion = barraAcciones.querySelector("#acciones-edicion")
+        accionesCreacion.classList.remove("hidden")
+
+        const botonNuevoConcepto = accionesCreacion.querySelector(".boton-nuevo-concepto")
+        botonNuevoConcepto.addEventListener("click", crearConcepto)
+
+        const botonGuardarFactura = accionesCreacion.querySelector(".boton-guardar-factura")
+        botonGuardarFactura.addEventListener("click", guardarFactura)
+    }
 
     //
     // Llama a la API para guardar los cambios en la Factura.

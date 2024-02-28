@@ -14,6 +14,7 @@
   <script src="https://cdn.amcharts.com/lib/5/locales/es_ES.js" defer></script>
   <script src="js/informes.js" type="module"></script>
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="../../assets/css/theme.css">
 </head>
 
@@ -43,8 +44,8 @@
       </div>
       <p class="informes-resumen-fechas">
         Desde <span id="informe-fecha-inicio">01/01/2000</span> hasta <span id="informe-fecha-fin">31/12/2023</span>
-        <a href="#" id="boton-cambiar-fechas" class="hidden">Cambiar</a>
-        <a href="#" id="boton-restaurar-fechas" class="hidden">Restaurar</a>
+        <a href="#" id="boton-cambiar-fechas" class="hidden" title="Cambiar" aria-label="Cambiar fechas"><i class="fa-regular fa-calendar-days"></i></a>
+        <a href="#" id="boton-restaurar-fechas" class="hidden" title="Restaurar" aria-label="Restaurar fechas"><i class="fa-solid fa-rotate"></i></a>
       </p>
     </section>
 

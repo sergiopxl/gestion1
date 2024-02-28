@@ -135,7 +135,8 @@ function doNuevoCliente() {
     const campoSector = formNuevoCliente.querySelector("[name = 'select-cliente-sector']")
     getSectoresClientes(campoSector)
 
-    const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
+    const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-guardarNuevo")
+    botonEnviar.classList.remove("hidden")
     botonEnviar.addEventListener("click", e => {
         e.preventDefault()
         modals.ConfirmBox.mostrar("¿Seguro que quiere guardar los datos?", guardarNuevoCliente)
@@ -187,8 +188,8 @@ function doEditar(cliente) {
     const campoSector = formEditarCliente.querySelector("[name = 'select-cliente-sector']")
     getSectoresClientes(campoSector, cliente)
 
-    const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
-    botonEnviar.textContent = "Guardar cambios"
+    const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-guardarCambios")
+    botonEnviar.classList.remove("hidden")
     botonEnviar.addEventListener("click", e => {
         e.preventDefault()
         modals.ConfirmBox.mostrar("¿Seguro que quiere efectuar los cambios?", guardarUpdateCliente)

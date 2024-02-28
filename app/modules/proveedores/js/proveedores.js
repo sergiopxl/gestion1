@@ -133,7 +133,8 @@ function doNuevoProveedor() {
     const campoServicio = formNuevoProveedor.querySelector("[name = 'select-proveedor-servicio']")
     getServiciosProveedores(campoServicio)
 
-    const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
+    const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-guardarNuevo")
+    botonEnviar.classList.remove("hidden")
     botonEnviar.addEventListener("click", e => {
         e.preventDefault()
         modals.ConfirmBox.mostrar("¿Seguro que quiere guardar los datos?", guardarNuevoProveedor)
@@ -185,8 +186,8 @@ function doEditar(proveedor) {
     const campoServicio = formEditarProveedor.querySelector("[name = 'select-proveedor-servicio']")
     getServiciosProveedores(campoServicio, proveedor)
 
-    const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-enviar")
-    botonEnviar.textContent = "Guardar cambios"
+    const botonEnviar = bloqueFormulario.querySelector(".formulario-boton-guardarCambios")
+    botonEnviar.classList.remove("hidden")
     botonEnviar.addEventListener("click", e => {
         e.preventDefault()
         modals.ConfirmBox.mostrar("¿Seguro que quiere efectuar los cambios?", guardarUpdateProveedor)
