@@ -15,11 +15,11 @@
 
         flex-basis: 30%;
 
-        padding: 0 0.55rem;
+        padding: 0.55rem;
         border-right: 1px dashed $color-gris-medio;  // Línea separadora
 
         p { margin: 0.6rem 0; }
-    
+
         .cliente-datos-nombre {
             background-color: lighten($color-azul, 40%);
             padding: 0.25rem;
@@ -58,16 +58,16 @@
     display: flex;
     flex-direction: row;
     gap: 1.6rem;
-    
+
     fieldset {
         border: 0;
         display: grid;
         grid-template-columns: 1fr 2fr;
         align-items: center;
     }
-    
+
     .cliente-formulario { flex-basis: 50%; }
-    
+
     .cliente-contactos-contenedor-formulario { flex-basis: 50%; }
 
     .cliente-contactos-form {
