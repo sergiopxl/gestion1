@@ -57,6 +57,7 @@ async function getProveedores(pagina, busqueda) {
     }
     catch (error) {
         modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+        console.error(error)
     }
     finally {
         loader.destroy()
@@ -162,6 +163,7 @@ function doNuevoProveedor() {
         }
         catch (error) {
             modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+            console.error(error)
         }
     }
 }
@@ -218,6 +220,7 @@ function doEditar(proveedor) {
         }
         catch (error) {
             modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+            console.error(error)
         }
     }
 
@@ -292,6 +295,7 @@ function doEditar(proveedor) {
                 }
                 catch (error) {
                     modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+                    console.error(error)
                     return
                 }
 
@@ -327,6 +331,7 @@ function doEditar(proveedor) {
             }
             catch (error) {
                 modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+                console.error(error)
             }
         }
 
@@ -360,6 +365,7 @@ async function getServiciosProveedores(selectServicio, proveedor) {
     }
     catch (error) {
         modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+        console.error(error)
     }
 
     servicios.forEach(servicio => {

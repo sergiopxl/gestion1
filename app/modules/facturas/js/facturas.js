@@ -43,6 +43,7 @@ async function getFacturas(pagina) {
     }
     catch (error) {
         modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+        console.error(error)
     }
     finally {
         loader.destroy()
@@ -219,6 +220,7 @@ function nuevaFactura() {
             }
             catch (error) {
                 modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+                console.error(error)
             }
         }
 
@@ -444,6 +446,7 @@ function nuevaFactura() {
         }
         catch (error) {
             modals.ErrorBox.mostrar("Ha habido un problema obteniendo información del Cliente")
+            console.error(error)
         }
     }
 
@@ -608,6 +611,7 @@ async function editarFactura(idFactura) {
             }
             catch (error) {
                 modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+                console.error(error)
             }
         }
 
@@ -928,6 +932,7 @@ async function editarFactura(idFactura) {
         }
         catch (error) {
             modals.ErrorBox.mostrar("Ha habido un problema obteniendo información del Cliente")
+            console.error(error)
         }
     }
 

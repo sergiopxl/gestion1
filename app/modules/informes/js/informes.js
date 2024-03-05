@@ -128,6 +128,7 @@ async function getEstadisticas() {
         }
         catch (error) {
             const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+            console.error(error)
             throw new Error(mensajeError)
         }
     }
@@ -143,6 +144,7 @@ async function getEstadisticas() {
         }
         catch (error) {
             const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+            console.error(error)
             throw new Error(mensajeError)
         }
     }
@@ -727,6 +729,7 @@ async function getEstadisticas() {
         }
         catch (error) {
             const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+            console.error(error)
             throw new Error(mensajeError)
         }
     }
@@ -894,6 +897,7 @@ async function getEstadisticas() {
         }
         catch (error) {
             const mensajeError = `ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`
+            console.error(error)
             throw new Error(mensajeError)
         }
     }

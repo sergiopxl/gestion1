@@ -57,6 +57,7 @@ async function getClientes(pagina, busqueda) {
     }
     catch (error) {
         modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+        console.error(error)
     }
     finally {
         loader.destroy()
@@ -164,6 +165,7 @@ function doNuevoCliente() {
         }
         catch (error) {
             modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+            console.error(error)
         }
     }
 }
@@ -220,6 +222,7 @@ function doEditar(cliente) {
         }
         catch (error) {
             modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+            console.error(error)
         }
     }
 
@@ -294,6 +297,7 @@ function doEditar(cliente) {
                 }
                 catch (error) {
                     modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+                    console.error(error)
                     return
                 }
 
@@ -329,6 +333,7 @@ function doEditar(cliente) {
             }
             catch (error) {
                 modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+                console.error(error)
             }
         }
 
@@ -345,6 +350,7 @@ function doEditar(cliente) {
             }
             catch (error) {
                 modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+                console.error(error)
             }
         }
     }
@@ -362,6 +368,7 @@ async function getSectoresClientes(selectSector, cliente) {
     }
     catch (error) {
         modals.ErrorBox.mostrar(`ERROR <br> ${error} <br> Consulte con el servicio de atención al cliente.`)
+        console.error(error)
     }
 
     sectores.forEach(sector => {
