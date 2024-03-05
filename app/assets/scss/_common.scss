@@ -9,6 +9,10 @@ html, body {
   font-size: 12pt;
 
   color: black;
+
+  scroll-behavior: smooth;
+  scrollbar-color: $scrollbar-color-track $scrollbar-color-thumb;
+  scrollbar-width: thin;
 }
 
 a {
