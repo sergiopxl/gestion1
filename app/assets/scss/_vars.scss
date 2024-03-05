@@ -21,3 +21,16 @@ $font-size-medium : 1.5rem;
 $font-size-big : 2.5rem;
 
 $wrapper-size : min(1024px, 90vw);
+
+$header-height: 3rem;
+$header-color: #8ac5ff;
+
+$nav-color-background: lighten($header-color, $amount: 10%);
+$nav-color-foreground: #002e5b;
+
+$nav-hover-color-background: lighten($color: $nav-color-foreground, $amount: 10%);
+
+$nav-activo-color-background: $nav-color-foreground;
+$nav-activo-color-foreground: $nav-color-background;
+
+$nav-color-transition-time: 0.5s;

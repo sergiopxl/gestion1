@@ -1,4 +1,4 @@
-console.log("navigation.js 1.2")
+console.log("navigation.js 1.3")
 
 /**
  * Inicia y configura la barra de navegación con los módulos disponibles.
@@ -10,27 +10,38 @@ export function navegacion(apartadoActual) {
 
     const apartados = [
         {
-            literal: "inicio",
+            nombre: "inicio",
+            icono: "fa-home",
             url: "../../modules/inicio/index.html"
         },
         {
-            literal: "clientes",
+            nombre: "clientes",
+            icono: "fa-user-tie",
             url: "../../modules/clientes/index.html"
         },
         {
-            literal: "facturas",
+            nombre: "facturas",
+            icono: "fa-file-invoice-dollar",
             url: "../../modules/facturas/index.html"
         },
         {
-            literal: "proveedores",
+            nombre: "proveedores",
+            icono: "fa-building",
             url: "../../modules/proveedores/index.html"
         },
         {
-            literal: "comunicaciones",
+            nombre: "gastos",
+            icono: "fa-dollar-sign",
+            url: "../../modules/gastos/index.html"
+        },
+        {
+            nombre: "comunicaciones",
+            icono: "fa-phone",
             url: "../../modules/comunicaciones/index.html"
         },
         {
-            literal: "informes",
+            nombre: "informes",
+            icono: "fa-chart-line",
             url: "../../modules/informes/index.html"
         }
     ]
@@ -40,10 +51,16 @@ export function navegacion(apartadoActual) {
         const navegacionLi = document.createElement("li")
         const navegacionA = document.createElement("a")
 
-        navegacionA.textContent = apartado.literal
+        let contenido = apartado.nombre
+
+        if (apartado.icono && apartado.icono !== "") {
+            contenido = `<i class="fas ${apartado.icono}"></i> ${contenido}`
+        }
+
+        navegacionA.innerHTML = contenido
         navegacionA.href = apartado.url
 
-        if (apartado.literal === apartadoActual) {
+        if (apartado.nombre === apartadoActual) {
             navegacionLi.classList.add("activo")
         }
 

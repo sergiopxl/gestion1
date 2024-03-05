@@ -1,11 +1,15 @@
 #header-pagina {
-  background-color: $color-gris-oscuro;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  height: $header-height;
+
+  background-color: $header-color;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
-  top: 0;
-  height: 60px;
-  position: sticky;
-  z-index: 1;
+  overflow: hidden;
 }

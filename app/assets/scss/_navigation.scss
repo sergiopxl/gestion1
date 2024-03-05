@@ -1,28 +1,44 @@
 #navegacion-principal {
-
-  display: flex;
   width: $wrapper-size;
   margin: auto;
 
+  background-color: $nav-color-background;
+  color: $nav-color-foreground;
+
+  transform: skewX(-15deg);
+
   ul {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
 
-    padding-left: 0;
+    padding: 0;
+    margin: 0;
 
-    list-style: none;
-  }  
-  li {
-    background-color: $color-gris-medio;
-    color: black;
-    border-radius: 0.4rem;
-    padding: 0.4rem;
-
+    list-style-type: none;
     text-transform: capitalize;
 
-    &.activo {
-      background-color: $color-gris-suave;
+    li {
+      &.activo {
+        background-color: $nav-activo-color-background;
+        color: $nav-activo-color-foreground
+      }
+
+      &:hover {
+        background-color: $nav-hover-color-background;
+        color: $nav-color-background;
+        transition: all $nav-color-transition-time ease 0s;
+      }
+
+      a {
+        padding: 0 1rem;
+        display: flex;
+        align-items: center;
+        height: $header-height;
+
+        transform: skewX(15deg);
+
+        // Icono
+        i { margin-right: 0.5rem; }
+      }
     }
   }
 }
