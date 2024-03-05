@@ -1,5 +1,5 @@
 import { navegacion } from "../../../assets/js/navegacion.js"
-import { paginacion } from "../../../assets/js/paginacion.js"
+import { Pagination, PaginationOptions } from "../../../assets/js/paginacion.js"
 import { Loader } from "../../../assets/js/loader.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
 import * as modals from "../../../assets/js/modal.js"
@@ -10,7 +10,7 @@ console.log("clientes.js v1.1")
 navegacion("clientes")
 
 let paginaActual = 1
-const resultadosPorPagina = 20
+const opcionesPaginacion = new PaginationOptions()
 
 const contenedorListado = document.querySelector("main")
 const templateCliente = document.querySelector(".cliente-row")
@@ -52,7 +52,7 @@ async function getClientes(pagina, busqueda) {
     const loader = new Loader({ mensaje: "Cargando clientes..." })
 
     try {
-        const datosClientes = await datos.cargarClientes(paginaActual, resultadosPorPagina, busqueda)
+        const datosClientes = await datos.cargarClientes(paginaActual, opcionesPaginacion.registrosPorPagina, busqueda)
         printListaClientes(datosClientes.numero_clientes, datosClientes.clientes, busquedaActiva, busqueda)
     }
     catch (error) {
@@ -75,7 +75,9 @@ function printListaClientes(numClientes, clientes, busquedaActiva, busqueda) {
         buscadorTexto.value = ""
         document.querySelector("#paginacion").innerHTML = "<ul></ul>"
 
-        paginacion(paginaActual, resultadosPorPagina, numClientes, getClientes)
+        opcionesPaginacion.paginaActual = paginaActual
+        opcionesPaginacion.totalRegistros = numClientes
+        Pagination.crear(opcionesPaginacion, getClientes)
     } else {
         const botonVerTodos = document.createElement("button")
         botonVerTodos.classList.add("btn-info")

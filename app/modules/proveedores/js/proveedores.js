@@ -1,5 +1,5 @@
 import { navegacion } from "../../../assets/js/navegacion.js"
-import { paginacion } from "../../../assets/js/paginacion.js"
+import { Pagination, PaginationOptions } from "../../../assets/js/paginacion.js"
 import { Loader } from "../../../assets/js/loader.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
 import * as modals from "../../../assets/js/modal.js"
@@ -10,7 +10,7 @@ console.log("proveedores.js v1.1")
 navegacion("proveedores")
 
 let paginaActual = 1
-const resultadosPorPagina = 20
+const opcionesPaginacion = new PaginationOptions()
 
 const contenedorListado = document.querySelector("main")
 const templateProveedor = document.querySelector(".proveedor-row")
@@ -52,7 +52,7 @@ async function getProveedores(pagina, busqueda) {
     const loader = new Loader({ mensaje: "Cargando proveedores..." })
 
     try {
-        const datosProveedores = await datos.cargarProveedores(paginaActual, resultadosPorPagina, busqueda)
+        const datosProveedores = await datos.cargarProveedores(paginaActual, opcionesPaginacion.registrosPorPagina, busqueda)
         printListaProveedores(datosProveedores.numero_proveedores, datosProveedores.proveedores, busquedaActiva, busqueda)
     }
     catch (error) {
@@ -75,7 +75,9 @@ function printListaProveedores(numProveedores, proveedores, busquedaActiva, busq
         buscadorTexto.value = ""
         document.querySelector("#paginacion").innerHTML = "<ul></ul>"
 
-        paginacion(paginaActual, resultadosPorPagina, numProveedores, getProveedores)
+        opcionesPaginacion.paginaActual = paginaActual
+        opcionesPaginacion.totalRegistros = numProveedores
+        Pagination.crear(opcionesPaginacion, getProveedores)
     } else {
         const botonVerTodos = document.createElement("button")
         botonVerTodos.classList.add("btn-info")

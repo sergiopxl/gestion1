@@ -37,3 +37,7 @@ $nav-color-transition-time: 0.5s;
 
 $scrollbar-color-track: $nav-color-foreground;
 $scrollbar-color-thumb: $header-color;
+
+$paginacion-color-background: $color-gris-suave;
+$paginacion-activo-color-background: $header-color;
+$paginacion-hover-color-background: lighten($paginacion-activo-color-background, $amount: 10%);

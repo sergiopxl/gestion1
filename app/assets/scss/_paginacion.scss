@@ -8,16 +8,27 @@
     }
 
     li.elemento-paginacion {
-        background-color: $color-gris-suave;
+        background-color: $paginacion-color-background;
         color: black;
+
         border-radius: 0.6rem;
         padding: 0.4rem;
 
         cursor: pointer;
 
+        &:hover {
+            background-color: $paginacion-hover-color-background;
+        }
+
         &.elemento-paginacion-activo {
-            background-color: $color-gris-medio;
+            background-color: $paginacion-activo-color-background;
             color: white;
+        }
+
+        &[disabled] {
+            background-color: $paginacion-color-background;
+            color: $color-gris-medio;
+            cursor: not-allowed;
         }
     }
 

@@ -1,5 +1,5 @@
 import { navegacion } from "../../../assets/js/navegacion.js"
-import { paginacion } from "../../../assets/js/paginacion.js"
+import { PaginationOptions, Pagination } from "../../../assets/js/paginacion.js"
 import { Loader } from "../../../assets/js/loader.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
 import { fechaCorta } from "../../../assets/js/formato_fecha.js"
@@ -11,7 +11,7 @@ console.log("facturas.js 1.1")
 navegacion("facturas")
 
 let paginaActual = 1
-const resultadosPorPagina = 20
+const opcionesPaginacion = new PaginationOptions()
 
 const contenedorMain = document.querySelector("main")
 const plantillaFacturaRow = document.querySelector("#factura-template")
@@ -38,7 +38,7 @@ async function getFacturas(pagina) {
     const loader = new Loader({ mensaje: "Cargando facturas..." })
 
     try {
-        const datosFacturas = await datos.cargarFacturas(paginaActual, resultadosPorPagina)
+        const datosFacturas = await datos.cargarFacturas(paginaActual, opcionesPaginacion.registrosPorPagina)
         printFacturas(datosFacturas.numero_facturas, datosFacturas.facturas)
     }
     catch (error) {
@@ -58,7 +58,9 @@ function printFacturas(numFacturas, facturas) {
 
     // Preparamos la paginación
     document.querySelector("#paginacion").innerHTML = "<ul></ul>"
-    paginacion(paginaActual, resultadosPorPagina, numFacturas, getFacturas)
+    opcionesPaginacion.paginaActual = paginaActual
+    opcionesPaginacion.totalRegistros = numFacturas
+    Pagination.crear(opcionesPaginacion, getFacturas)
 
     // Imprime una fila por cada factura
     for (let factura of facturas) {
