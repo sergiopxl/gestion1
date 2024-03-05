@@ -36,27 +36,10 @@ input, select, button { padding: 0.4rem; }
 
 #h1-apartado {
   width: $wrapper-size;
-  margin: 0.75rem auto;
+  margin: 1.75rem auto 0.75rem;
 }
 
 .hidden { display: none !important; }
-
-.acciones-pagina {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  position: sticky;
-  top: 60px;
-  width: $wrapper-size;
-  margin: auto;
-
-  background-color: #FFFE;
-}
-
-#buscador-boton {
-  margin-left: 0;
-}
 
 span.resaltar {
   background-color: #FF0;
