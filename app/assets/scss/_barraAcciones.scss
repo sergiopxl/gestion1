@@ -6,9 +6,11 @@
   position: sticky;
   top: $header-height;
   width: $wrapper-size;
+  height: $header-height;
   margin: auto;
 
-  background-color: #FFFE;
+  background-color: #FFFC;
+  backdrop-filter: blur(4px);
 }
 
 #buscador-boton {
