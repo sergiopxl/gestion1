@@ -1,5 +1,6 @@
 import { navegacion } from "../../../assets/js/navegacion.js"
 import { PaginationOptions, Pagination } from "../../../assets/js/paginacion.js"
+import { RateLimiter } from "../../../assets/js/rateLimiter.js"
 import { Loader } from "../../../assets/js/loader.js"
 import { formatoMoneda } from "../../../assets/js/formato_moneda.js"
 import { fechaCorta } from "../../../assets/js/formato_fecha.js"
@@ -358,8 +359,18 @@ function nuevaFactura() {
         const contenedorResultados = interfazBuscador.querySelector(".buscador-clientes-resultados")
         const plantillaResultado = contenedorResultados.querySelector(".buscador-clientes-resultado")
 
+        // No buscamos más de una vez cada 500ms
+        const limiteBusqueda = new RateLimiter(500)
+
         const campoBusqueda = interfazBuscador.querySelector(".buscador-clientes-busqueda")
-        campoBusqueda.addEventListener("input", busquedaCambiada)
+        campoBusqueda.addEventListener("input", evento => {
+            // No buscamos si no se han escrito al menos 3 caracteres
+            if (evento.target.value.length >= 3)
+                limiteBusqueda.ejecutar(() => busquedaCambiada(evento))
+            else
+                // Si no hay suficientes caracteres, borramos los resultados
+                contenedorResultados.innerHTML = ""
+        })
 
         // Controlamos cuándo se selecciona un Cliente
         contenedorResultados.addEventListener("click", clienteSeleccionado)
@@ -376,27 +387,24 @@ function nuevaFactura() {
         //
         async function busquedaCambiada(evento) {
 
-            if (evento.target.value.length > 2) {
+            const busqueda = evento.target.value
 
-                const busqueda = evento.target.value
+            const clientes = await datos.buscarClientes(campoBusqueda.value)
 
-                const clientes = await datos.buscarClientes(campoBusqueda.value)
+            contenedorResultados.innerHTML = ""
 
-                contenedorResultados.innerHTML = ""
+            for (let cliente of clientes.clientes) {
+                const resultadoCliente = plantillaResultado.cloneNode(true)
+                resultadoCliente.classList.remove("hidden")
 
-                for (let cliente of clientes.clientes) {
-                    const resultadoCliente = plantillaResultado.cloneNode(true)
-                    resultadoCliente.classList.remove("hidden")
+                const htmlNombre = `<strong>${resaltar(cliente.nombre, busqueda)}</strong>`
+                resultadoCliente.querySelector(".buscador-clientes-nombre").innerHTML = htmlNombre
+                const htmlCIF = `CIF: ${resaltar(cliente.cif, busqueda)}`
+                resultadoCliente.querySelector(".buscador-clientes-cif").innerHTML = htmlCIF
 
-                    const htmlNombre = `<strong>${resaltar(cliente.nombre, busqueda)}</strong>`
-                    resultadoCliente.querySelector(".buscador-clientes-nombre").innerHTML = htmlNombre
-                    const htmlCIF = `CIF: ${resaltar(cliente.cif, busqueda)}`
-                    resultadoCliente.querySelector(".buscador-clientes-cif").innerHTML = htmlCIF
+                resultadoCliente.dataset.clienteId = cliente.id
 
-                    resultadoCliente.dataset.clienteId = cliente.id
-
-                    contenedorResultados.append(resultadoCliente)
-                }
+                contenedorResultados.append(resultadoCliente)
             }
         }
 
