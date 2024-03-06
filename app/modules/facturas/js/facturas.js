@@ -381,6 +381,7 @@ function nuevaFactura() {
             mostrarBotonAceptar: false
         })
         modalBuscador.mostrar()
+        campoBusqueda.focus()
 
         //
         // Función llamada cada vez que cambia el campo de búsqueda para actualizar los resultados.
