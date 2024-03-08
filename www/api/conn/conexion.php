@@ -1,6 +1,6 @@
 <?php
 
-include("conn/parameters.php");
+require_once("conn/parameters.php");
 
 $conn = mysqli_connect(HOST, USER, PASSWORD, DATABASE) or die("No se puede conectar a la base de datos");
 mysqli_select_db($conn, DATABASE);

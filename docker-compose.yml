@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+
+  # Contenedor de MySQL
+  mysql-container:
+    image: mysql:latest
+    container_name: mysql-container
+    environment:
+      # Usamos la base de datos 'gestion' sin contraseña (usuario: root)
+      MYSQL_DATABASE: gestion
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+    volumes:
+      # Persistimos los datos en './mysql' para que no se pierdan
+      - ./mysql:/var/lib/mysql
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+
+  # Contenedor del servidor web Apache + PHP
+  apache-container:
+    container_name: apache-container
+    build:
+      # Importa la configuración del Dockerfile
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Configura el volumen './www' como el origen de la web
+      - ./www/:/var/www/html
+    links:
+      # Permite el acceso a MySQL desde PHP
+      - mysql-container
+    expose:
+      - 80
+    ports:
+      - 80:80
+
+  # Contenedor de phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    links:
+      # Permite el acceso a MySQL desde phpMyAdmin
+      - mysql-container
+    environment:
+      # Configuramos el acceso a MySQL
+      PMA_HOST: mysql-container
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: unless-stopped
+    ports:
+      - 8081:80

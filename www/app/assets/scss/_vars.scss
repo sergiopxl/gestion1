@@ -1,0 +1,43 @@
+$color-gris-suave: #e2e2e2;
+$color-gris-medio: #b1b0b0;
+$color-gris-oscuro: #343434;
+
+$color-rojo: #db1139;
+$color-naranja: #ff7b00;
+$color-verde: #549913;
+$color-azul: #246cb4;
+$color-violeta: #7324b4;
+
+$color-error: $color-rojo;
+$color-warning: $color-naranja;
+$color-success: $color-verde;
+$color-info: $color-azul;
+
+$fuente-primaria: Arial, Helvetica, sans-serif;
+
+$font-size-small: 0.5rem;
+$font-size-regular: 1.0rem;
+$font-size-medium: 1.5rem;
+$font-size-big: 2.5rem;
+
+$wrapper-size: min(1024px, 90vw);
+
+$header-height: 3rem;
+$header-color: #8ac5ff;
+
+$nav-color-background: lighten($header-color, $amount: 10%);
+$nav-color-foreground: #002e5b;
+
+$nav-hover-color-background: lighten($color: $nav-color-foreground, $amount: 10%);
+
+$nav-activo-color-background: $nav-color-foreground;
+$nav-activo-color-foreground: $nav-color-background;
+
+$nav-color-transition-time: 0.5s;
+
+$scrollbar-color-track: $nav-color-foreground;
+$scrollbar-color-thumb: $header-color;
+
+$paginacion-color-background: $color-gris-suave;
+$paginacion-activo-color-background: $header-color;
+$paginacion-hover-color-background: lighten($paginacion-activo-color-background, $amount: 10%);
