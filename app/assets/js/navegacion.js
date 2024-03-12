@@ -43,6 +43,11 @@ export function navegacion(apartadoActual) {
             nombre: "informes",
             icono: "fa-chart-line",
             url: "../../modules/informes/index.html"
+        },
+        {
+            nombre: "usuarios",
+            icono: "fa-users",
+            url: "../../modules/usuarios/index.html"
         }
     ]
     const navegacionContenedor = document.querySelector("#navegacion-principal ul")
