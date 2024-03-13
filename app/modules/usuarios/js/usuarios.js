@@ -79,23 +79,11 @@ function nuevoUsuario() {
     formNuevoUsuario.classList.remove("hidden")
 
     const campoPassword = formNuevoUsuario.querySelector('[name = "usuario-password"]')
+    const campoPassword2 = formNuevoUsuario.querySelector('[name = "usuario-password2"]')
     const campoAvatar = formNuevoUsuario.querySelector('[name = "usuario-avatar"]')
 
-    const botonMostrarPassword = formNuevoUsuario.querySelector(".ver-password")
-    const botonOcultarPassword = formNuevoUsuario.querySelector(".ocultar-password")
-
-    botonMostrarPassword.addEventListener("click", e => {
-        e.preventDefault()
-        campoPassword.setAttribute("type", "text")
-        botonMostrarPassword.classList.add("hidden")
-        botonOcultarPassword.classList.remove("hidden")
-    })
-    botonOcultarPassword.addEventListener("click", e => {
-        e.preventDefault()
-        campoPassword.setAttribute("type", "password")
-        botonOcultarPassword.classList.add("hidden")
-        botonMostrarPassword.classList.remove("hidden")
-    })
+    configurarCampoPassword(campoPassword)
+    configurarCampoPassword(campoPassword2)
 
     const botonGuardar = formNuevoUsuario.querySelector(".boton-guardar-usuario")
     botonGuardar.addEventListener("click", e => {
@@ -131,6 +119,31 @@ function nuevoUsuario() {
 // Muestra la interfaz de edición de un Usuario.
 //
 function editarUsuario(usuario) {
+}
+
+//
+// Configura un campo de contraseña haciendo que sus botones de ocultar / mostrar contraseña
+// funcionen.
+//
+function configurarCampoPassword(campoPassword) {
+
+    const fieldset = campoPassword.closest("fieldset")
+
+    const botonMostrarPassword = fieldset.querySelector(".ver-password")
+    const botonOcultarPassword = fieldset.querySelector(".ocultar-password")
+
+    botonMostrarPassword.addEventListener("click", e => {
+        e.preventDefault()
+        campoPassword.setAttribute("type", "text")
+        botonMostrarPassword.classList.add("hidden")
+        botonOcultarPassword.classList.remove("hidden")
+    })
+    botonOcultarPassword.addEventListener("click", e => {
+        e.preventDefault()
+        campoPassword.setAttribute("type", "password")
+        botonOcultarPassword.classList.add("hidden")
+        botonMostrarPassword.classList.remove("hidden")
+    })
 }
 
 getUsuarios()
