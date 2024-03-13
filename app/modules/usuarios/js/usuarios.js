@@ -48,7 +48,9 @@ function imprimirUsuarios(datos) {
         fila.classList.remove("hidden")
 
         fila.querySelector(".usuario-avatar .usuario-id").textContent = usuario.id
-        fila.querySelector(".usuario-avatar img").src = usuario.avatar
+        fila.querySelector(".usuario-avatar img").src = usuario.avatar && usuario.avatar !== ""
+            ? usuario.avatar
+            : "../../assets/avatares/unknown.png"
 
         fila.querySelector(".usuario-nombre").textContent = usuario.nombre
         fila.querySelector(".usuario-email").textContent = usuario.email
