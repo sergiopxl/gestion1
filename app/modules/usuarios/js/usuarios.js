@@ -119,6 +119,48 @@ function nuevoUsuario() {
 // Muestra la interfaz de edición de un Usuario.
 //
 function editarUsuario(usuario) {
+    contenedorPrincipal.innerHTML = ""
+    tituloPrincipal.textContent = "Editar usuario"
+
+    const formEditarUsuario = plantillaFormUsuario.cloneNode(true)
+    formEditarUsuario.setAttribute("id", "")
+    formEditarUsuario.classList.remove("hidden")
+
+    const campoId = formEditarUsuario.querySelector('[name = "usuario-id"]')
+    const campoNombre = formEditarUsuario.querySelector('[name = "usuario-nombre"]')
+    const campoEmail = formEditarUsuario.querySelector('[name = "usuario-email"]')
+    const campoPassword = formEditarUsuario.querySelector('[name = "usuario-password"]')
+    const campoPassword2 = formEditarUsuario.querySelector('[name = "usuario-password2"]')
+    const campoAvatar = formEditarUsuario.querySelector('[name = "usuario-avatar"]')
+    const imgAvatar = formEditarUsuario.querySelector('.usuario-avatar-previo')
+
+    campoId.value = usuario.id
+    campoNombre.value = usuario.nombre
+    campoEmail.value = usuario.email
+    campoPassword.value = ""
+    campoPassword2.value = ""
+
+    imgAvatar.classList.remove("hidden")
+    imgAvatar.src = usuario.avatar && usuario.avatar !== ""
+        ? usuario.avatar
+        : "../../assets/avatares/unknown.png"
+
+    configurarCampoPassword(campoPassword)
+    configurarCampoPassword(campoPassword2)
+
+    const botonGuardar = formEditarUsuario.querySelector(".boton-guardar-usuario")
+    botonGuardar.addEventListener("click", e => {
+        e.preventDefault()
+        actualizarUsuario()
+    })
+
+    contenedorPrincipal.append(formEditarUsuario)
+
+    //
+    // Actualiza los datos del Usuario.
+    //
+    async function actualizarUsuario() {
+    }
 }
 
 //

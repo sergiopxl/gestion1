@@ -28,3 +28,4 @@ export const UrlComunicacionesGet = "http://localhost/gestion1/api/comunicacione
 
 export const UrlUsuariosGet = "http://localhost/gestion1/api/usuarios_get.php"
 export const UrlUsuariosPost = "http://localhost/gestion1/api/usuarios_post.php"
+export const UrlUsuariosUpdate = "http://localhost/gestion1/api/usuarios_update.php"

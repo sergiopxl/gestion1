@@ -45,6 +45,7 @@
 
   <!-- Plantilla formulario Usuario -->
   <form action="" enctype="multipart/form-data" id="templateUsuarioForm" class="usuario-form hidden">
+    <input type="hidden" name="usuario-id">
     <fieldset>
       <label for="usuario-nombre">Nombre</label>
       <input type="text" name="usuario-nombre">
@@ -67,7 +68,11 @@
     </fieldset>
     <fieldset>
       <label for="usuario-avatar">Avatar</label>
-      <input type="file" name="usuario-avatar">
+      <div class="usuario-eleccion-avatar">
+        <input type="file" name="usuario-avatar">
+        <input type="hidden" name="usuario-avatar-previo">
+        <img class="usuario-avatar-previo hidden" src="" alt="Avatar actual del usuario">
+      </div>
     </fieldset>
     <button class="btn-info boton-guardar-usuario">
       <i class="fa-solid fa-floppy-disk"></i>

@@ -70,9 +70,20 @@
             left: calc(-1.2rem - 2.25rem);
         }
 
-        input[type = "file"] {
+        .usuario-eleccion-avatar {
+            display: flex;
             background-color: #EEE;
             border-radius: 0.3rem;
+
+            img {
+                width: 72px;
+                margin: 12px;
+                border-radius: 40%;
+            }
+        }
+
+        input[type = "file"] {            
+            width: 100%;
         }
     }
 
