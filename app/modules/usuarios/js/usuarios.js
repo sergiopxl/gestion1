@@ -160,6 +160,21 @@ function editarUsuario(usuario) {
     // Actualiza los datos del Usuario.
     //
     async function actualizarUsuario() {
+
+        const datosForm = new FormData(formEditarUsuario)
+        const archivo = campoAvatar.files[0]
+
+        datosForm.append("archivo", archivo)
+
+        try {
+            await datos.actualizarUsuario(datosForm)
+
+            modal.InfoBox.mostrar("El usuario ha sido actualizado correctamente.")
+        }
+        catch (error) {
+            modal.ErrorBox.mostrar(`Ha ocurrido un problema:<br>` + error)
+            console.error(error)
+        }
     }
 }
 

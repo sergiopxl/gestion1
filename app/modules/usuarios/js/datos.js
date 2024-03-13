@@ -35,3 +35,22 @@ export async function crearNuevoUsuario(datos) {
     const json = await respuesta.json()
     return json
 }
+
+/**
+ * Llama a la API para actualizar los datos de un Usuario.
+ *
+ * @param {FormData} datos -- Datos del formulario de edición.
+ *
+ * @returns Objeto con los datos del usuario.
+ */
+export async function actualizarUsuario(datos) {
+
+    // Hace la llamada GET al API
+    const respuesta = await fetch(api.UrlUsuariosUpdate, { method: "POST", body: datos })
+
+    if (!respuesta.ok)
+        throw new Error(`Error en la solicitud: ${respuesta.status}`)
+
+    const json = await respuesta.json()
+    return json
+}
