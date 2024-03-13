@@ -42,5 +42,31 @@
 
     <button class="btn-info editar-usuario"><i class="fa-solid fa-user-pen"></i> Editar</button>
   </div>
+
+  <!-- Plantilla formulario Usuario -->
+  <form action="" enctype="multipart/form-data" id="templateUsuarioForm" class="usuario-form hidden">
+    <fieldset>
+      <label for="usuario-nombre">Nombre</label>
+      <input type="text" name="usuario-nombre">
+    </fieldset>
+    <fieldset>
+      <label for="usuario-email">Correo electrónico</label>
+      <input type="email" name="usuario-email">
+    </fieldset>
+    <fieldset>
+      <label for="usuario-password">Contraseña</label>
+      <input type="password" name="usuario-password">
+      <button class="ver-password" title="Mostrar contraseña"><i class="fa-solid fa-eye"></i></button>
+      <button class="ocultar-password hidden" title="Ocultar contraseña"><i class="fa-solid fa-eye-slash"></i></button>
+    </fieldset>
+    <fieldset>
+      <label for="usuario-avatar">Avatar</label>
+      <input type="file" name="usuario-avatar">
+    </fieldset>
+    <button class="btn-info boton-guardar-usuario">
+      <i class="fa-solid fa-floppy-disk"></i>
+      Guardar
+    </button>
+  </form>
 </body>
 </html>
