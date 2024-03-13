@@ -1,0 +1,44 @@
+.usuario-row {
+
+    display: grid;
+    grid-template-columns: 96px 2fr 2fr 1.5fr auto;
+    align-items: center;
+    gap: 0.5rem;
+
+    border: 1px solid #DDD;
+
+    margin: 0.2rem 0;
+    padding: 0.3rem 1.0rem;
+
+    border-radius: 0.35rem;
+    background-color: #EEE;
+    &:nth-of-type(even) { background-color: #FFF; }
+
+    .usuario-avatar {
+
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: flex-end;
+
+        .usuario-id {
+            position: relative;
+            left: -1.4rem;
+            top: -0.25rem;
+
+            border-radius: 50%;
+            background-color: #EEEC;
+            color: #777;
+        }
+
+        img {
+            width: 96px;
+            height: 96px;
+
+            border-radius: 40%;
+        }
+    }
+
+    .usuario-nombre {
+        font-weight: bold;
+    }
+}
