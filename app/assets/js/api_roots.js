@@ -25,3 +25,6 @@ export const UrlFacturasUpdate = "http://localhost/gestion1/api/facturas_update.
 export const UrlAvisosGet = "http://localhost/gestion1/api/avisos_get.php"
 export const UrlGastosGet = "http://localhost/gestion1/api/gastos_get.php"
 export const UrlComunicacionesGet = "http://localhost/gestion1/api/comunicaciones_get.php"
+
+export const UrlUsuariosGet = "http://localhost/gestion1/api/usuarios_get.php"
+export const UrlUsuariosPost = "http://localhost/gestion1/api/usuarios_post.php"

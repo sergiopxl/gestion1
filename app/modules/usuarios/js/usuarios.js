@@ -104,9 +104,24 @@ function nuevoUsuario() {
     contenedorPrincipal.append(formNuevoUsuario)
 
     //
-    // Guarda el nuevo usuario.
+    // Guarda el nuevo Usuario.
     //
     async function guardarNuevoUsuario() {
+
+        const datosForm = new FormData(formNuevoUsuario)
+        const archivo = campoAvatar.files[0]
+
+        datosForm.append("archivo", archivo)
+
+        try {
+            await datos.crearNuevoUsuario(datosForm)
+
+            modal.InfoBox.mostrar("El usuario ha sido creado correctamente.")
+        }
+        catch (error) {
+            modal.ErrorBox.mostrar(`Ha ocurrido un problema:<br>` + error)
+            console.error(error)
+        }
     }
 }
 
