@@ -15,7 +15,7 @@ $urlBaseDb = "../../assets/avatares/";      // URL base de las imágenes de Usua
 $urlImagenParaBd = "";
 
 // Verifica si se ha enviado un archivo
-if ($_FILES['archivo']) {
+if (isset($_FILES['archivo'])) {
 
     $archivoNombre = $_FILES['archivo']['name'];
     $archivoTipo = $_FILES['archivo']['type'];
